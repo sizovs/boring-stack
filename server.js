@@ -32,10 +32,11 @@ const app = express();
 
 // In development, when we change static files, staticity doesn't rehash them (it only does when the server restarts),
 // and since staticify sends max-age headers, we're getting old assets if we don't flush the browser's cache.
-// Therefore, in order to always see fresh static assets, we disable caching in development.
+// Therefore, in order to always see fresh static assets, we disable caching.
+// And it also works in production because the reverse proxy, not the app, should set static cache headers.
 const statics = staticify('static', {
   sendOptions: {
-    maxAge: isDevMode ? '0s' : '1y'
+    maxAge: '0s'
   }
 })
 app.use(statics.middleware)
