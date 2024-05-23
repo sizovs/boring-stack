@@ -23,4 +23,4 @@ tasks:
     cmds:
       - echo Will deploy to {{.ip}}
       - rsync -a ./ devops@{{.ip}}:/home/devops/latest
-      - ssh devops@{{.ip}} "DOMAIN=https://dev.club X_SECRET_TOKEN=$X_SECRET_TOKEN R2_BACKUP_ENDPOINT=$R2_BACKUP_ENDPOINT R2_BACKUP_BUCKET=$R2_BACKUP_BUCKET R2_BACKUP_KEY=$R2_BACKUP_KEY R2_BACKUP_SECRET=$R2_BACKUP_SECRET bash -s" < ./deploy.sh
+      - ssh devops@{{.ip}} "DOMAIN=https://dev.club R2_BACKUP_ENDPOINT=$R2_BACKUP_ENDPOINT R2_BACKUP_BUCKET=$R2_BACKUP_BUCKET R2_BACKUP_KEY=$R2_BACKUP_KEY R2_BACKUP_SECRET=$R2_BACKUP_SECRET bash -s" < ./deploy.sh

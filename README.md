@@ -32,8 +32,6 @@ task terraform -- apply
 
 You'll need to create `<project_dir>/.env` file with the following content and fill missing production values before deploying:
 ```
-NODE_ENV=production
-DB_LOCATION=/mnt/database/db.sqlite3
 COOKIE_SECRET=<secret goes here>
 ```
 

@@ -1,9 +1,10 @@
 #!/usr/bin/env bash
 
 APP_NAME=devclub
+DB_LOCATION=/mnt/database/db.sqlite3
 
 # Ensure all required environment variables are present
-REQUIRED_ENV_VARS=("DOMAIN" "R2_BACKUP_KEY" "R2_BACKUP_SECRET" "R2_BACKUP_ENDPOINT" "R2_BACKUP_BUCKET" "X_SECRET_TOKEN")
+REQUIRED_ENV_VARS=("DOMAIN" "R2_BACKUP_KEY" "R2_BACKUP_SECRET" "R2_BACKUP_ENDPOINT" "R2_BACKUP_BUCKET")
 for var in "${REQUIRED_ENV_VARS[@]}"; do
   if [ -z "${!var}" ]; then
     echo "Environment variable $var is not set."
@@ -29,7 +30,7 @@ fi
 LITESTREAM_CONFIG=$(
   cat <<EOF
 dbs:
-  - path: /mnt/database/db.sqlite3
+  - path: $DB_LOCATION
     replicas:
       - type: s3
         endpoint: $R2_BACKUP_ENDPOINT
@@ -119,7 +120,7 @@ npm ci --production
 
 # Backup database
 backupFile=/mnt/database/db-backup.sqlite3
-sqlite3 /mnt/database/db.sqlite3 ".backup '$backupFile'" || exit
+sqlite3 "$DB_LOCATION" ".backup '$backupFile'" || exit
 echo "Database backed up: $backupFile"
 
 # Run migrations
@@ -130,7 +131,7 @@ PORT=$DEPLOY_PORT npm run migrate
 pm2 stop -s "$APP_NAME-$DEPLOY_NODE" || ':'
 
 # Run <deploy node>
-PORT=$DEPLOY_PORT pm2 start server.js --node-args="--env-file .env" -i max -o "$HOME/.pm2/logs/$APP_NAME-out.log" -e "$HOME/.pm2/logs/$APP_NAME-err.log" -n "$APP_NAME-$DEPLOY_NODE"
+NODE_ENV=production PORT=$DEPLOY_PORT DB_LOCATION=$DB_LOCATION pm2 start server.js --node-args="--env-file .env" -i max -o "$HOME/.pm2/logs/$APP_NAME-out.log" -e "$HOME/.pm2/logs/$APP_NAME-err.log" -n "$APP_NAME-$DEPLOY_NODE"
 
 # Check if <deploy node> is healthy
 HEALTHY=false
