@@ -1,4 +1,7 @@
 import Database from 'better-sqlite3';
+if (!process.env.DB_LOCATION) {
+  throw 'DB_LOCATION env variable is not provided.'
+}
 const db = new Database(process.env.DB_LOCATION, {});
 db.pragma('journal_mode = WAL');
 db.pragma('foreign_keys = true')

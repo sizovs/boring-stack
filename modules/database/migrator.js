@@ -22,17 +22,15 @@ export class Migrator {
         const targetVersion = databaseVersion + 1
         const migration = this.#migrations.version(targetVersion)
         migration.execute(this.#db)
-        return outOfDate
-      } else {
-        console.log(`Database is up-to-date (v${databaseVersion}).`)
-        return outOfDate
       }
+      return outOfDate
     })
 
     // Keep running migration transactions while DB is out of date
     while (tx.immediate()) {
     }
 
+    console.log(`Database is up-to-date.`)
   }
 
   databaseVersion() {
@@ -89,7 +87,7 @@ class Migration {
     try {
       console.log(`Migrating to v${this.version} using ${this.name}`)
       db.exec(this.statements)
-      db.exec(`PRAGMA user_version = ${this.#version}`)
+      db.exec(`PRAGMA user_version = ${this.version}`)
     } catch (error) {
       const message = `Unable to execute migration ${this.name}: ${error}`
       console.error(message)

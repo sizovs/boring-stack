@@ -1,5 +1,10 @@
 version: 3
 
+env:
+  DB_LOCATION: ./modules/database/db.sqlite3
+  NODE_ENV: development
+  COOKIE_SECRET: unsecure
+
 tasks:
   terraform:
     cmds:
@@ -11,11 +16,9 @@ tasks:
     cmds:
       - npm run migrate
   db:pull:
-    env:
-      DB_FILE: ./modules/database/db.sqlite3
     cmds:
       - rm -rf ./tmp
-      - litestream restore -config ./litestream.yml $DB_FILE
+      - litestream restore -config ./litestream.yml $DB_LOCATION
   deploy:
     silent: true
     vars:

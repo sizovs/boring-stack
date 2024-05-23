@@ -124,7 +124,7 @@ sqlite3 "$DB_LOCATION" ".backup '$backupFile'" || exit
 echo "Database backed up: $backupFile"
 
 # Run migrations
-PORT=$DEPLOY_PORT npm run migrate
+NODE_ENV=production DB_LOCATION=$DB_LOCATION npm run migrate
 
 # If <deploy node> is running, stop it
 # https://github.com/Unitech/pm2/issues/325
