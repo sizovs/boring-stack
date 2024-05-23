@@ -5,7 +5,7 @@
     "dev": "node --watch server.js",
     "migrate": "node ./modules/database/migrate.js",
     "repl": "node ./modules/repl.js",
-    "test": "node bin/test.js"
+    "test": "node ./modules/japa.js"
   },
   "dependencies": {
     "@vinejs/vine": "^2.0.0",
