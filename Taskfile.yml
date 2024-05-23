@@ -8,7 +8,7 @@ env:
 tasks:
   terraform:
     cmds:
-      - terraform -chdir=infra {{.CLI_ARGS}}
+      - terraform -chdir=terraform {{.CLI_ARGS}}
   dev:
     cmds:
       - npm run dev
