@@ -1,0 +1,9 @@
+# litestream.yaml
+dbs:
+  - path: $DB_FILE
+    replicas:
+      - type: s3
+        endpoint: $R2_BACKUP_ENDPOINT
+        bucket: $R2_BACKUP_BUCKET
+        access-key-id: $R2_BACKUP_KEY
+        secret-access-key: $R2_BACKUP_SECRET

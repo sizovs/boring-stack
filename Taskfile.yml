@@ -1,0 +1,30 @@
+version: 3
+
+dotenv:
+  - .env.devops
+
+tasks:
+  terraform:
+    cmds:
+      - terraform -chdir=infra {{.CLI_ARGS}}
+  dev:
+    cmds:
+      - npm run dev
+  db:migrate:
+    cmds:
+      - npm run migrate
+  db:pull:
+    env:
+      DB_FILE: ./modules/database/db.sqlite3
+    cmds:
+      - rm -rf ./tmp
+      - litestream restore -config ./litestream.yml $DB_FILE
+  deploy:
+    silent: true
+    vars:
+      ip: xxx.xxx.xxx.xxx
+    cmds:
+      - echo Will deploy to {{.ip}}
+      - node ace build --production && cp .env.production build/.env
+      - rsync -a build/ devops@{{.ip}}:/home/devops/latest
+      - ssh devops@{{.ip}} "DOMAIN=https://dev.club X_SECRET_TOKEN=$X_SECRET_TOKEN R2_BACKUP_ENDPOINT=$R2_BACKUP_ENDPOINT R2_BACKUP_BUCKET=$R2_BACKUP_BUCKET R2_BACKUP_KEY=$R2_BACKUP_KEY R2_BACKUP_SECRET=$R2_BACKUP_SECRET bash -s" < ./deploy.sh
