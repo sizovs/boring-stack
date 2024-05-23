@@ -17,6 +17,7 @@ import { callbackify } from "util"
 await vine.validate({
   data: process.env,
   schema: vine.object({
+    DB_LOCATION: vine.string(),
     COOKIE_SECRET: vine.string(),
     NODE_ENV: vine.enum(['development', 'production'])
   })

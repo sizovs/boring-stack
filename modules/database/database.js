@@ -1,5 +1,5 @@
 import Database from 'better-sqlite3';
-const db = new Database(process.env.PWD + "/modules/database/db.sqlite3", {});
+const db = new Database(process.env.DB_LOCATION, {});
 db.pragma('journal_mode = WAL');
 db.pragma('foreign_keys = true')
 db.pragma('busy_timeout = 5000')
