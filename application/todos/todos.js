@@ -29,7 +29,7 @@ router.post('/', async (request, response) => {
     return
   }
 
-  db.prepare('INSERT INTO todos (description) VALUES (?)').run(newTodo.description)
+  db.prepare('insert into todos (description) values (?)').run(newTodo.description)
   response.redirect('/todos')
 })
 
