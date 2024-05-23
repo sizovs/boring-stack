@@ -9,7 +9,7 @@ I don't think it's reasonable to split apps prematurely across all axes — 1) v
 Such simple architectures also diminish the benefit of running on PaaS or cloud hyperscalers that are opaque and expensive abstractions over servers. Thus, I am running my stuff on Hetzner (or any other VPC), provisioning servers with Terraform, and deploying using a simple, homegrown bash script that supports zero downtime deployments.
 
 
-As a guiding principes, I bet on stability, simplicity, and fewer abstractions. As a result, I made the following tech choices:
+As a guiding principles, I bet on stability, simplicity, and fewer abstractions. As a result, I made the following tech choices:
 * javascript
 * express
 * sqlite
