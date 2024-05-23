@@ -4,8 +4,8 @@
   "scripts": {
     "dev": "NODE_ENV=development COOKIE_SECRET=unsecure node --watch server.js",
     "repl": "node ./modules/repl.js",
-    "migrate": "node ./modules/database/migrator.js",
-    "test": "jest"
+    "migrate": "node ./modules/database/migrate.js",
+    "test": "node bin/test.js"
   },
   "dependencies": {
     "@vinejs/vine": "^2.0.0",
@@ -25,6 +25,9 @@
     "#modules/*": "./modules/*"
   },
   "devDependencies": {
-    "jest": "^29.7.0"
+    "@faker-js/faker": "^8.4.1",
+    "@japa/assert": "^2.0.0-2",
+    "@japa/runner": "^3.0.0-9",
+    "memfs": "^4.9.2"
   }
 }

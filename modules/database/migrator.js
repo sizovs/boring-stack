@@ -1,141 +1,111 @@
-import { readFileSync, readdirSync } from 'fs'
-import { join } from "path"
-import { db } from './database.js'
+import { basename } from 'path'
+import fs from "fs"
 
-export const migrate = (
-  migrationsDirectory = join(import.meta.dirname, './migrations'),
-) => {
+export class Migrator {
+  #db
+  #migrations
+  constructor(db, migrations) {
+    this.#db = db
+    this.#migrations = migrations
+  }
+  migrate() {
 
-  const migrations = getMigrations(migrationsDirectory)
-  const maxVersion = getMaximumVersion(migrations)
-  const targetVersion = maxVersion
+    if (this.#migrations.empty()) {
+      return
+    }
 
-  const migrate = db.transaction(
-    (targetVersion, maxVersion) => {
-      const currentVersion = getDatabaseVersion(db)
-      if (maxVersion < currentVersion) {
-        return true
+    const tx = this.#db.transaction(() => {
+      const latestVersion = this.#migrations.latest().version
+      const databaseVersion = this.databaseVersion()
+      const outOfDate = databaseVersion < latestVersion
+      if (outOfDate) {
+        const targetVersion = databaseVersion + 1
+        const migration = this.#migrations.version(targetVersion)
+        migration.execute(this.#db)
+        return outOfDate
       } else {
-        if (currentVersion === targetVersion) {
-          return true
-        } else if (currentVersion < targetVersion) {
-          upgrade()
-          return false
-        } else {
-          downgrade()
-          return false
-        }
+        console.log(`Database is up-to-date (v${databaseVersion}).`)
+        return outOfDate
       }
-    },
-  )
+    })
 
-  while (true) {
-    const done = migrate.immediate(targetVersion, maxVersion)
-    if (done) break
-  }
-
-  function upgrade() {
-    const currentVersion = getDatabaseVersion(db)
-    const targetVersion = currentVersion + 1
-
-    const migration = migrations.find((x) => x.version === targetVersion)
-    if (!migration) {
-      throw new Error(`Cannot find migration for version ${targetVersion}`)
+    // Keep running migration transactions while DB is out of date
+    while (tx.immediate()) {
     }
 
+  }
+
+  databaseVersion() {
+    const userVersion = this.#db.prepare('PRAGMA user_version;').get()?.user_version
+    if (typeof userVersion !== 'number') {
+      throw new Error(`Unexpected result when getting user_version: "${userVersion}".`)
+    }
+    return userVersion
+  }
+}
+
+export class Migrations {
+  #migrations
+  #fs
+  constructor(directory, filesystem = fs) {
+    this.#fs = filesystem
+    this.#migrations = this.migrationFiles(directory).map((file, index) => new Migration(file, index + 1, filesystem))
+    console.log(`${this.#migrations.length} migration(s) in directory.`)
+  }
+
+  empty() {
+    return this.#migrations.length === 0
+  }
+
+  version(v) {
+    return this.#migrations.find(({ version }) => version === v)
+  }
+
+  latest() {
+    return this.#migrations.at(-1)
+  }
+
+  migrationFiles(path) {
+    const sqlFiles = this.#fs.readdirSync(path, { withFileTypes: true })
+      .filter((file) => file.isFile() && file.name.endsWith('.sql'))
+      .map((sqlFile) => `${path}/${sqlFile.name}`)
+      .sort()
+
+    return sqlFiles
+  }
+}
+
+class Migration {
+  #file
+  #version
+  #fs
+  constructor(file, version, fs) {
+    this.#file = file;
+    this.#version = version
+    this.#fs = fs
+  }
+
+  execute(db) {
     try {
-      for (const up of migration.up) {
-        console.log(db)
-        const stmt = db.prepare(up);
-        stmt.run()
-      }
+      console.log(`Migrating to v${this.version} using ${this.name}`)
+      db.exec(this.statements)
+      db.exec(`PRAGMA user_version = ${this.#version}`)
     } catch (error) {
-      console.error(
-        `Upgrade from version ${currentVersion} to version ${targetVersion} failed.`,
-      )
-      throw error
+      const message = `Unable to execute migration ${this.name}: ${error}`
+      console.error(message)
+      throw new Error(message, { cause: error })
     }
-    setDatabaseVersion(db, targetVersion)
   }
 
-  function downgrade() {
-    const currentVersion = getDatabaseVersion(db)
-    const targetVersion = currentVersion - 1
-
-    const migration = migrations.find((x) => x.version === currentVersion)
-    if (!migration) {
-      throw new Error(`Cannot find migration for version ${targetVersion}`)
-    }
-
-    try {
-      db.exec(migration.down)
-    } catch (e) {
-      console.error(
-        `Downgrade from version ${currentVersion} to version ${targetVersion} failed.`,
-      )
-      throw e
-    }
-    setDatabaseVersion(db, targetVersion)
-  }
-}
-
-export const getMaximumVersion = (migrations) => {
-  return migrations.reduce((max, cur) => Math.max(cur.version, max), 0)
-}
-
-export const getDatabaseVersion = (db) => {
-  const result = db.prepare('PRAGMA user_version;').get()
-  if (typeof (result)?.user_version === 'number') {
-    return (result)?.user_version
-  }
-  throw new Error(`Unexpected result when getting user_version: "${result}".`)
-}
-
-export const setDatabaseVersion = (db, version) => {
-  db.exec(`PRAGMA user_version = ${version}`)
-}
-
-export const readMigrationFiles = (path) => {
-  const sqlFiles = readdirSync(path, { withFileTypes: true })
-    .filter((file) => file.isFile() && file.name.endsWith('.sql'))
-    .map((sqlFile) => `${path}/${sqlFile.name}`)
-    .sort()
-
-  return sqlFiles
-}
-
-export const getMigrations = (path) => {
-  const migrationFilesPaths = readMigrationFiles(path)
-
-  const migrations = []
-
-  for (let i = 0; i < migrationFilesPaths.length; i++) {
-    const filePath = migrationFilesPaths[i]
-    const fileContent = readFileSync(filePath, { encoding: 'utf8' })
-
-    const up = parseSqlContent(fileContent)
-
-    const migration = {
-      up,
-      down: '',
-      version: i + 1,
-    }
-    migrations.push(migration)
+  get version() {
+    return this.#version
   }
 
-  return migrations
-}
+  get name() {
+    return basename(this.#file)
+  }
 
-/**
- * A single .sql file can contain multiple sql statements
- * splitted by an empty line
- */
-export const parseSqlContent = (content) => {
-  const parts = content
-    .split(/\n\n/gm)
-    .map((v) => v.trim())
-    .filter((v) => v.length > 0)
-  return parts
+  get statements() {
+    return this.#fs.readFileSync(this.#file, { encoding: 'utf8' })
+  }
 }
-
-migrate()

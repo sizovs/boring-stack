@@ -22,13 +22,13 @@ As a guiding principes, we bet on stability, simplicity, and fewer abstractions.
 
 # Provisioning infra
 ```
-  task terraform -- init
-  task terraform -- apply
+task terraform -- init
+task terraform -- apply
 ```
 
 # Deploying to production
 ```
-  task deploy
+task deploy
 ```
 
 # Running an app locally
