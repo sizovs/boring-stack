@@ -45,7 +45,7 @@ echo "$LITESTREAM_CONFIG" | sudo tee /etc/litestream.yml >/dev/null
 sudo systemctl enable litestream
 sudo systemctl restart litestream
 
-NODE_VERSION="18.18.2"
+NODE_VERSION="22.1.0"
 
 # Download and install NVM
 if [ ! -d "$HOME/.nvm" ]; then
@@ -130,7 +130,7 @@ PORT=$DEPLOY_PORT npm run migrate
 pm2 stop -s "$APP_NAME-$DEPLOY_NODE" || ':'
 
 # Run <deploy node>
-PORT=$DEPLOY_PORT pm2 start server.js -i max -o "$HOME/.pm2/logs/$APP_NAME-out.log" -e "$HOME/.pm2/logs/$APP_NAME-err.log" -n "$APP_NAME-$DEPLOY_NODE"
+PORT=$DEPLOY_PORT pm2 start server.js --node-args="--env-file .env" -i max -o "$HOME/.pm2/logs/$APP_NAME-out.log" -e "$HOME/.pm2/logs/$APP_NAME-err.log" -n "$APP_NAME-$DEPLOY_NODE"
 
 # Check if <deploy node> is healthy
 HEALTHY=false

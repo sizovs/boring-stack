@@ -29,6 +29,9 @@ task terraform -- apply
 ```
 
 # Deploying to production
+
+You'll need to create `<project_dir>/.env` file and fill it with production values before deploying. See `server.js` for required parameters.
+
 ```
 task deploy
 ```
