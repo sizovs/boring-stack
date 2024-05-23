@@ -30,7 +30,12 @@ task terraform -- apply
 
 # Deploying to production
 
-You'll need to create `<project_dir>/.env` file and fill it with production values before deploying. See `server.js` for required parameters.
+You'll need to create `<project_dir>/.env` file with the following content and fill missing production values before deploying:
+```
+NODE_ENV=production
+DB_LOCATION=/mnt/database/db.sqlite3
+COOKIE_SECRET=<secret goes here>
+```
 
 ```
 task deploy
