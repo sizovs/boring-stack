@@ -1,0 +1,30 @@
+{
+  "name": "dev.club",
+  "type": "module",
+  "scripts": {
+    "dev": "NODE_ENV=development COOKIE_SECRET=unsecure node --watch server.js",
+    "repl": "node ./modules/repl.js",
+    "migrate": "node ./modules/database/migrator.js",
+    "test": "jest"
+  },
+  "dependencies": {
+    "@vinejs/vine": "^2.0.0",
+    "better-sqlite3": "^9.3.0",
+    "cookie-session": "^2.1.0",
+    "cors": "2.8.5",
+    "edge-stacks": "^2.0.0-0",
+    "edge.js": "^6.0.0-10",
+    "express": "^4.19.2",
+    "express-promise-router": "^4.1.1",
+    "morgan": "1.10.0",
+    "req-flash": "^0.0.3",
+    "staticify": "5.0.0",
+    "winston": "3.11.0"
+  },
+  "imports": {
+    "#modules/*": "./modules/*"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0"
+  }
+}

@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  {{-- Htmx --}}
+  <script src="https://cdn.jsdelivr.net/npm/htmx.org@1.9.10/dist/htmx.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/htmx.org@1.9.10/dist/ext/preload.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/htmx.org@1.9.10/dist/ext/alpine-morph.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/htmx.org@1.9.10/dist/ext/loading-states.js"></script>
+
+  {{-- Alpine --}}
+  <script src="https://cdn.jsdelivr.net/npm/@alpinejs/focus@3.13.5/dist/cdn.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.13.5/dist/cdn.min.js" defer></script>
+
+  {{-- Cash – a modern jQuery replacement --}}
+  <script src="https://cdn.jsdelivr.net/npm/cash-dom/dist/cash.min.js"></script>
+
+  {{-- Pico --}}
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css" />
+
+  {{-- Global styles --}}
+  <link rel="stylesheet" href="{{static('/app.css')}}">
+
+  {{-- Components can push their styles here --}}
+  @stack('css')
+
+  {{-- Components can push their JS here --}}
+  @stack('js')
+
+  <title>Hello World</title>
+</head>
+
+<body hx-ext="preload,loading-states" hx-boost="true">
+  {{{ await $slots.main() }}}
+</body>
+
+</html>

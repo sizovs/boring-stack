@@ -1,0 +1,31 @@
+@layout()
+<main>
+  <h1>You have {{todos.length}} todos</h1>
+  @each(todo in todos)
+  <table class="todos">
+    <tr>
+      <td>
+        <input type="checkbox" hx-post="/todos/{{todo.id}}/done" name="todo" hx-target="body" />
+      </td>
+      <td>
+        {{todo.description}}
+      </td>
+    </tr>
+  </table>
+  @end
+  <form action="/todos" method="post">
+    <textarea {{!flash.errors?.description || 'aria-invalid=true' }} type="text" name="description"
+      placeholder="Description" aria-label="Description">{{flash.old?.description ?? ''}}</textarea>
+    @if(flash.errors?.description)
+    <small>{{flash.errors.description[0].message}}</small>
+    @end
+
+    <button type="submit">Add new todo</button>
+
+  </form>
+
+</main>
+@end
+@pushTo('css')
+<link rel="stylesheet" href="{{static('/todos.css')}}">
+@end
