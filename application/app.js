@@ -100,7 +100,7 @@ const startApp = async (port) => {
   migrator.migrate()
 
   const server = app.listen(port, () => logger.info("Your app is ready on http://localhost:" + server.address().port))
-  return server
+  return `http://localhost:${server.address().port}`
 }
 
 export { startApp }
