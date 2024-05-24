@@ -18,7 +18,7 @@ As a guiding principles, I bet on stability, simplicity, and fewer abstractions.
 * SQLite with better-sqlite3 for DB acccess w/o ORMs and query builders
 * Livestream for DB replication to R2
 
-By looking into the code, you'll discover lesser-known gems like the Japa testing library and the Vine validation library. Generally, the dependencies are minimal, giving a refreshing feel after dealing with bloated frameworks.
+By looking into the code, you'll discover lesser-known gems such as Vine validation library. Generally, the dependencies are minimal, giving a refreshing feel after dealing with bloated frameworks.
 
 # Provisioning infra
 ```
