@@ -9,16 +9,16 @@ I don't think it's reasonable to split apps prematurely across all axes — 1) v
 Loosely coupled, distributed architectures are challenging to operate, which is why they are better suited for running on the cloud. This is one of the reasons why cloud providers advocate for such architectures. On the other hand, monolithic, self-contained architectures diminish the benefit of running on PaaS or cloud hyperscalers that are opaque and 5-20x more expensive abstractions over good old servers. Therefore, I am running my stuff on Hetzner VPS, provisioning servers with Terraform, and deploying using a simple, homegrown bash script that supports zero-downtime deployments.
 
 As a guiding principles, I bet on stability, simplicity, and fewer abstractions. As a result, I made the following tech choices:
-* JavaScript (you don't need TS for large-scale apps if you write tests. Ruby on Rails is a good example)
-* Express
-* SQLite with better-sqlite3 for DB acccess w/o ORMs and query builders
-* Livestream for DB replication to R2
-* Htmx for SPA experience
+* JS (you don't need TS for large-scale apps if you write tests. Ruby on Rails is a good example)
+* Express.js
 * Edge.js for templating
+* Htmx for SPA experience
 * Alpine.js for sprinkling JS here and there
 * CSS for styling w/o build tools
+* SQLite with better-sqlite3 for DB acccess w/o ORMs and query builders
+* Livestream for DB replication to R2
 
-By looking into the code, you'll discover lesser-known gems like the Japa testing library and the Vine validation library. I learned about them from the [Adonis framework](https://adonisjs.com/), which I find to be the best batteries-included framework for Node for devs who enjoy (or at least tolerate) TypeScript.
+By looking into the code, you'll discover lesser-known gems like the Japa testing library and the Vine validation library. Generally, the dependencies are minimal, giving a refreshing feel after dealing with bloated frameworks.
 
 # Provisioning infra
 ```
