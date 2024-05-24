@@ -4,7 +4,7 @@ export default defineConfig({
   workers: 2,
   testDir: './tests',
   fullyParallel: true,
-  reporter: 'html',
+  reporter: 'list',
   use: {
     trace: 'on-first-retry',
   },
