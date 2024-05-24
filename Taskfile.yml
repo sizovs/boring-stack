@@ -20,6 +20,8 @@ tasks:
       - npm install
       - npm run dev
   db:pull:
+    env:
+      DB_LOCATION: ./modules/database/db.sqlite3
     cmds:
       - rm -rf ./tmp
       - litestream restore -config ./litestream.yml $DB_LOCATION
