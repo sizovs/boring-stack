@@ -9,7 +9,7 @@ I don't think it's reasonable to split apps prematurely across all axes — 1) v
 Loosely coupled, distributed architectures are challenging to operate, which is why they are better suited for running on the cloud. This is one of the reasons why cloud providers advocate for such architectures. On the other hand, monolithic, self-contained architectures diminish the benefit of running on PaaS or cloud hyperscalers that are opaque and 5-20x more expensive abstractions over good old servers. Therefore, I am running my stuff on Hetzner VPS, provisioning servers with Terraform, and deploying using a simple, homegrown bash script that supports zero-downtime deployments.
 
 As a guiding principles, I bet on stability, simplicity, and fewer abstractions. As a result, I made the following tech choices:
-* JS (you don't need TS for large-scale apps if you write tests. Ruby on Rails is a good example)
+* JS (you don't need TS for large-scale apps if you write tests; rails is a great example)
 * Express.js
 * Edge.js for templating
 * Htmx for SPA experience
