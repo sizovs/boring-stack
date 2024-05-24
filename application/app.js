@@ -99,7 +99,8 @@ const startApp = async (port) => {
   const migrator = new Migrator(db, migrations)
   migrator.migrate()
 
-  return app.listen(port, () => logger.info("Your app is ready on http://localhost:" + port))
+  const server = app.listen(port, () => logger.info("Your app is ready on http://localhost:" + server.address().port))
+  return server
 }
 
 export { startApp }

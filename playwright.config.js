@@ -1,11 +1,11 @@
 import { defineConfig, devices } from '@playwright/test'
 
 export default defineConfig({
+  workers: 2,
   testDir: './tests',
-  fullyParallel: false,
+  fullyParallel: true,
   reporter: 'html',
   use: {
-    baseURL: 'http://127.0.0.1:3001',
     trace: 'on-first-retry',
   },
 

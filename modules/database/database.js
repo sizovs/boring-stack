@@ -15,12 +15,8 @@ const createDatabase = () => {
   return db;
 }
 
-let db = createDatabase()
+const db = createDatabase()
 
-const recreateDatabase = () => {
-  db.close()
-  db = createDatabase()
-}
 
-export { db, recreateDatabase }
+export { db }
 

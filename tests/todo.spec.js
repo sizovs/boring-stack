@@ -1,21 +1,17 @@
 import { startApp } from '#application/app.js';
-import { recreateDatabase } from '#modules/database/database.js';
 
 import { test, expect } from '@playwright/test'
 
 let server
-
-test.beforeEach(async ({ page }) => {
-  server = await startApp(3001)
+let url
+test.beforeEach(async () => {
+  server = await startApp(0)
+  url = `http://localhost:${server.address().port}`
 });
-test.afterEach(async () => {
-  recreateDatabase()
-  server.close()
-})
 
 
 test('adds todo items', async ({ page }) => {
-  await page.goto('/');
+  await page.goto(url + '/');
   await page.getByPlaceholder('Description').fill('Homework')
   await page.getByText('Add new todo').click()
 
@@ -31,7 +27,7 @@ test('adds todo items', async ({ page }) => {
 })
 
 test('deletes todo item', async ({ page }) => {
-  await page.goto('/');
+  await page.goto(url + '/');
   await page.getByPlaceholder('Description').fill('Homework')
   await page.getByText('Add new todo').click()
   await expect(page.getByTestId('todo-count')).toHaveText('You have 1 todo')
