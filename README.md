@@ -4,22 +4,21 @@ This is my starter for full-stack web app development on Node.
 
 Since JS and TS ecosystem suffers from extreme churn, forcing 'a big rewrite' on app developers every 3-5 years, it's better and safer to build on top of stable and boring foundation. Moreover, the SPA ecosystem, and frameworks like Next and SvelteKit, are complex beasts with too much hidden "magic" under the hood. That magic works until it doesn't, because all abstractions are leaky. For the problem of sending data over HTTP to and from the database, I find that complexity hard to justify. By making certain architectural trade-offs, such as embracing [hypermedia systems](https://hypermedia.systems/), it's possible to eliminate that complexity altogether.
 
-I don't think it's reasonable to split apps prematurely across all axes — 1) vertically (microservices), 2) horizontally (BE / FE), and 3) across servers (e.g. DB running on a separate machine) and instread prefer building self-contained, monolith systems that run on a single server. Such systems can handle 10,000s of requests on a beefy VPS (which is enough for most apps) and can be split into multiple self-contained systems for scalability, if necessary.
+I don't think it's reasonable to split apps prematurely across all axes — 1) vertically (microservices), 2) horizontally (BE / FE), and 3) across servers (e.g. DB running on a separate machine) and instead prefer building self-contained, monolith systems that run on a single server. Such systems can handle 10,000s of requests on a beefy VPS (which is enough for most apps) and can be split into multiple self-contained systems for scalability, if necessary.
 
-Such simple architectures also diminish the benefit of running on PaaS or cloud hyperscalers that are opaque and expensive abstractions over good old servers. Therefore, I am running my stuff on Hetzner VPC, provisioning servers with Terraform, and deploying using a simple, homegrown bash script that supports zero downtime deployments.
+Such simple architectures also diminish the benefit of running on PaaS or cloud hyperscalers that are opaque and expensive abstractions over good old servers. Therefore, I prefer running my stuff on Hetzner VPS, provisioning servers with Terraform, and deploying using a simple, homegrown bash script that supports zero-downtime deployments.
 
 As a guiding principles, I bet on stability, simplicity, and fewer abstractions. As a result, I made the following tech choices:
-* javascript
-* express
-* sqlite
-* livestream for DB replication to R2
-* better-sqlite3 for DB access
-* htmx for SPA experience
-* edge.js for templating
-* alpine.js for sprinkling JS here and there
-* css for styling w/o build tools
+* JavaScript
+* Express
+* SQLite with better-sqlite3 for DB acccess w/o ORMs and query builders
+* Livestream for DB replication to R2
+* Htmx for SPA experience
+* Edge.js for templating
+* Alpine.js for sprinkling JS here and there
+* CSS for styling w/o build tools
 
-By looking into the code, you'll discover lesser-known gems like the Japa testing library and the Vine validation library. I learned about them from the Adonis framework, which I find to be the best full-stack framework for Node. You should give it a try if you like TypeScript.
+By looking into the code, you'll discover lesser-known gems like the Japa testing library and the Vine validation library. I learned about them from the [Adonis framework](https://adonisjs.com/), which I find to be the best batteries-included framework for Node for devs who enjoy (or at least tolerate) TypeScript.
 
 # Provisioning infra
 ```
@@ -40,14 +39,12 @@ task deploy
 
 # Running an app locally
 ```
-npm install
-task migrate
 task dev
 ```
 
 # Troubleshooting on prod
 ```
-npm run repl
+DB_LOCATION=/mnt/database/db.sqlite3 npm run repl
 ```
 
 

@@ -11,6 +11,7 @@ tasks:
       - terraform -chdir=terraform {{.CLI_ARGS}}
   dev:
     cmds:
+      - npm install
       - npm run dev
   db:migrate:
     cmds:

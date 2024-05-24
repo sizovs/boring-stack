@@ -2,7 +2,16 @@
   "compilerOptions": {
     "paths": {
       "#modules/*": [
-        "./modules/*"
+        "./modules/*",
+      ],
+      "#application/*": [
+        "./application/*",
+      ],
+      "#tests/*": [
+        "./tests/*"
+      ],
+      "#root/*": [
+        "./*",
       ]
     }
   },

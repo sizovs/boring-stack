@@ -3,9 +3,8 @@
   "type": "module",
   "scripts": {
     "dev": "node --watch server.js",
-    "migrate": "node ./modules/database/migrate.js",
     "repl": "node ./modules/repl.js",
-    "test": "node ./modules/japa.js"
+    "test": "DB_LOCATION=:memory: NODE_ENV=development COOKIE_SECRET=secret node ./modules/japa.js"
   },
   "dependencies": {
     "@vinejs/vine": "^2.0.0",
@@ -22,12 +21,18 @@
     "winston": "3.11.0"
   },
   "imports": {
-    "#modules/*": "./modules/*"
+    "#application/*": "./application/*",
+    "#modules/*": "./modules/*",
+    "#root/*": "./*",
+    "#tests/*": "./tests/*"
   },
   "devDependencies": {
     "@faker-js/faker": "^8.4.1",
-    "@japa/assert": "^2.0.0-2",
+    "@japa/assert": "^2.1.0",
+    "@japa/browser-client": "^2.0.3",
     "@japa/runner": "^3.0.0-9",
-    "memfs": "^4.9.2"
+    "@playwright/test": "^1.44.1",
+    "memfs": "^4.9.2",
+    "playwright": "^1.44.1"
   }
 }

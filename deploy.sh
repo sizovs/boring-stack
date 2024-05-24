@@ -123,9 +123,6 @@ backupFile=/mnt/database/db-backup.sqlite3
 sqlite3 "$DB_LOCATION" ".backup '$backupFile'" || exit
 echo "Database backed up: $backupFile"
 
-# Run migrations
-NODE_ENV=production DB_LOCATION=$DB_LOCATION npm run migrate
-
 # If <deploy node> is running, stop it
 # https://github.com/Unitech/pm2/issues/325
 pm2 stop -s "$APP_NAME-$DEPLOY_NODE" || ':'

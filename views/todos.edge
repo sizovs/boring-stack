@@ -7,9 +7,7 @@
       <td>
         <input type="checkbox" hx-post="/todos/{{todo.id}}/done" name="todo" hx-target="body" />
       </td>
-      <td>
-        {{todo.description}}
-      </td>
+      <td class="">{{todo.description}}</td>
     </tr>
   </table>
   @end
