@@ -1,13 +1,13 @@
 @layout()
 <main>
-  <h1>You have {{todos.length}} todos</h1>
+  <h1 data-testid="todo-count">You have {{todos.length}} todo{{todos.length === 1 ? '' : 's'}}</h1>
   @each(todo in todos)
-  <table class="todos">
+  <table>
     <tr>
       <td>
         <input type="checkbox" hx-post="/todos/{{todo.id}}/done" name="todo" hx-target="body" />
       </td>
-      <td class="">{{todo.description}}</td>
+      <td data-testid="todo-title">{{todo.description}}</td>
     </tr>
   </table>
   @end

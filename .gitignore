@@ -13,3 +13,7 @@ node_modules
 .vscode
 .env
 db.sqlite3*
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/

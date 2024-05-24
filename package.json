@@ -4,7 +4,8 @@
   "scripts": {
     "dev": "node --watch server.js",
     "repl": "node ./modules/repl.js",
-    "test": "DB_LOCATION=:memory: NODE_ENV=development COOKIE_SECRET=secret node ./modules/japa.js"
+    "test": "DB_LOCATION=:memory: NODE_ENV=development COOKIE_SECRET=secret node --test",
+    "test:e2e": "DB_LOCATION=:memory: NODE_ENV=development COOKIE_SECRET=secret npx playwright test"
   },
   "dependencies": {
     "@vinejs/vine": "^2.0.0",
@@ -27,12 +28,9 @@
     "#tests/*": "./tests/*"
   },
   "devDependencies": {
-    "@faker-js/faker": "^8.4.1",
-    "@japa/assert": "^2.1.0",
-    "@japa/browser-client": "^2.0.3",
-    "@japa/runner": "^3.0.0-9",
-    "@playwright/test": "^1.44.1",
     "memfs": "^4.9.2",
+    "@faker-js/faker": "^8.4.1",
+    "@playwright/test": "^1.44.1",
     "playwright": "^1.44.1"
   }
 }
