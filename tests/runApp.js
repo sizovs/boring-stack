@@ -5,7 +5,6 @@ import { getActiveTest } from '@japa/runner'
 export async function createApp() {
   const server = await startApp(3001)
   const test = getActiveTest()
-  console.log('started')
   test.cleanup(() => {
     recreateDatabase()
     server.close()
