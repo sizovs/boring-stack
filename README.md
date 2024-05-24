@@ -42,6 +42,11 @@ task deploy
 task dev
 ```
 
+# Running tests
+```
+task test
+```
+
 # Troubleshooting on prod
 ```
 DB_LOCATION=/mnt/database/db.sqlite3 npm run repl

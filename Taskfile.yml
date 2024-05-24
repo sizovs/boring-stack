@@ -1,7 +1,7 @@
 version: 3
 
 env:
-  DB_LOCATION: ./modules/database/db.sqlite3
+  DB_LOCATION: ":memory:"
   NODE_ENV: development
   COOKIE_SECRET: unsecure
 
@@ -9,13 +9,16 @@ tasks:
   terraform:
     cmds:
       - terraform -chdir=terraform {{.CLI_ARGS}}
+  test:
+    cmds:
+      - npm test
+      - npx playwright test
   dev:
+    env:
+      DB_LOCATION: ./modules/database/db.sqlite3
     cmds:
       - npm install
       - npm run dev
-  db:migrate:
-    cmds:
-      - npm run migrate
   db:pull:
     cmds:
       - rm -rf ./tmp

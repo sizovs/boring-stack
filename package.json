@@ -4,8 +4,8 @@
   "scripts": {
     "dev": "node --watch server.js",
     "repl": "node ./modules/repl.js",
-    "test": "DB_LOCATION=:memory: NODE_ENV=development COOKIE_SECRET=secret node --test",
-    "test:e2e": "DB_LOCATION=:memory: NODE_ENV=development COOKIE_SECRET=secret npx playwright test"
+    "test": "node --test",
+    "test:e2e": "npx playwright test"
   },
   "dependencies": {
     "@vinejs/vine": "^2.0.0",
