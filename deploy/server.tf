@@ -44,18 +44,3 @@ resource "hcloud_ssh_key" "devclub" {
   public_key = file("ssh.pub")
 }
 
-resource "cloudflare_record" "devclub" {
-  for_each        = var.environment
-  name            = each.key
-  zone_id         = var.cloudflare_zone_id
-  value           = hcloud_primary_ip.devclub_ip[each.key].ip_address
-  type            = "A"
-  ttl             = 1
-  proxied         = true
-  allow_overwrite = true
-}
-
-
-
-
-

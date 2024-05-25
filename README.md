@@ -24,8 +24,6 @@ By looking into the code, you'll discover lesser-known gems such as Vine validat
 Before provisioning infra, create `<project_dir>/.env.devops`:
 ```
 TF_VAR_hcloud_token=<secret goes here>
-TF_VAR_cloudflare_token=<secret goes here>
-TF_VAR_cloudflare_zone_id=<secret goes here>
 R2_BACKUP_KEY=<secret goes here>
 R2_BACKUP_SECRET=<secret goes here>
 R2_BACKUP_ENDPOINT=<secret goes here>
