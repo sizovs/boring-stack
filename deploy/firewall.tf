@@ -1,5 +1,5 @@
 resource "hcloud_firewall" "web" {
-  name = "devclub"
+  name = "web"
   rule {
     direction = "in"
     protocol  = "tcp"

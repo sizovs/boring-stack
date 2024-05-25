@@ -15,13 +15,13 @@ variable "environment" {
   }
 }
 
-resource "hcloud_server" "devclub" {
+resource "hcloud_server" "webserver" {
   for_each     = var.environment
-  name         = "devclub-${each.key}"
+  name         = "webserver-${each.key}"
   image        = "ubuntu-22.04"
   server_type  = "cax11"
   datacenter   = "nbg1-dc3"
-  ssh_keys     = [hcloud_ssh_key.devclub.id]
+  ssh_keys     = [hcloud_ssh_key.webserver_key.id]
   firewall_ids = [hcloud_firewall.web.id]
   user_data = templatefile(each.value.cloudInit,
     {
@@ -30,7 +30,7 @@ resource "hcloud_server" "devclub" {
       database_volume : hcloud_volume.database_volume[each.key].id
   })
   public_net {
-    ipv4 = hcloud_primary_ip.devclub_ip[each.key].id
+    ipv4 = hcloud_primary_ip.server_ip[each.key].id
   }
   lifecycle {
     ignore_changes = [
@@ -39,8 +39,8 @@ resource "hcloud_server" "devclub" {
   }
 }
 
-resource "hcloud_ssh_key" "devclub" {
-  name       = "devclub"
+resource "hcloud_ssh_key" "webserver_key" {
+  name       = "devops ssh key"
   public_key = file("ssh.pub")
 }
 
