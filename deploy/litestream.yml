@@ -1,4 +1,3 @@
-# litestream.yaml
 dbs:
   - path: $DB_LOCATION
     replicas:
