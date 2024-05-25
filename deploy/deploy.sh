@@ -7,7 +7,7 @@ NODE_VERSION="22.1.0"
 LITESTREAM_VERSION="v0.3.11"
 
 # Ensure all required environment variables are present
-REQUIRED_ENV_VARS=("DOMAIN" "R2_BACKUP_KEY" "R2_BACKUP_SECRET" "R2_BACKUP_ENDPOINT" "R2_BACKUP_BUCKET", "X_SECRET_TOKEN")
+REQUIRED_ENV_VARS=("DOMAIN" "R2_BACKUP_KEY" "R2_BACKUP_SECRET" "R2_BACKUP_ENDPOINT" "R2_BACKUP_BUCKET")
 for var in "${REQUIRED_ENV_VARS[@]}"; do
   if [ -z "${!var}" ]; then
     echo "Environment variable $var is not set."
@@ -151,8 +151,6 @@ CADDYFILE_CONTENT=$(
 #$DEPLOY_NODE
 $DOMAIN {
   handle {
-    @unauthorized not header X-Secret-Token "$X_SECRET_TOKEN"
-    respond @unauthorized 403
     reverse_proxy localhost:$DEPLOY_PORT
     encode gzip
   }

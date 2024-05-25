@@ -20,14 +20,9 @@ As a guiding principles, I bet on stability, simplicity, and fewer abstractions.
 
 By looking into the code, you'll discover lesser-known gems such as Vine validation library. Generally, the dependencies are minimal, giving a refreshing feel after dealing with bloated frameworks.
 
-# A note on infrastructure
-Public traffic to our Hetzner VPS is routed through a Cloudflare Worker. This setup allows us to cache static assets on Cloudflare's CDN and switch between `blue.<your.domain>` and `green.<your.domain>` without downtime by calling `task promote:green` or `task promote:blue`. Essentially, the Cloudflare Worker serves as a reverse proxy, load balancer, and CDN.
-
 # Provisioning infra
 Before provisioning infra, create `<project_dir>/.env.devops`:
 ```
-WORKER_SECRET=<secret goes here> # This is a secret that we use to access Cloudflare worker.
-X_SECRET_TOKEN=<secret goes here> # This is a secret our Cloudflare Worker sends to Hetzner.
 TF_VAR_hcloud_token=<secret goes here>
 TF_VAR_cloudflare_token=<secret goes here>
 TF_VAR_cloudflare_zone_id=<secret goes here>
@@ -40,7 +35,6 @@ R2_BACKUP_BUCKET=<secret goes here>
 ```
 task terraform -- init
 task terraform -- apply
-task deploy:worker
 ```
 
 # Deploying to production
