@@ -28,6 +28,7 @@ R2_BACKUP_KEY=<secret goes here>
 R2_BACKUP_SECRET=<secret goes here>
 R2_BACKUP_ENDPOINT=<secret goes here>
 R2_BACKUP_BUCKET=<secret goes here>
+SERVER_IP=<ip address of your Hetzner VPC>
 ```
 
 ```
