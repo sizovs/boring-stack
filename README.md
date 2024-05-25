@@ -21,6 +21,18 @@ As a guiding principles, I bet on stability, simplicity, and fewer abstractions.
 By looking into the code, you'll discover lesser-known gems such as Vine validation library. Generally, the dependencies are minimal, giving a refreshing feel after dealing with bloated frameworks.
 
 # Provisioning infra
+
+Before provisioning infra, create `<project_dir>/.env.devops`:
+```
+TF_VAR_hcloud_token=<secret goes here>
+TF_VAR_cloudflare_token=<secret goes here>
+TF_VAR_cloudflare_zone_id=<secret goes here>
+R2_BACKUP_KEY=<secret goes here>
+R2_BACKUP_SECRET=<secret goes here>
+R2_BACKUP_ENDPOINT=<secret goes here>
+R2_BACKUP_BUCKET=<secret goes here>
+```
+
 ```
 task terraform -- init
 task terraform -- apply
@@ -28,10 +40,13 @@ task terraform -- apply
 
 # Deploying to production
 
-You'll need to create `<project_dir>/.env` file with the following content and fill missing production values before deploying:
+Before deploying, create `<project_dir>/.env`:
 ```
 COOKIE_SECRET=<secret goes here>
 ```
+
+
+
 
 ```
 task deploy

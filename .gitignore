@@ -11,7 +11,7 @@ node_modules
 .DS_Store
 .idea
 .vscode
-.env
+.env*
 db.sqlite3*
 /test-results/
 /playwright-report/

@@ -10,6 +10,10 @@ variable "cloudflare_token" {
   sensitive = true
 }
 
+variable "cloudflare_zone_id" {
+
+}
+
 provider "cloudflare" {
   api_token = var.cloudflare_token
 }

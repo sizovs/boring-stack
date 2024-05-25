@@ -1,6 +1,6 @@
 # litestream.yaml
 dbs:
-  - path: $DB_FILE
+  - path: $DB_LOCATION
     replicas:
       - type: s3
         endpoint: $R2_BACKUP_ENDPOINT

@@ -1,7 +1,10 @@
 #!/usr/bin/env bash
 
-APP_NAME=devclub
-DB_LOCATION=/mnt/database/db.sqlite3
+export APP_NAME=devclub
+export DB_LOCATION=/mnt/database/db.sqlite3
+
+NODE_VERSION="22.1.0"
+LITESTREAM_VERSION="v0.3.11"
 
 # Ensure all required environment variables are present
 REQUIRED_ENV_VARS=("DOMAIN" "R2_BACKUP_KEY" "R2_BACKUP_SECRET" "R2_BACKUP_ENDPOINT" "R2_BACKUP_BUCKET")
@@ -13,7 +16,7 @@ for var in "${REQUIRED_ENV_VARS[@]}"; do
 done
 
 # Install Litestream
-LITESTREAM_VERSION="v0.3.11"
+
 if ! command -v litestream &>/dev/null || [ "$(litestream version)" != "$LITESTREAM_VERSION" ]; then
   arch=$(dpkg --print-architecture)
   url=https://github.com/benbjohnson/litestream/releases/download/$LITESTREAM_VERSION/litestream-$LITESTREAM_VERSION-linux-$arch.deb
@@ -27,26 +30,12 @@ if ! command -v litestream &>/dev/null || [ "$(litestream version)" != "$LITESTR
 fi
 
 # Create litestream.yml config file for continuous data replication
-LITESTREAM_CONFIG=$(
-  cat <<EOF
-dbs:
-  - path: $DB_LOCATION
-    replicas:
-      - type: s3
-        endpoint: $R2_BACKUP_ENDPOINT
-        bucket: $R2_BACKUP_BUCKET
-        access-key-id: $R2_BACKUP_KEY
-        secret-access-key: $R2_BACKUP_SECRET
-
-EOF
-)
+LITESTREAM_CONFIG=$(envsubst <litestream.yml)
 
 echo "$LITESTREAM_CONFIG" | sudo tee /etc/litestream.yml >/dev/null
 
 sudo systemctl enable litestream
 sudo systemctl restart litestream
-
-NODE_VERSION="22.1.0"
 
 # Download and install NVM
 if [ ! -d "$HOME/.nvm" ]; then
