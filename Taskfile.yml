@@ -8,7 +8,7 @@ env:
 tasks:
   terraform:
     cmds:
-      - terraform -chdir=terraform {{.CLI_ARGS}}
+      - terraform -chdir=deploy {{.CLI_ARGS}}
   test:
     cmds:
       - npm test
@@ -24,7 +24,7 @@ tasks:
       DB_LOCATION: ./modules/database/db.sqlite3
     cmds:
       - rm -rf ./tmp
-      - litestream restore -config ./litestream.yml $DB_LOCATION
+      - litestream restore -config ./deploy/litestream.yml $DB_LOCATION
   deploy:
     silent: true
     vars:
@@ -32,4 +32,4 @@ tasks:
     cmds:
       - echo Will deploy to {{.ip}}
       - rsync -a ./ devops@{{.ip}}:/home/devops/latest
-      - ssh devops@{{.ip}} "DOMAIN=https://dev.club R2_BACKUP_ENDPOINT=$R2_BACKUP_ENDPOINT R2_BACKUP_BUCKET=$R2_BACKUP_BUCKET R2_BACKUP_KEY=$R2_BACKUP_KEY R2_BACKUP_SECRET=$R2_BACKUP_SECRET bash -s" < ./deploy.sh
+      - ssh devops@{{.ip}} "DOMAIN=https://dev.club R2_BACKUP_ENDPOINT=$R2_BACKUP_ENDPOINT R2_BACKUP_BUCKET=$R2_BACKUP_BUCKET R2_BACKUP_KEY=$R2_BACKUP_KEY R2_BACKUP_SECRET=$R2_BACKUP_SECRET bash -s" < ./deploy/deploy.sh

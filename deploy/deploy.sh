@@ -128,7 +128,7 @@ echo "Database backed up: $backupFile"
 pm2 stop -s "$APP_NAME-$DEPLOY_NODE" || ':'
 
 # Run <deploy node>
-NODE_ENV=production PORT=$DEPLOY_PORT DB_LOCATION=$DB_LOCATION pm2 start server.js --node-args="--env-file .env" -i max -o "$HOME/.pm2/logs/$APP_NAME-out.log" -e "$HOME/.pm2/logs/$APP_NAME-err.log" -n "$APP_NAME-$DEPLOY_NODE"
+NODE_ENV=production PORT=$DEPLOY_PORT DB_LOCATION=$DB_LOCATION pm2 start ./application/server.js --node-args="--env-file .env" -i max -o "$HOME/.pm2/logs/$APP_NAME-out.log" -e "$HOME/.pm2/logs/$APP_NAME-err.log" -n "$APP_NAME-$DEPLOY_NODE"
 
 # Check if <deploy node> is healthy
 HEALTHY=false

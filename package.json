@@ -2,7 +2,7 @@
   "name": "dev.club",
   "type": "module",
   "scripts": {
-    "dev": "node --watch server.js",
+    "dev": "node --watch ./application/server.js",
     "repl": "node ./modules/repl.js",
     "test": "node --test",
     "test:e2e": "npx playwright test"
