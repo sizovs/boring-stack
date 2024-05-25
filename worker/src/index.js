@@ -32,7 +32,7 @@ router.all('*', async (request, env) => {
   url.hostname = productionHost
 
   // Our CF worker adds this token to all requests, and then we're validating its presence in Caddy
-  // to make sure <subdomain>.dev.events is only accessible via the CF network, effectively blocking direct external access.
+  // to make sure <subdomain>.your.domain is only accessible via the CF network, effectively blocking direct external access.
   const secretToken = env.X_SECRET_TOKEN
   if (!secretToken) {
     return new Response('X_SECRET_TOKEN is missing', { status: 500 })
