@@ -27,7 +27,7 @@ Public traffic to our Hetzner VPS is routed through a Cloudflare Worker. This se
 Before provisioning infra, create `<project_dir>/.env.devops`:
 ```
 WORKER_SECRET=<secret goes here> # This is a secret that we use to access Cloudflare worker.
-X_SECRET_TOKEN=<secret goes here> # This is a secret our Cloudflare Worker sends to Hetzner. Lacking the secret, exception is thrown.
+X_SECRET_TOKEN=<secret goes here> # This is a secret our Cloudflare Worker sends to Hetzner.
 TF_VAR_hcloud_token=<secret goes here>
 TF_VAR_cloudflare_token=<secret goes here>
 TF_VAR_cloudflare_zone_id=<secret goes here>
