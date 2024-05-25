@@ -5,12 +5,10 @@ variable "environment" {
   }))
   default = {
     #    blue = {
-    #      domain = "staging.dev.club"
     #      cloudInit      = "cloud-config-blue.yaml"
     #      acceptsTraffic = true
     #    }
     green = {
-      domain         = "dev.club"
       cloudInit      = "cloud-config.yaml"
       acceptsTraffic = false
     }
@@ -48,7 +46,7 @@ resource "hcloud_ssh_key" "devclub" {
 
 resource "cloudflare_record" "devclub" {
   for_each        = var.environment
-  name            = each.value.domain
+  name            = each.key
   zone_id         = var.cloudflare_zone_id
   value           = hcloud_primary_ip.devclub_ip[each.key].ip_address
   type            = "A"

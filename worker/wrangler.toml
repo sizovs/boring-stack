@@ -1,0 +1,5 @@
+name = "dev-club"
+main = "src/index.js"
+compatibility_date = "2023-12-18"
+route = { pattern = "dev.club", custom_domain = true }
+workers_dev = false
