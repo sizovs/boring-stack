@@ -21,7 +21,7 @@ As a guiding principles, I bet on stability, simplicity, and fewer abstractions.
 By looking into the code, you'll discover lesser-known gems such as Vine validation library. Generally, the dependencies are minimal, giving a refreshing feel after dealing with bloated frameworks.
 
 # A note on infrastructure
-Public traffic to our Hetzner VPS is routed through a Cloudflare Worker. This setup allows us to cache static assets on Cloudflare's CDN and switch between blue.<your.domain> and green.<your.domain> without downtime by calling `task promote:green` or `task promote:blue`. Essentially, the Cloudflare Worker server as a reverse proxy, load balancer, and CDN.
+Public traffic to our Hetzner VPS is routed through a Cloudflare Worker. This setup allows us to cache static assets on Cloudflare's CDN and switch between `blue.<your.domain>` and `green.<your.domain>` without downtime by calling `task promote:green` or `task promote:blue`. Essentially, the Cloudflare Worker serves as a reverse proxy, load balancer, and CDN.
 
 # Provisioning infra
 Before provisioning infra, create `<project_dir>/.env.devops`:
