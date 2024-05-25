@@ -32,7 +32,6 @@ tasks:
   deploy:
     silent: true
     vars:
-      color: green
       ip: xxx.xxx.xxx.xxx
     cmds:
       - echo Will deploy to {{.ip}}
