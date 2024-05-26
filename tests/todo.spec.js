@@ -13,6 +13,12 @@ test.beforeAll(async ({ browser }) => {
 test('starts with zero todos', async () => {
   await expect(page.getByTestId('todo-count')).toHaveText('You have 0 todos')
   await expect(page.getByTestId('todo-title')).toHaveCount(0)
+  await expect(page.getByTestId('todo-error')).toBeHidden()
+})
+
+test('does not allow empty todo', async () => {
+  await page.getByText('Add new todo').click()
+  await expect(page.getByTestId('todo-error')).toContainText('The description field must be defined')
 })
 
 test('adds todo items', async () => {

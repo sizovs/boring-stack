@@ -15,7 +15,7 @@
     <textarea {{!flash.errors?.description || 'aria-invalid=true' }} type="text" name="description"
       placeholder="Description" aria-label="Description">{{flash.old?.description ?? ''}}</textarea>
     @if(flash.errors?.description)
-    <small>{{flash.errors.description[0].message}}</small>
+    <small data-testid="todo-error">{{flash.errors.description[0].message}}</small>
     @end
 
     <button type="submit">Add new todo</button>
