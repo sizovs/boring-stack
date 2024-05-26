@@ -1,10 +1,9 @@
 import express from "express"
 import logger from "../modules/logger.js"
 import Router from "express-promise-router";
-import fs from "fs"
 import vine from '@vinejs/vine'
 import { createDatabase } from "#modules/database/database.js"
-import { Migrator, Migrations } from "#modules/database/migrator.js"
+import { Migrator } from "#modules/database/migrator.js"
 import { initTodos } from "./todos/todos.js"
 import { initHealth } from "./health.js"
 import { enableFlashScope } from "./setup/flash.js"
@@ -35,7 +34,6 @@ const startApp = async (port) => {
   enableCors({ app, isDevMode })
   enableBodyParsing({ app })
 
-  // Routes
   const db = createDatabase(process.env.DB_LOCATION)
   const router = new Router()
   app.use(router)
@@ -48,9 +46,7 @@ const startApp = async (port) => {
   // In dev mode, we run migrations upon startup.
   // In production, migrations are run by the deployment script.
   if (isDevMode) {
-    const migrationsDirectory = './modules/database/migrations'
-    const migrations = new Migrations(migrationsDirectory, fs)
-    const migrator = new Migrator(db, migrations)
+    const migrator = new Migrator(db)
     migrator.migrate()
   }
 

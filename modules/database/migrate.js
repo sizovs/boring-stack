@@ -1,10 +1,6 @@
-import fs from "fs"
 import { createDatabase } from "./database.js"
-import path from "path"
-import { Migrator, Migrations } from "./migrator.js"
+import { Migrator } from "./migrator.js"
 
 const db = createDatabase(process.env.DB_LOCATION)
-const migrationsDirectory = path.resolve(import.meta.dirname, './migrations')
-const migrations = new Migrations(migrationsDirectory, fs)
-const migrator = new Migrator(db, migrations)
+const migrator = new Migrator(db)
 migrator.migrate()

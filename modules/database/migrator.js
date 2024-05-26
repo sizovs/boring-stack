@@ -4,7 +4,7 @@ import fs from "fs"
 export class Migrator {
   #db
   #migrations
-  constructor(db, migrations) {
+  constructor(db, migrations = new Migrations()) {
     this.#db = db
     this.#migrations = migrations
   }
@@ -45,7 +45,7 @@ export class Migrator {
 export class Migrations {
   #migrations
   #fs
-  constructor(directory, filesystem = fs) {
+  constructor(directory = import.meta.dirname + '/migrations', filesystem = fs) {
     this.#fs = filesystem
     this.#migrations = this.migrationFiles(directory).map((file, index) => new Migration(file, index + 1, filesystem))
     console.log(`${this.#migrations.length} migration(s) in directory.`)
