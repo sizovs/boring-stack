@@ -2,13 +2,12 @@ import express from "express"
 import morgan from "morgan"
 import cors from "cors"
 import flash from "req-flash"
-import routes from "./routes.js"
 import logger from "../modules/logger.js"
 import staticify from "staticify";
 import cookieSession from 'cookie-session'
-
+import Router from "express-promise-router";
 import fs from "fs"
-import { db } from "#modules/database/database.js"
+import { createDatabase } from "#modules/database/database.js"
 import { Migrator, Migrations } from "#modules/database/migrator.js"
 
 import vine from '@vinejs/vine'
@@ -16,7 +15,8 @@ import vine from '@vinejs/vine'
 import { Edge } from 'edge.js'
 import { edgeStacks } from 'edge-stacks'
 import { callbackify } from "util"
-import { initializeDb } from "#modules/database/database.js"
+import { initTodos } from "./todos/todos.js"
+import { initHealth } from "./health.js"
 
 const startApp = async (port) => {
   // ensure all process.env variables are in place.
@@ -92,8 +92,14 @@ const startApp = async (port) => {
     origin: isDevMode || 'https://dev.club'
   }));
 
-  routes(app)
-  initializeDb()
+  const db = createDatabase(process.env.DB_LOCATION)
+  const router = new Router()
+  app.use(router)
+  app.use('/', (request, response) => {
+    response.redirect('/todos');
+  });
+  initTodos({ router, db })
+  initHealth({ router, db })
 
   // In dev mode, we run migrations upon startup.
   // In production, migrations are run by the deployment script.

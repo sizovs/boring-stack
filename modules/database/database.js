@@ -1,12 +1,10 @@
 import Database from 'better-sqlite3';
-if (!process.env.DB_LOCATION) {
-  throw 'DB_LOCATION env variable is not provided.'
-}
 
-let db
-
-const initializeDb = () => {
-  db = new Database(process.env.DB_LOCATION, {});
+const createDatabase = (location) => {
+  if (!location) {
+    throw new Error('Cannot create database. Please provide the DB location')
+  }
+  const db = new Database(location, {});
   db.pragma('journal_mode = WAL');
   db.pragma('foreign_keys = true')
   db.pragma('busy_timeout = 5000')
@@ -14,7 +12,8 @@ const initializeDb = () => {
   // Litestream takes over checkpointing and recommends running the app with checkpointing disabled:
   // https://litestream.io/tips/#disable-autocheckpoints-for-high-write-load-servers
   db.pragma('wal_autocheckpoint = 0')
+  return db
 }
 
-export { db, initializeDb }
+export { createDatabase }
 
