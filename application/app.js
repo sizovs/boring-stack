@@ -12,7 +12,7 @@ import { enableSessions } from "./setup/session.js";
 import { enableEdgeTemplates } from "./setup/edge.js";
 import { enableHttpLogging } from "./setup/morgan.js";
 import { enableCors } from "./setup/cors.js";
-import { enableFormDataParsing } from "./setup/urlencoded.js";
+import { enableBodyParsing } from "./setup/bodyparser.js";
 
 await vine.validate({
   data: process.env,
@@ -33,7 +33,7 @@ const startApp = async (port) => {
   enableFlashScope({ app })
   enableHttpLogging({ app, logger })
   enableCors({ app, isDevMode })
-  enableFormDataParsing({ app })
+  enableBodyParsing({ app })
 
   // Routes
   const db = createDatabase(process.env.DB_LOCATION)
