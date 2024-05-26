@@ -4,6 +4,7 @@
   "scripts": {
     "dev": "node --watch ./application/server.js",
     "repl": "node ./modules/repl.js",
+    "migrate": "node ./modules/database/migrate.js",
     "test": "node --test",
     "test:e2e": "npx playwright test"
   },

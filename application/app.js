@@ -7,9 +7,7 @@ import logger from "../modules/logger.js"
 import staticify from "staticify";
 import cookieSession from 'cookie-session'
 
-import fs from "fs"
-import { db } from "#modules/database/database.js"
-import { Migrator, Migrations } from "#modules/database/migrator.js"
+
 
 import vine from '@vinejs/vine'
 
@@ -94,10 +92,9 @@ const startApp = async (port) => {
 
   routes(app)
 
-  const migrationsDirectory = './modules/database/migrations'
-  const migrations = new Migrations(migrationsDirectory, fs)
-  const migrator = new Migrator(db, migrations)
-  migrator.migrate()
+  if (isDevMode) {
+    await import('#modules/database/migrate.js')
+  }
 
   const server = app.listen(port, () => logger.info("Your app is ready on http://localhost:" + server.address().port))
   return `http://localhost:${server.address().port}`

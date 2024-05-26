@@ -30,7 +30,7 @@ export class Migrator {
     while (tx.immediate()) {
     }
 
-    console.log(`Database is up-to-date.`)
+    console.log(`Database ${this.#db.name} is up-to-date.`)
   }
 
   databaseVersion() {
