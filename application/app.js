@@ -9,7 +9,6 @@ import cookieSession from 'cookie-session'
 
 import fs from "fs"
 import { db } from "#modules/database/database.js"
-import path from "path"
 import { Migrator, Migrations } from "#modules/database/migrator.js"
 
 import vine from '@vinejs/vine'
