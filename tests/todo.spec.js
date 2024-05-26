@@ -1,13 +1,21 @@
 import { startApp } from '#application/app.js';
 import { test, expect } from '@playwright/test'
 
-test.beforeEach(async ({ page }) => {
+let page
+
+test.beforeAll(async ({ browser }) => {
   const baseUrl = await startApp(0)
+  page = await browser.newPage();
   await page.goto(baseUrl);
 });
 
 
-test('adds todo items', async ({ page }) => {
+test('starts with zero todos', async () => {
+  await expect(page.getByTestId('todo-count')).toHaveText('You have 0 todos')
+  await expect(page.getByTestId('todo-title')).toHaveCount(0)
+})
+
+test('adds todo items', async () => {
   await page.getByPlaceholder('Description').fill('Homework')
   await page.getByText('Add new todo').click()
 
@@ -22,15 +30,10 @@ test('adds todo items', async ({ page }) => {
 
 })
 
-test('deletes todo item', async ({ page }) => {
-  await page.getByPlaceholder('Description').fill('Homework')
-  await page.getByText('Add new todo').click()
+test('deletes a todo item', async () => {
+  await page.getByRole('checkbox').first().click()
   await expect(page.getByTestId('todo-count')).toHaveText('You have 1 todo')
   await expect(page.getByTestId('todo-title')).toHaveCount(1)
-  await page.getByRole('checkbox').click()
-
-  await expect(page.getByTestId('todo-count')).toHaveText('You have 0 todos')
-  await expect(page.getByTestId('todo-title')).toHaveCount(0)
 
 })
 
