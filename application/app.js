@@ -7,12 +7,12 @@ import { createDatabase } from "#modules/database/database.js"
 import { Migrator, Migrations } from "#modules/database/migrator.js"
 import { initTodos } from "./todos/todos.js"
 import { initHealth } from "./health.js"
-import { flashMiddleware } from "./middlewares/flash.js"
-import { sessionMiddleware } from "./middlewares/session.js";
-import { edgeMiddleware } from "./middlewares/edge.js";
-import { morganMiddleware } from "./middlewares/morgan.js";
-import { corsMiddleware } from "./middlewares/cors.js";
-import { urlencodedMiddleware } from "./middlewares/urlencoded.js";
+import { enableFlashScope } from "./setup/flash.js"
+import { enableSessions } from "./setup/session.js";
+import { enableEdgeTemplates } from "./setup/edge.js";
+import { enableHttpLogging } from "./setup/morgan.js";
+import { enableCors } from "./setup/cors.js";
+import { enableFormDataParsing } from "./setup/urlencoded.js";
 
 await vine.validate({
   data: process.env,
@@ -28,14 +28,12 @@ const isDevMode = process.env.NODE_ENV !== "production"
 const startApp = async (port) => {
 
   const app = express();
-
-  // Middlewares
-  edgeMiddleware({ app, isDevMode })
-  sessionMiddleware({ app, secret: process.env.COOKIE_SECRET })
-  flashMiddleware({ app })
-  morganMiddleware({ app, logger })
-  corsMiddleware({ app, isDevMode })
-  urlencodedMiddleware({ app })
+  enableEdgeTemplates({ app, isDevMode })
+  enableSessions({ app, secret: process.env.COOKIE_SECRET })
+  enableFlashScope({ app })
+  enableHttpLogging({ app, logger })
+  enableCors({ app, isDevMode })
+  enableFormDataParsing({ app })
 
   // Routes
   const db = createDatabase(process.env.DB_LOCATION)

@@ -1,5 +1,5 @@
 import morgan from "morgan"
-export const morganMiddleware = ({ app, logger }) => {
+export const enableHttpLogging = ({ app, logger }) => {
 
   const morganMiddleware = morgan(
     ':method :url :status - :response-time ms',

@@ -1,4 +1,4 @@
 import { urlencoded } from "express"
-export const urlencodedMiddleware = ({ app }) => {
+export const enableFormDataParsing = ({ app }) => {
   app.use(urlencoded({ extended: true }));
 }

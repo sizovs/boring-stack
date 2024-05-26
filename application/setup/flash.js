@@ -1,5 +1,5 @@
 import flash from "req-flash"
-export const flashMiddleware = ({ app }) => {
+export const enableFlashScope = ({ app }) => {
   app.use(flash());
   // Make flash attributes available to template engine
   app.use((request, response, next) => {

@@ -5,7 +5,7 @@ import { callbackify } from "util"
 
 
 
-export const edgeMiddleware = ({ app, isDevMode }) => {
+export const enableEdgeTemplates = ({ app, isDevMode }) => {
 
   // In development, when we change static files, staticity doesn't rehash them (it only does when the server restarts),
   // and since staticify sends max-age headers, we're getting old assets if we don't flush the browser's cache.

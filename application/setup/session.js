@@ -1,5 +1,5 @@
 import cookieSession from 'cookie-session'
-export const sessionMiddleware = ({ app, secret }) => {
+export const enableSessions = ({ app, secret }) => {
   app.use(cookieSession({
     name: 'session',
     secret
