@@ -24,7 +24,7 @@ await vine.validate({
 
 const isDevMode = process.env.NODE_ENV !== "production"
 
-const startApp = async (port) => {
+const startApp = (port = 0) => {
 
   const app = express();
   enableEdgeTemplates({ app, isDevMode })

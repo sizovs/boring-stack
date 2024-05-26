@@ -19,6 +19,7 @@ tasks:
       - npx playwright test
   dev:
     env:
+      PORT: 3000
       DB_LOCATION: ./modules/database/db.sqlite3
     cmds:
       - npm install
