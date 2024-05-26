@@ -1,6 +1,7 @@
 import { start } from 'node:repl';
-import { db } from "#modules/database/database.js";
+import { db, initializeDb } from "#modules/database/database.js";
 
 const repl = start();
+initializeDb()
 
 repl.context.db = db
