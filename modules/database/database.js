@@ -5,7 +5,7 @@ if (!process.env.DB_LOCATION) {
 
 let db
 
-const initializeDatabase = () => {
+const initializeDb = () => {
   db = new Database(process.env.DB_LOCATION, {});
   db.pragma('journal_mode = WAL');
   db.pragma('foreign_keys = true')
@@ -16,5 +16,5 @@ const initializeDatabase = () => {
   db.pragma('wal_autocheckpoint = 0')
 }
 
-export { db, initializeDatabase }
+export { db, initializeDb }
 

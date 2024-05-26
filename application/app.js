@@ -16,7 +16,7 @@ import vine from '@vinejs/vine'
 import { Edge } from 'edge.js'
 import { edgeStacks } from 'edge-stacks'
 import { callbackify } from "util"
-import { initializeDatabase } from "#modules/database/database.js"
+import { initializeDb } from "#modules/database/database.js"
 
 const startApp = async (port) => {
   // ensure all process.env variables are in place.
@@ -93,7 +93,7 @@ const startApp = async (port) => {
   }));
 
   routes(app)
-  initializeDatabase()
+  initializeDb()
 
   // In dev mode, we run migrations upon startup.
   // In production, migrations are run by the deployment script.
