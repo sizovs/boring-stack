@@ -7,13 +7,17 @@ import logger from "../modules/logger.js"
 import staticify from "staticify";
 import cookieSession from 'cookie-session'
 
-
+import fs from "fs"
+import { db } from "#modules/database/database.js"
+import path from "path"
+import { Migrator, Migrations } from "#modules/database/migrator.js"
 
 import vine from '@vinejs/vine'
 
 import { Edge } from 'edge.js'
 import { edgeStacks } from 'edge-stacks'
 import { callbackify } from "util"
+import { initializeDatabase } from "#modules/database/database.js"
 
 const startApp = async (port) => {
   // ensure all process.env variables are in place.
@@ -89,11 +93,16 @@ const startApp = async (port) => {
     origin: isDevMode || 'https://dev.club'
   }));
 
-
   routes(app)
+  initializeDatabase()
 
+  // In dev mode, we run migrations upon startup.
+  // In production, migrations are run by the deployment script.
   if (isDevMode) {
-    await import('#modules/database/migrate.js')
+    const migrationsDirectory = './modules/database/migrations'
+    const migrations = new Migrations(migrationsDirectory, fs)
+    const migrator = new Migrator(db, migrations)
+    migrator.migrate()
   }
 
   const server = app.listen(port, () => logger.info("Your app is ready on http://localhost:" + server.address().port))

@@ -33,3 +33,4 @@ test('deletes todo item', async ({ page }) => {
   await expect(page.getByTestId('todo-title')).toHaveCount(0)
 
 })
+
