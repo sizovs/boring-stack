@@ -6,7 +6,7 @@ export DB_BACKUP="/mnt/backup"
 
 NVM_VERSION=v0.39.7
 NODE_VERSION="22.1.0"
-LITESTREAM_VERSION="v0.3.11"
+LITESTREAM_VERSION="v0.3.13"
 
 # Ensure all required environment variables are present
 REQUIRED_ENV_VARS=("DOMAIN")
