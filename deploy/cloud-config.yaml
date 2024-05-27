@@ -20,13 +20,13 @@ runcmd:
   - udevadm trigger -c add -s block -p ID_VENDOR=HC --verbose -p ID_MODEL=Volume
 
   # Symlinks to volumes
-  - ln -s /mnt/HC_Volume_${database_volume} /mnt/database
+  - ln -s /mnt/HC_Volume_${backup_volume} /mnt/backup
 
   # Wait until volumes are mounted
   - |
     max_attempts=10
     attempt=1
-    while [ ! -d /mnt/database ]; do
+    while [ ! -d /mnt/backup ]; do
       echo "Attempt $attempt: Waiting for volumes to become available..."
       sleep 10
       if [ "$attempt" -ge "$max_attempts" ]; then
@@ -38,7 +38,7 @@ runcmd:
     echo "Volumes are now available."
 
   # Make "devops" owner of database directories
-  - chown devops:devops /mnt/database
+  - chown devops:devops /mnt/backup
 
   # Caddy
   - apt install -y debian-keyring debian-archive-keyring apt-transport-https

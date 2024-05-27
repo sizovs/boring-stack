@@ -17,7 +17,7 @@ As a guiding principles, I bet on stability, simplicity, and fewer abstractions.
 * CSS for styling w/o build tools
 * Playwright for E2E tests
 * SQLite with better-sqlite3 for DB acccess w/o ORMs and query builders (nobody switches databases anyway)
-* Livestream for DB replication to R2
+* Livestream for DB replication
 
 By looking into the code, you'll discover lesser-known gems such as Vine validation library. Generally, the dependencies are minimal, giving a refreshing feel after dealing with bloated frameworks.
 
@@ -25,10 +25,6 @@ By looking into the code, you'll discover lesser-known gems such as Vine validat
 Before provisioning infra, create `<project_dir>/.env.devops`:
 ```
 TF_VAR_hcloud_token=<secret goes here>
-R2_BACKUP_KEY=<secret goes here>
-R2_BACKUP_SECRET=<secret goes here>
-R2_BACKUP_ENDPOINT=<secret goes here>
-R2_BACKUP_BUCKET=<secret goes here>
 SERVER_IP=<ip address of your Hetzner VPS>
 ```
 
@@ -60,7 +56,7 @@ task test
 
 # Troubleshooting on prod
 ```
-DB_LOCATION=/mnt/database/db.sqlite3 npm run repl
+DB_LOCATION=<db location> npm run repl
 ```
 
 

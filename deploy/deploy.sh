@@ -1,13 +1,15 @@
 #!/usr/bin/env bash
 
 export APP_NAME=devclub
-export DB_LOCATION=/mnt/database/db.sqlite3
+export DB_LOCATION="/var/lib/$APP_NAME/db.sqlite3"
+export DB_BACKUP="/mnt/backup"
 
+NVM_VERSION=v0.39.7
 NODE_VERSION="22.1.0"
 LITESTREAM_VERSION="v0.3.11"
 
 # Ensure all required environment variables are present
-REQUIRED_ENV_VARS=("DOMAIN" "R2_BACKUP_KEY" "R2_BACKUP_SECRET" "R2_BACKUP_ENDPOINT" "R2_BACKUP_BUCKET")
+REQUIRED_ENV_VARS=("DOMAIN")
 for var in "${REQUIRED_ENV_VARS[@]}"; do
   if [ -z "${!var}" ]; then
     echo "Environment variable $var is not set."
@@ -30,7 +32,14 @@ if ! command -v litestream &>/dev/null || [ "$(litestream version)" != "$LITESTR
 fi
 
 # Create litestream.yml config file for continuous data replication
-LITESTREAM_CONFIG=$(envsubst <litestream.yml)
+LITESTREAM_CONFIG=$(
+  cat <<EOF
+dbs:
+  - path: $DB_LOCATION
+    replicas:
+      - url: file:$DB_BACKUP
+EOF
+)
 
 echo "$LITESTREAM_CONFIG" | sudo tee /etc/litestream.yml >/dev/null
 
@@ -39,7 +48,7 @@ sudo systemctl restart litestream
 
 # Download and install NVM
 if [ ! -d "$HOME/.nvm" ]; then
-  curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.5/install.sh | bash
+  curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/$NVM_VERSION/install.sh | bash
 fi
 
 # Source NVM to make it available in the current session
@@ -95,7 +104,7 @@ fi
 
 echo "Current node is $CURRENT_NODE. Will deploy to $DEPLOY_NODE"
 
-# Rename ~/latest to ~/<deploy node>
+# ~/latest becomes ~/<deploy node>
 rm -rf ~/$DEPLOY_NODE
 mv -f "$HOME/latest" "$HOME/$DEPLOY_NODE"
 
@@ -106,11 +115,6 @@ sudo chmod -R u+rwx,o+rx "$HOME"
 # Install dependencies
 cd ~/$DEPLOY_NODE || exit
 npm ci --production
-
-# Backup database
-backupFile=/mnt/database/db-backup.sqlite3
-sqlite3 "$DB_LOCATION" ".backup '$backupFile'" || exit
-echo "Database backed up: $backupFile"
 
 # If <deploy node> is running, stop it
 # https://github.com/Unitech/pm2/issues/325

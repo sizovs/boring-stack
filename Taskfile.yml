@@ -28,11 +28,12 @@ tasks:
     env:
       DB_LOCATION: ./modules/database/db.sqlite3
     cmds:
-      - rm -rf ./tmp
-      - litestream restore -config ./deploy/litestream.yml $DB_LOCATION
+      - rm -rf ./backup
+      - scp -r devops@$SERVER_IP:/mnt/backup ./backup
+      - litestream restore -o $DB_LOCATION ./backup
   deploy:
     silent: true
     cmds:
       - echo Will deploy to $SERVER_IP
-      - rsync -a --exclude '.env.devops' ./ devops@$SERVER_IP:/home/devops/latest
-      - ssh devops@$SERVER_IP "DOMAIN=https://dev.club R2_BACKUP_ENDPOINT=$R2_BACKUP_ENDPOINT R2_BACKUP_BUCKET=$R2_BACKUP_BUCKET R2_BACKUP_KEY=$R2_BACKUP_KEY R2_BACKUP_SECRET=$R2_BACKUP_SECRET bash -s" < ./deploy/deploy.sh
+      - rsync -a --exclude '.env.devops' --exclude 'node_modules' --exclude 'deploy' --exclude 'db.sqlite3*' ./ devops@$SERVER_IP:/home/devops/latest
+      - ssh devops@$SERVER_IP "DOMAIN=https://dev.club bash -s" < ./deploy/deploy.sh

@@ -1,4 +1,4 @@
-resource "hcloud_volume" "database_volume" {
+resource "hcloud_volume" "backup" {
   for_each          = var.environment
   name              = "database-${each.key}"
   size              = 40
@@ -7,9 +7,9 @@ resource "hcloud_volume" "database_volume" {
   delete_protection = true
 }
 
-resource "hcloud_volume_attachment" "database_volume_attachment" {
+resource "hcloud_volume_attachment" "backup_attachment" {
   for_each  = var.environment
   server_id = hcloud_server.webserver[each.key].id
-  volume_id = hcloud_volume.database_volume[each.key].id
+  volume_id = hcloud_volume.backup[each.key].id
   automount = true
 }

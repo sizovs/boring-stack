@@ -27,7 +27,7 @@ resource "hcloud_server" "webserver" {
     {
       username : "devops",
       ssh_key : file("ssh.pub"),
-      database_volume : hcloud_volume.database_volume[each.key].id
+      backup_volume : hcloud_volume.backup[each.key].id
   })
   public_net {
     ipv4 = hcloud_primary_ip.server_ip[each.key].id
