@@ -5,7 +5,7 @@ import vine from '@vinejs/vine'
 import { createDatabase } from "#modules/database/database.js"
 import { Migrator } from "#modules/database/migrator.js"
 import { initTodos } from "./todos/todos.js"
-import { initHealth } from "./health.js"
+import { initHealth } from "./health/health.js"
 import { enableFlashScope } from "./setup/flash.js"
 import { enableSessions } from "./setup/session.js";
 import { enableEdgeTemplates } from "./setup/edge.js";
