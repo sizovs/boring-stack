@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 
+export DOMAIN=dev.club
 export APP_NAME=devclub
 export DB_LOCATION="/var/lib/$APP_NAME/db.sqlite3"
 export DB_BACKUP="/mnt/backup"
@@ -8,14 +9,8 @@ NVM_VERSION=v0.39.7
 NODE_VERSION="22.1.0"
 LITESTREAM_VERSION="v0.3.13"
 
-# Ensure all required environment variables are present
-REQUIRED_ENV_VARS=("DOMAIN")
-for var in "${REQUIRED_ENV_VARS[@]}"; do
-  if [ -z "${!var}" ]; then
-    echo "Environment variable $var is not set."
-    exit 1
-  fi
-done
+BLUE_PORT=3000
+GREEN_PORT=3001
 
 # Install Litestream
 if ! command -v litestream &>/dev/null || [ "$(litestream version)" != "$LITESTREAM_VERSION" ]; then
@@ -90,20 +85,22 @@ EOF
 echo "$LOGROTATE_CONFIG" | sudo tee /etc/logrotate.d/pm2 >/dev/null
 
 # Determine deploy node
-CURRENT_NODE=$(head -n 1 /etc/caddy/Caddyfile | grep -oE '#(green|blue)' | sed 's/#//')
-if [ -z "$CURRENT_NODE" ] || [ "$CURRENT_NODE" == "green" ]; then
-  DEPLOY_NODE="blue"
-  DEPLOY_PORT=3000
-  OLD_NODE=green
-  OLD_PORT=3001
-else
+if /usr/bin/nc -z localhost "$BLUE_PORT" >/dev/null 2>&1; then
+  echo "Blue node is running. Will deploy to green..."
   DEPLOY_NODE=green
-  DEPLOY_PORT=3001
+  DEPLOY_PORT=$GREEN_PORT
   OLD_NODE=blue
-  OLD_PORT=3000
+elif /usr/bin/nc -z localhost "$GREEN_PORT" >/dev/null 2>&1; then
+  echo "Green node is running. Will deploy to blue..."
+  DEPLOY_NODE=blue
+  DEPLOY_PORT=$BLUE_PORT
+  OLD_NODE=green
+else
+  echo "Nodes are not running. Will deploy to blue."
+  DEPLOY_NODE=blue
+  DEPLOY_PORT=$BLUE_PORT
+  OLD_NODE=green
 fi
-
-echo "Current node is $CURRENT_NODE. Will deploy to $DEPLOY_NODE"
 
 # ~/latest becomes ~/<deploy node>
 rm -rf ~/$DEPLOY_NODE
@@ -125,17 +122,18 @@ pm2 delete -s "$APP_NAME-$DEPLOY_NODE" || ':'
 DB_LOCATION=$DB_LOCATION npm run migrate
 
 # Run <deploy node>
-NODE_ENV=production PORT=$DEPLOY_PORT DB_LOCATION=$DB_LOCATION pm2 start ./application/server.js --node-args="--env-file $HOME/$DEPLOY_NODE/.env" -i max -o "$HOME/.pm2/logs/$APP_NAME-out.log" -e "$HOME/.pm2/logs/$APP_NAME-err.log" -n "$APP_NAME-$DEPLOY_NODE"
+NODE_ENV=production PORT=$DEPLOY_PORT DB_LOCATION=$DB_LOCATION pm2 start application/server.js --node-args="--env-file $HOME/$DEPLOY_NODE/.env" -i max -o "$HOME/.pm2/logs/$APP_NAME-out.log" -e "$HOME/.pm2/logs/$APP_NAME-err.log" -n "$APP_NAME-$DEPLOY_NODE"
 
-generate_caddyfile() {
-  local DEPLOY_NODE=$1
-  local DEPLOY_PORT=$2
+function point_caddy_to() {
+  local UPSTREAM_PORT=$1
+  # Create Caddyfile that forwards to <deploy node>
   CADDYFILE_CONTENT=$(
     cat <<EOF
-#$DEPLOY_NODE
 $DOMAIN {
   handle {
-    reverse_proxy localhost:$DEPLOY_PORT
+    reverse_proxy {
+      to localhost:$UPSTREAM_PORT
+    }
     encode gzip
   }
 
@@ -149,6 +147,7 @@ EOF
   )
 
   echo "$CADDYFILE_CONTENT" | sudo tee /etc/caddy/Caddyfile >/dev/null
+  caddy reload --config "Caddyfile"
 }
 
 # Check if <deploy node> is healthy
@@ -172,16 +171,15 @@ done
 if [ "$HEALTHY" = false ]; then
   echo "$DEPLOY_NODE is not healthy even after $MAX_RETRIES retries. Killing it."
   pm2 delete -s "$APP_NAME-$DEPLOY_NODE" || ':'
-  generate_caddyfile "$OLD_NODE" "$OLD_PORT"
+  point_caddy_to "$OLD_PORT"
   exit 1
 else
   echo "$DEPLOY_NODE is healthy!"
+  point_caddy_to "$DEPLOY_PORT"
 fi
 
-generate_caddyfile "$DEPLOY_NODE" "$DEPLOY_PORT"
-
-# Reload Caddy
-sudo systemctl reload caddy
+# Give old node a few seconds to complete existing requests
+sleep 5
 
 # Stop old node
 pm2 delete -s "$APP_NAME-$OLD_NODE" || ':'

@@ -36,4 +36,4 @@ tasks:
     cmds:
       - echo Will deploy to $SERVER_IP
       - rsync -a --exclude '.env.devops' --exclude 'node_modules' --exclude 'deploy' --exclude 'db.sqlite3*' ./ devops@$SERVER_IP:/home/devops/latest
-      - ssh devops@$SERVER_IP "DOMAIN=https://dev.club bash -s" < ./deploy/deploy.sh
+      - ssh devops@$SERVER_IP "bash -s" < ./deploy/deploy.sh
