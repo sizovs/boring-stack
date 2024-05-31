@@ -18,7 +18,6 @@ for var in "${REQUIRED_ENV_VARS[@]}"; do
 done
 
 # Install Litestream
-
 if ! command -v litestream &>/dev/null || [ "$(litestream version)" != "$LITESTREAM_VERSION" ]; then
   arch=$(dpkg --print-architecture)
   url=https://github.com/benbjohnson/litestream/releases/download/$LITESTREAM_VERSION/litestream-$LITESTREAM_VERSION-linux-$arch.deb
@@ -95,11 +94,13 @@ CURRENT_NODE=$(head -n 1 /etc/caddy/Caddyfile | grep -oE '#(green|blue)' | sed '
 if [ -z "$CURRENT_NODE" ] || [ "$CURRENT_NODE" == "green" ]; then
   DEPLOY_NODE="blue"
   DEPLOY_PORT=3000
-  OLD_NODE="green"
+  OLD_NODE=green
+  OLD_PORT=3001
 else
-  DEPLOY_NODE="green"
+  DEPLOY_NODE=green
   DEPLOY_PORT=3001
-  OLD_NODE="blue"
+  OLD_NODE=blue
+  OLD_PORT=3000
 fi
 
 echo "Current node is $CURRENT_NODE. Will deploy to $DEPLOY_NODE"
@@ -118,13 +119,37 @@ npm ci --production
 
 # If <deploy node> is running, stop it
 # https://github.com/Unitech/pm2/issues/325
-pm2 stop -s "$APP_NAME-$DEPLOY_NODE" || ':'
+pm2 delete -s "$APP_NAME-$DEPLOY_NODE" || ':'
 
 # Migrate database
 DB_LOCATION=$DB_LOCATION npm run migrate
 
 # Run <deploy node>
 NODE_ENV=production PORT=$DEPLOY_PORT DB_LOCATION=$DB_LOCATION pm2 start ./application/server.js --node-args="--env-file $HOME/$DEPLOY_NODE/.env" -i max -o "$HOME/.pm2/logs/$APP_NAME-out.log" -e "$HOME/.pm2/logs/$APP_NAME-err.log" -n "$APP_NAME-$DEPLOY_NODE"
+
+generate_caddyfile() {
+  local DEPLOY_NODE=$1
+  local DEPLOY_PORT=$2
+  CADDYFILE_CONTENT=$(
+    cat <<EOF
+#$DEPLOY_NODE
+$DOMAIN {
+  handle {
+    reverse_proxy localhost:$DEPLOY_PORT
+    encode gzip
+  }
+
+	@static {
+		path *.ico *.gif *.jpg *.jpeg *.png *.svg *.webp *.js *.css *.woff2
+	}
+
+	header @static Cache-Control "public, max-age=31536000"
+}
+EOF
+  )
+
+  echo "$CADDYFILE_CONTENT" | sudo tee /etc/caddy/Caddyfile >/dev/null
+}
 
 # Check if <deploy node> is healthy
 HEALTHY=false
@@ -146,38 +171,20 @@ done
 # If <deploy node> is unhealthy, stop it and interrupt deployment
 if [ "$HEALTHY" = false ]; then
   echo "$DEPLOY_NODE is not healthy even after $MAX_RETRIES retries. Killing it."
-  pm2 stop -s "$APP_NAME-$DEPLOY_NODE" || ':'
+  pm2 delete -s "$APP_NAME-$DEPLOY_NODE" || ':'
+  generate_caddyfile "$OLD_NODE" "$OLD_PORT"
   exit 1
 else
   echo "$DEPLOY_NODE is healthy!"
 fi
 
-# Create Caddyfile that forwards to <deploy node>
-CADDYFILE_CONTENT=$(
-  cat <<EOF
-#$DEPLOY_NODE
-$DOMAIN {
-  handle {
-    reverse_proxy localhost:$DEPLOY_PORT
-    encode gzip
-  }
-
-	@static {
-		path *.ico *.gif *.jpg *.jpeg *.png *.svg *.webp *.js *.css *.woff2
-	}
-
-	header @static Cache-Control "public, max-age=31536000"
-}
-EOF
-)
-
-echo "$CADDYFILE_CONTENT" | sudo tee /etc/caddy/Caddyfile >/dev/null
+generate_caddyfile "$DEPLOY_NODE" "$DEPLOY_PORT"
 
 # Reload Caddy
 sudo systemctl reload caddy
 
 # Stop old node
-pm2 stop -s "$APP_NAME-$OLD_NODE" || ':'
+pm2 delete -s "$APP_NAME-$OLD_NODE" || ':'
 
 # Save the app list so PM2 respawns then after reboot
 pm2 save
