@@ -50,8 +50,8 @@ const startApp = (port = 0) => {
     migrator.migrate()
   }
 
-  const server = app.listen(port, () => logger.info("Your app is ready on http://localhost:" + server.address().port))
-  return 'http://localhost:' + server.address().port
+  app.listen(port, () => logger.info("Your app is ready on http://localhost:" + port))
+  return 'http://localhost:' + port
 }
 
 export { startApp }
