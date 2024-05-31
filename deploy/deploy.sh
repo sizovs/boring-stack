@@ -147,7 +147,7 @@ EOF
   )
 
   echo "$CADDYFILE_CONTENT" | sudo tee /etc/caddy/Caddyfile >/dev/null
-  caddy reload --config "Caddyfile"
+  sudo systemctl reload caddy
 }
 
 # Check if <deploy node> is healthy
