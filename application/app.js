@@ -1,7 +1,6 @@
 import express from "express"
 import logger from "../modules/logger.js"
 import Router from "express-promise-router";
-import vine from '@vinejs/vine'
 import { createDatabase } from "#modules/database/database.js"
 import { Migrator } from "#modules/database/migrator.js"
 import { initTodos } from "./todos/todos.js"
@@ -13,14 +12,20 @@ import { enableHttpLogging } from "./setup/morgan.js";
 import { enableCors } from "./setup/cors.js";
 import { enableBodyParsing } from "./setup/bodyparser.js";
 
-await vine.validate({
-  data: process.env,
-  schema: vine.object({
-    DB_LOCATION: vine.string(),
-    COOKIE_SECRET: vine.string(),
-    NODE_ENV: vine.enum(['development', 'production'])
-  })
-})
+console.log(process.env)
+
+if (!process.env.DB_LOCATION) {
+  throw new Error('DB_LOCATION environment variable is missing.')
+}
+
+if (!process.env.COOKIE_SECRET) {
+  throw new Error('COOKIE_SECRET environment variable is missing.')
+}
+
+const envs = ['development', 'production']
+if (!envs.includes(process.env.NODE_ENV)) {
+  throw new Error(`NODE_ENV environment variable must be one of ${envs}.`)
+}
 
 const isDevMode = process.env.NODE_ENV !== "production"
 
