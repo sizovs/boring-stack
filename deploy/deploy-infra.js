@@ -1,69 +1,3 @@
-const cloudInit = (publicKey, backupVolumeId) => `
-#cloud-config
-users:
-  - name: devops
-    groups: users, admin
-    sudo: ALL=(ALL) NOPASSWD:ALL
-    shell: /bin/bash
-    ssh_authorized_keys:
-      - ${publicKey}
-packages:
-  - jq
-  - htop
-  - wget
-  - fail2ban
-  - micro
-  - sqlite3
-package_update: true
-package_upgrade: true
-runcmd:
-  # Bug, see https://github.com/hetznercloud/terraform-provider-hcloud/issues/473
-  - udevadm trigger -c add -s block -p ID_VENDOR=HC --verbose -p ID_MODEL=Volume
-
-  # Symlinks to volumes
-  - ln -s /mnt/HC_Volume_${backupVolumeId} /mnt/backup
-
-  # Wait until volumes are mounted
-  - |
-    max_attempts=10
-    attempt=1
-    while [ ! -d /mnt/backup ]; do
-      echo "Attempt $attempt: Waiting for volumes to become available..."
-      sleep 10
-      if [ "$attempt" -ge "$max_attempts" ]; then
-        echo "Reached maximum attempts. Exiting."
-        exit 1
-      fi
-      attempt=$((attempt + 1))
-    done
-    echo "Volumes are now available."
-
-  # Make "devops" owner of database directories
-  - chown devops:devops /mnt/backup
-
-  # Caddy
-  - apt install -y debian-keyring debian-archive-keyring apt-transport-https
-  - curl -1sLf 'https://dl.cloudsmith.io/public/caddy/stable/gpg.key' | gpg --dearmor -o /usr/share/keyrings/caddy-stable-archive-keyring.gpg
-  - curl -1sLf 'https://dl.cloudsmith.io/public/caddy/stable/debian.deb.txt' | tee /etc/apt/sources.list.d/caddy-stable.list
-  - apt-get update
-  - apt-get -y install caddy
-
-  - printf "[sshd]\nenabled = true\nbanaction = iptables-multiport" > /etc/fail2ban/jail.local
-  - systemctl enable fail2ban
-
-  - sed -i -e '/^\(#\|\)PermitRootLogin/s/^.*$/PermitRootLogin no/' /etc/ssh/sshd_config
-  - sed -i -e '/^\(#\|\)PasswordAuthentication/s/^.*$/PasswordAuthentication no/' /etc/ssh/sshd_config
-  - sed -i -e '/^\(#\|\)KbdInteractiveAuthentication/s/^.*$/KbdInteractiveAuthentication no/' /etc/ssh/sshd_config
-  - sed -i -e '/^\(#\|\)ChallengeResponseAuthentication/s/^.*$/ChallengeResponseAuthentication no/' /etc/ssh/sshd_config
-  - sed -i -e '/^\(#\|\)MaxAuthTries/s/^.*$/MaxAuthTries 2/' /etc/ssh/sshd_config
-  - sed -i -e '/^\(#\|\)AllowTcpForwarding/s/^.*$/AllowTcpForwarding no/' /etc/ssh/sshd_config
-  - sed -i -e '/^\(#\|\)X11Forwarding/s/^.*$/X11Forwarding no/' /etc/ssh/sshd_config
-  - sed -i -e '/^\(#\|\)AllowAgentForwarding/s/^.*$/AllowAgentForwarding no/' /etc/ssh/sshd_config
-  - sed -i -e '/^\(#\|\)AuthorizedKeysFile/s/^.*$/AuthorizedKeysFile .ssh\/authorized_keys/' /etc/ssh/sshd_config
-  - sed -i '$a AllowUsers devops' /etc/ssh/sshd_config
-  - systemctl reload sshd
-`
-
 import fs from "fs"
 import { Resource } from "./hetzner-api.js"
 
@@ -72,14 +6,15 @@ const backupVolume = new Resource('volume', 'backup')
 const network = new Resource('network', 'vpn')
 const sshKey = new Resource('ssh_key', 'devops')
 const server = new Resource('server', 'web')
-const floatingIp = new Resource('floating_ip', 'public')
+const primaryIp = new Resource("primary_ip", "public")
 
-// await floatingIp.delete()
 // await sshKey.delete()
 // await server.delete()
-// await backupVolume.delete()
 // await network.delete()
 // await firewall.delete()
+// await backupVolume.action('detach')
+// await backupVolume.delete()
+// await primaryIp.delete()
 
 await firewall.createIfAbsent({
   rules: [
@@ -121,31 +56,33 @@ await network.createIfAbsent({
 })
 
 const publicKey = fs.readFileSync(`${process.env.HOME}/.ssh/hetzner.pub`, 'utf-8')
-const userData = cloudInit(publicKey, await backupVolume.id())
 
+const cloudInit = fs.readFileSync(import.meta.dirname + '/cloud-config.yml', 'utf-8')
+  .replace('${publicKey}', publicKey)
+  .replace('${backupVolumeId}', await backupVolume.id())
+
+console.log(cloudInit)
 await sshKey.createIfAbsent({
   public_key: publicKey
 })
 
+await primaryIp.createIfAbsent({
+  type: 'ipv4',
+  assignee_type: 'server',
+  datacenter: 'nbg1-dc3'
+})
+
 await server.createIfAbsent({
-  image: 'ubuntu-22.04',
+  image: 'ubuntu-24.04',
   server_type: 'cax11',
   location: 'nbg1',
-  ssh_keys: [await sshKey.id()],
-  firewalls: [{ firewall: await firewall.id() }],
-  user_data: userData,
+  ssh_keys: [sshKey.name],
+  user_data: cloudInit,
+  volumes: [await backupVolume.id()],
+  automount: true,
   networks: [await network.id()],
+  firewalls: [{ firewall: await firewall.id() }],
   public_net: {
-    enable_ipv4: true,
+    ipv4: await primaryIp.id()
   }
-})
-
-await floatingIp.createIfAbsent({
-  type: 'ipv4',
-  home_location: 'nbg1',
-  auto_delete: false
-})
-
-await floatingIp.action('assign', {
-  server: await server.id()
 })

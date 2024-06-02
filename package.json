@@ -12,7 +12,7 @@
   "dependencies": {
     "@vinejs/vine": "^2.0.0",
     "axios": "^1.7.2",
-    "better-sqlite3": "^9.3.0",
+    "better-sqlite3": "^11.0.0",
     "cookie-session": "^2.1.0",
     "cors": "2.8.5",
     "edge-stacks": "^2.0.0-0",

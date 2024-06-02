@@ -2,28 +2,14 @@
 
 export DOMAIN=dev.club
 export APP_NAME=devclub
-export DB_LOCATION="/var/lib/$APP_NAME/db.sqlite3"
+export DB_LOCATION="$HOME/db.sqlite3"
 export DB_BACKUP="/mnt/backup"
 
 NVM_VERSION=v0.39.7
-NODE_VERSION="22.1.0"
-LITESTREAM_VERSION="v0.3.13"
+NODE_VERSION="22.2.0"
 
 BLUE_PORT=3000
 GREEN_PORT=3001
-
-# Install Litestream
-if ! command -v litestream &>/dev/null || [ "$(litestream version)" != "$LITESTREAM_VERSION" ]; then
-  arch=$(dpkg --print-architecture)
-  url=https://github.com/benbjohnson/litestream/releases/download/$LITESTREAM_VERSION/litestream-$LITESTREAM_VERSION-linux-$arch.deb
-  if ! curl -fLo litestream.deb "$url"; then
-    echo "Error: Failed to download $url"
-    exit 1
-  fi
-  sudo dpkg -i -y litestream.deb
-  rm litestream.deb
-  echo "Litestream version $LITESTREAM_VERSION installed successfully."
-fi
 
 # Create litestream.yml config file for continuous data replication
 LITESTREAM_CONFIG=$(

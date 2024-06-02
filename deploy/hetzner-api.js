@@ -34,6 +34,10 @@ export class Resource {
     return match.id
   }
 
+  get name() {
+    return this.#name
+  }
+
   async get() {
     const match = this.find()
     if (!match) {
@@ -48,9 +52,11 @@ export class Resource {
   }
 
   async delete() {
-    const match = await this.find()
-    if (match) {
-      await apiClient.delete(this.#kinds + '/' + match.id)
+    let match = await this.find();
+    while (match) {
+      await apiClient.delete(this.#kinds + '/' + match.id);
+      await new Promise(resolve => setTimeout(resolve, 2500));
+      match = await this.find();
     }
   }
 
