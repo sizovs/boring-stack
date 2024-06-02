@@ -35,6 +35,7 @@ Before deploying, create `<project_dir>/.env`:
 COOKIE_SECRET=<secret goes here>
 ```
 
+Then run:
 ```
 SERVER_IP=<ip address of your Hetzner VPS> task deploy
 ```
