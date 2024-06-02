@@ -55,13 +55,15 @@ await network.createIfAbsent({
     }]
 })
 
-const publicKey = fs.readFileSync(`${process.env.HOME}/.ssh/hetzner.pub`, 'utf-8')
+if (!process.env.HETZNER_PUBLIC_KEY) {
+  throw new Error('HETZNER_PUBLIC_KEY env variable is missing.')
+}
 
+const publicKey = fs.readFileSync(process.env.HETZNER_PUBLIC_KEY.replace("~", process.env.HOME), 'utf-8')
 const cloudInit = fs.readFileSync(import.meta.dirname + '/cloud-config.yml', 'utf-8')
   .replace('${publicKey}', publicKey)
   .replace('${backupVolumeId}', await backupVolume.id())
 
-console.log(cloudInit)
 await sshKey.createIfAbsent({
   public_key: publicKey
 })

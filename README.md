@@ -26,11 +26,10 @@ Create `<project_dir>/.env`:
 ```
 DOMAIN=<app domain w/o protocol e.g. sizovs.net>
 COOKIE_SECRET=<secret for encrypting your cookies>
+HETZNER_PUBLIC_KEY=<path to public key for accessing VPS e.g. ~/.ssh/hetzner.pub>
 ```
 
 # Provisioning infra
-Make sure your public SSH key that will be used to accessing VPS lives in `~/.ssh/hetzner.pub`. Then run:
-
 ```
 HETZNER_API_TOKEN=<secret goes here> task deploy:infra
 ```

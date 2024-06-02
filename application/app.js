@@ -12,8 +12,6 @@ import { enableHttpLogging } from "./setup/morgan.js";
 import { enableCors } from "./setup/cors.js";
 import { enableBodyParsing } from "./setup/bodyparser.js";
 
-console.log(process.env)
-
 if (!process.env.DB_LOCATION) {
   throw new Error('DB_LOCATION environment variable is missing.')
 }
