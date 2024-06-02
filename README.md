@@ -21,6 +21,13 @@ As a guiding principles, I bet on stability, simplicity, and fewer abstractions.
 
 By looking into the code, you'll discover lesser-known gems such as Vine validation library. Generally, the dependencies are minimal, giving a refreshing feel after dealing with bloated frameworks.
 
+# Before deployment
+Create `<project_dir>/.env`:
+```
+DOMAIN=<app domain w/o protocol e.g. sizovs.net>
+COOKIE_SECRET=<secret for encrypting your cookies>
+```
+
 # Provisioning infra
 Make sure your public SSH key that will be used to accessing VPS lives in `~/.ssh/hetzner.pub`. Then run:
 
@@ -30,12 +37,6 @@ HETZNER_API_TOKEN=<secret goes here> task deploy:infra
 
 # Deploying to production
 
-Before deploying, create `<project_dir>/.env`:
-```
-COOKIE_SECRET=<secret goes here>
-```
-
-Then run:
 ```
 SERVER_IP=<ip address of your Hetzner VPS> task deploy
 ```

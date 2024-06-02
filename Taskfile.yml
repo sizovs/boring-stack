@@ -1,7 +1,7 @@
 version: 3
 
 dotenv:
-  - .env.devops
+  - .env
 
 env:
   NODE_ENV: development
@@ -35,5 +35,5 @@ tasks:
     silent: true
     cmds:
       - echo Will deploy to $SERVER_IP
-      - rsync -a --exclude '.env.devops' --exclude 'node_modules' --exclude 'deploy' --exclude 'db.sqlite3*' ./ devops@$SERVER_IP:/home/devops/latest
-      - ssh devops@$SERVER_IP "bash -s" < ./deploy/deploy.sh
+      - rsync -a --exclude 'node_modules' --exclude 'deploy' --exclude 'db.sqlite3*' ./ devops@$SERVER_IP:/home/devops/latest
+      - ssh devops@$SERVER_IP "DOMAIN=$DOMAIN bash -s" < ./deploy/deploy.sh

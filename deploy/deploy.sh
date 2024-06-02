@@ -1,6 +1,10 @@
 #!/usr/bin/env bash
 
-export DOMAIN=dev.club
+if [[ -z "${DOMAIN}" ]]; then
+  echo "DOMAIN environment variable is not set. Exiting." >&2
+  exit 1
+fi
+
 export APP_NAME=${DOMAIN/./}
 export DB_LOCATION="$HOME/db.sqlite3"
 export DB_BACKUP="/mnt/backup"
