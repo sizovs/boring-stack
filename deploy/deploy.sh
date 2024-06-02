@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 export DOMAIN=dev.club
-export APP_NAME=DOMAIN
+export APP_NAME=${DOMAIN/./}
 export DB_LOCATION="$HOME/db.sqlite3"
 export DB_BACKUP="/mnt/backup"
 
