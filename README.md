@@ -17,7 +17,7 @@ As a guiding principles, I bet on stability, simplicity, and fewer abstractions.
 * CSS for styling w/o build tools
 * Playwright for E2E tests
 * SQLite with better-sqlite3 for DB acccess w/o ORMs and query builders (nobody switches databases anyway)
-* Livestream for streaming DB replication
+* Litestream for streaming DB replication
 
 By looking into the code, you'll discover lesser-known gems such as Vine validation library. Generally, the dependencies are minimal, giving a refreshing feel after dealing with bloated frameworks.
 
