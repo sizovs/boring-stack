@@ -8,9 +8,6 @@ env:
   COOKIE_SECRET: unsecure
 
 tasks:
-  terraform:
-    cmds:
-      - terraform -chdir=deploy {{.CLI_ARGS}}
   test:
     env:
       DB_LOCATION: ":memory:"
@@ -31,6 +28,9 @@ tasks:
       - rm -rf ./backup
       - scp -r devops@$SERVER_IP:/mnt/backup ./backup
       - litestream restore -o $DB_LOCATION ./backup
+  deploy:infra:
+    cmds:
+      - npm run infra
   deploy:
     silent: true
     cmds:

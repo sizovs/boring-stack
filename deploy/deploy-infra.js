@@ -1,3 +1,4 @@
+const cloudInit = (publicKey, backupVolumeId) => `
 #cloud-config
 users:
   - name: devops
@@ -5,7 +6,7 @@ users:
     sudo: ALL=(ALL) NOPASSWD:ALL
     shell: /bin/bash
     ssh_authorized_keys:
-      - ${ssh_key}
+      - ${publicKey}
 packages:
   - jq
   - htop
@@ -20,7 +21,7 @@ runcmd:
   - udevadm trigger -c add -s block -p ID_VENDOR=HC --verbose -p ID_MODEL=Volume
 
   # Symlinks to volumes
-  - ln -s /mnt/HC_Volume_${backup_volume} /mnt/backup
+  - ln -s /mnt/HC_Volume_${backupVolumeId} /mnt/backup
 
   # Wait until volumes are mounted
   - |
@@ -61,3 +62,89 @@ runcmd:
   - sed -i -e '/^\(#\|\)AuthorizedKeysFile/s/^.*$/AuthorizedKeysFile .ssh\/authorized_keys/' /etc/ssh/sshd_config
   - sed -i '$a AllowUsers devops' /etc/ssh/sshd_config
   - systemctl reload sshd
+`
+
+import fs from "fs"
+import { Resource } from "./hetzner-api.js"
+
+const firewall = new Resource('firewall', 'web')
+const backupVolume = new Resource('volume', 'backup')
+const network = new Resource('network', 'vpn')
+const sshKey = new Resource('ssh_key', 'devops')
+const server = new Resource('server', 'web')
+const floatingIp = new Resource('floating_ip', 'public')
+
+// await floatingIp.delete()
+// await server.delete()
+// await backupVolume.delete()
+// await network.delete()
+// await firewall.delete()
+
+const firewallId = (await firewall.createIfAbsent({
+  rules: [
+    {
+      direction: 'in',
+      protocol: 'tcp',
+      port: '80',
+      source_ips: ['0.0.0.0/0', '::/0']
+    },
+    {
+      direction: 'in',
+      protocol: 'tcp',
+      port: '443',
+      source_ips: ['0.0.0.0/0', '::/0']
+    },
+    {
+      direction: 'in',
+      protocol: 'tcp',
+      port: '22',
+      source_ips: ['0.0.0.0/0', '::/0']
+    }
+  ]
+}))
+
+const backupVolumeId = (await backupVolume.createIfAbsent({
+  size: 40,
+  location: 'nbg1',
+  format: 'ext4',
+}))
+
+const networkId = (await network.createIfAbsent({
+  ip_range: '10.0.1.0/24',
+  subnets: [
+    {
+      type: "cloud",
+      network_zone: "eu-central",
+      ip_range: "10.0.1.0/24"
+    }]
+}))
+
+const publicKey = fs.readFileSync(`${process.env.HOME}/.ssh/hetzner.pub`, 'utf-8')
+const userData = cloudInit(publicKey, backupVolumeId)
+
+const sshKeyId = (await sshKey.createIfAbsent({
+  public_key: publicKey
+})).id
+
+const serverId = (await server.createIfAbsent({
+  image: 'ubuntu-22.04',
+  server_type: 'cax11',
+  location: 'nbg1',
+  ssh_keys: [sshKeyId],
+  firewalls: [{ firewall: firewallId }],
+  user_data: userData,
+  networks: [networkId],
+  public_net: {
+    enable_ipv4: true,
+  }
+})).id
+
+await floatingIp.createIfAbsent({
+  type: 'ipv4',
+  home_location: 'nbg1',
+  auto_delete: false
+})
+
+await floatingIp.action('assign', {
+  server: serverId
+})

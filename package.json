@@ -5,11 +5,13 @@
     "dev": "node --watch ./application/server.js",
     "repl": "node ./modules/repl.js",
     "migrate": "node ./modules/database/migrate.js",
+    "infra": "node ./deploy/deploy-infra.js",
     "test": "node --test",
     "test:e2e": "npx playwright test"
   },
   "dependencies": {
     "@vinejs/vine": "^2.0.0",
+    "axios": "^1.7.2",
     "better-sqlite3": "^9.3.0",
     "cookie-session": "^2.1.0",
     "cors": "2.8.5",
@@ -29,9 +31,9 @@
     "#tests/*": "./tests/*"
   },
   "devDependencies": {
-    "memfs": "^4.9.2",
     "@faker-js/faker": "^8.4.1",
     "@playwright/test": "^1.44.1",
+    "memfs": "^4.9.2",
     "playwright": "^1.44.1"
   }
 }
