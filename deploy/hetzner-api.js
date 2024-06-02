@@ -29,6 +29,19 @@ export class Resource {
     await apiClient.post(`/${this.#kinds}/${match.id}/actions/${name}`, parameters)
   }
 
+  async id() {
+    const match = await this.get()
+    return match.id
+  }
+
+  async get() {
+    const match = this.find()
+    if (!match) {
+      throw new Error(`Cannot get ${this.#kind} with name ${this.#name}`)
+    }
+    return match
+  }
+
   async find() {
     const resources = (await apiClient.get(this.#kinds)).data[this.#kinds];
     return resources.find(resource => resource.name === this.#name);

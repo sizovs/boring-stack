@@ -75,12 +75,13 @@ const server = new Resource('server', 'web')
 const floatingIp = new Resource('floating_ip', 'public')
 
 // await floatingIp.delete()
+// await sshKey.delete()
 // await server.delete()
 // await backupVolume.delete()
 // await network.delete()
 // await firewall.delete()
 
-const firewallId = (await firewall.createIfAbsent({
+await firewall.createIfAbsent({
   rules: [
     {
       direction: 'in',
@@ -101,15 +102,15 @@ const firewallId = (await firewall.createIfAbsent({
       source_ips: ['0.0.0.0/0', '::/0']
     }
   ]
-}))
+})
 
-const backupVolumeId = (await backupVolume.createIfAbsent({
+await backupVolume.createIfAbsent({
   size: 40,
   location: 'nbg1',
   format: 'ext4',
-}))
+})
 
-const networkId = (await network.createIfAbsent({
+await network.createIfAbsent({
   ip_range: '10.0.1.0/24',
   subnets: [
     {
@@ -117,27 +118,27 @@ const networkId = (await network.createIfAbsent({
       network_zone: "eu-central",
       ip_range: "10.0.1.0/24"
     }]
-}))
+})
 
 const publicKey = fs.readFileSync(`${process.env.HOME}/.ssh/hetzner.pub`, 'utf-8')
-const userData = cloudInit(publicKey, backupVolumeId)
+const userData = cloudInit(publicKey, await backupVolume.id())
 
-const sshKeyId = (await sshKey.createIfAbsent({
+await sshKey.createIfAbsent({
   public_key: publicKey
-})).id
+})
 
-const serverId = (await server.createIfAbsent({
+await server.createIfAbsent({
   image: 'ubuntu-22.04',
   server_type: 'cax11',
   location: 'nbg1',
-  ssh_keys: [sshKeyId],
-  firewalls: [{ firewall: firewallId }],
+  ssh_keys: [await sshKey.id()],
+  firewalls: [{ firewall: await firewall.id() }],
   user_data: userData,
-  networks: [networkId],
+  networks: [await network.id()],
   public_net: {
     enable_ipv4: true,
   }
-})).id
+})
 
 await floatingIp.createIfAbsent({
   type: 'ipv4',
@@ -146,5 +147,5 @@ await floatingIp.createIfAbsent({
 })
 
 await floatingIp.action('assign', {
-  server: serverId
+  server: await server.id()
 })
