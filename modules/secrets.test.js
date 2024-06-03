@@ -13,14 +13,14 @@ describe('secrets', async () => {
     ) strict;`)
   });
 
-  it('returns existing secret coookie and keep returning it on consequent calls', () => {
+  it('returns existing secret coookie and keeps returning it on consequent calls', () => {
     const existingSecret = '00000000000000000000000000000000000000000000000000000000000000000000000000000'
     db.exec(`INSERT INTO secrets (id, value) VALUES ('COOKIE_SECRET', '${existingSecret}')`)
     const cookies = [cookieSecret(db), cookieSecret(db), cookieSecret(db)]
     cookies.forEach(cookie => assert.equal(cookie, existingSecret))
   })
 
-  it('generates secret coookie if absent and keep returning it on consequent calls', () => {
+  it('generates secret coookie if absent and keeps returning it on consequent calls', () => {
     const cookies = [cookieSecret(db), cookieSecret(db), cookieSecret(db)]
     cookies.forEach(cookie => assert.equal(cookie.length, 64))
     assert.deepStrictEqual(cookies, [cookies[0], cookies[0], cookies[0]])
