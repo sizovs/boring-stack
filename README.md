@@ -44,7 +44,7 @@ If you're using a custom app domain, point your DNS records to the IP address of
 SERVER_IP=<IP address of your Hetzner VPS> task deploy
 ```
 
-🎉 Your app should be publicly available via HTTPS on your custom domain or via <server ip>.nip.io.
+🎉 Your app should be publicly available via HTTPS on your custom domain or via `<server ip>.nip.io`.
 
 # Running an app locally
 ```
