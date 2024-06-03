@@ -1,5 +1,6 @@
 {
-  "name": "dev.club",
+  "name": "devclub",
+  "version": "latest",
   "type": "module",
   "scripts": {
     "dev": "node --watch ./application/server.js",
