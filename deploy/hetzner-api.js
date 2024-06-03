@@ -53,6 +53,33 @@ export class Resource {
 
   async delete() {
     let match = await this.find();
+    if (!match) {
+      return
+    }
+
+    const deleteResponse = await apiClient.delete(`${this.#kinds}/${match.id}`);
+    const deleteActionId = deleteResponse.data.action.id;
+
+    const waitForActionCompletion = async () => {
+      while (true) {
+        const actionResponse = await apiClient.get(`/actions/${deleteActionId}`);
+        const actionStatus = actionResponse.data.action.status;
+        if (actionStatus === 'success') {
+          break;
+        }
+        if (actionStatus === 'error') {
+          throw new Error(`Error occurred while deleting ${this.#kinds} with ID ${match.id}`);
+        }
+        await new Promise(resolve => setTimeout(resolve, 2500));
+      }
+    };
+
+    await waitForActionCompletion(deleteActionId);
+
+  }
+
+  async delete() {
+    let match = await this.find();
     while (match) {
       await apiClient.delete(this.#kinds + '/' + match.id);
       await new Promise(resolve => setTimeout(resolve, 2500));

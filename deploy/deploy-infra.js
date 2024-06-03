@@ -12,7 +12,6 @@ const primaryIp = new Resource("primary_ip", "public")
 // await server.delete()
 // await network.delete()
 // await firewall.delete()
-// await backupVolume.action('detach')
 // await backupVolume.delete()
 // await primaryIp.delete()
 
