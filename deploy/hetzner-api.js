@@ -14,6 +14,24 @@ apiClient.interceptors.request.use(request => {
   return request
 })
 
+async function retry(promiseFn, retries = 20, delay = 3000) {
+  const shouldRetry = (error) => {
+    return error.code === 'ECONNABORTED' || (error.response && error.response.status >= 500);
+  };
+
+  for (let attempt = 0; attempt < retries; attempt++) {
+    try {
+      return await promiseFn();
+    } catch (error) {
+      if (!shouldRetry(error) || attempt === retries - 1) {
+        throw error;
+      }
+      await new Promise(resolve => setTimeout(resolve, delay));
+    }
+  }
+}
+
+
 export class Resource {
   #kind
   #kinds
@@ -57,7 +75,7 @@ export class Resource {
       return
     }
 
-    const deleteResponse = await apiClient.delete(`${this.#kinds}/${match.id}`);
+    const deleteResponse = retry(() => apiClient.delete(`${this.#kinds}/${match.id}`))
     const deleteActionId = deleteResponse.data.action.id;
 
     const waitForActionCompletion = async () => {
