@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 if [[ -z "${DOMAIN}" ]]; then
-  echo "Environemnt variable DOMAIN is not set" >&2
+  echo "Environment variable DOMAIN is not set" >&2
   exit 1
 fi
 
