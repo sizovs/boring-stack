@@ -4,7 +4,8 @@ if [[ -z "${DOMAIN}" ]]; then
   DOMAIN="localhost"
 fi
 
-export APP_NAME==$(grep '"name"' ../package.json | sed -E 's/.*"name": *"([^"]+)".*/\1/')
+export APP_NAME=$(grep '"name"' "$HOME/latest/package.json" | sed -E 's/.*"name": *"([^"]+)".*/\1/')
+echo "$APP_NAME"
 export DB_LOCATION="$HOME/db.sqlite3"
 export DB_BACKUP="/mnt/backup"
 
