@@ -24,9 +24,11 @@ By looking into the code, you'll discover lesser-known gems such as Vine validat
 # Before deployment
 Create `<project_dir>/.env`:
 ```
-DOMAIN=<app domain w/o protocol e.g. sizovs.net>
-COOKIE_SECRET=<secret for encrypting your cookies>
-HETZNER_PUBLIC_KEY=<path to public key for accessing VPS e.g. ~/.ssh/hetzner.pub>
+# Path to a public key used for accessing your VPS. Optional, defaults to ~/.ssh/hetzner.pub
+HETZNER_PUBLIC_KEY=<value>
+
+# App domain such as sizovs.net. Optional, default to localhost (no custom domain)
+DOMAIN=<value>
 ```
 
 # Provisioning infra
@@ -34,11 +36,15 @@ HETZNER_PUBLIC_KEY=<path to public key for accessing VPS e.g. ~/.ssh/hetzner.pub
 HETZNER_API_TOKEN=<secret goes here> task deploy:infra
 ```
 
+If you're using a custom app domain, point your DNS records to ip address of your Hetzner VPS.
+
 # Deploying to production
 
 ```
 SERVER_IP=<ip address of your Hetzner VPS> task deploy
 ```
+
+🎉 Your app should be publicly available via HTTPS.
 
 # Running an app locally
 ```

@@ -55,11 +55,7 @@ await network.createIfAbsent({
     }]
 })
 
-const publicKeyLocation = process.env.HETZNER_PUBLIC_KEY?.replace("~", process.env.HOME)
-if (!publicKeyLocation) {
-  throw new Error('HETZNER_PUBLIC_KEY env variable is missing.')
-}
-
+const publicKeyLocation = (process.env.HETZNER_PUBLIC_KEY ?? '~/.ssh/hetzner.pub')?.replace("~", process.env.HOME)
 const publicKey = fs.readFileSync(publicKeyLocation, 'utf-8')
 const cloudInit = fs.readFileSync(import.meta.dirname + '/cloud-config.yml', 'utf-8')
   .replace('${publicKey}', publicKey)

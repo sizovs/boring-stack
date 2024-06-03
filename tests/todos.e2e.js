@@ -4,7 +4,7 @@ import { test, expect } from '@playwright/test'
 let page
 
 test.beforeAll(async ({ browser }) => {
-  const baseUrl = startApp()
+  const baseUrl = await startApp()
   page = await browser.newPage();
   await page.goto(baseUrl);
 });

@@ -11,13 +11,10 @@ import { enableEdgeTemplates } from "./setup/edge.js";
 import { enableHttpLogging } from "./setup/morgan.js";
 import { enableCors } from "./setup/cors.js";
 import { enableBodyParsing } from "./setup/bodyparser.js";
+import { cookieSecret } from "#modules/secrets.js";
 
 if (!process.env.DB_LOCATION) {
   throw new Error('DB_LOCATION environment variable is missing.')
-}
-
-if (!process.env.COOKIE_SECRET) {
-  throw new Error('COOKIE_SECRET environment variable is missing.')
 }
 
 const envs = ['development', 'production']
@@ -29,15 +26,22 @@ const isDevMode = process.env.NODE_ENV !== "production"
 
 const startApp = (port = 0) => {
 
+  const db = createDatabase(process.env.DB_LOCATION)
+  // In dev mode, we run migrations upon startup.
+  // In production, migrations are run by the deployment script.
+  if (isDevMode) {
+    const migrator = new Migrator(db)
+    migrator.migrate()
+  }
+
   const app = express();
   enableEdgeTemplates({ app, isDevMode })
-  enableSessions({ app, secret: process.env.COOKIE_SECRET })
+  enableSessions({ app, secret: cookieSecret(db) })
   enableFlashScope({ app })
   enableHttpLogging({ app, logger })
   enableCors({ app, isDevMode })
   enableBodyParsing({ app })
 
-  const db = createDatabase(process.env.DB_LOCATION)
   const router = new Router()
   app.use(router)
   app.use('/', (request, response) => {
@@ -46,15 +50,18 @@ const startApp = (port = 0) => {
   initTodos({ router, db })
   initHealth({ router, db })
 
-  // In dev mode, we run migrations upon startup.
-  // In production, migrations are run by the deployment script.
-  if (isDevMode) {
-    const migrator = new Migrator(db)
-    migrator.migrate()
-  }
 
-  app.listen(port, () => logger.info("Your app is ready on http://localhost:" + port))
-  return 'http://localhost:' + port
+
+  return new Promise((resolve, reject) => {
+    const server = app.listen(port, () => {
+      const address = 'http://localhost:' + server.address().port;
+      logger.info("Your app is ready on " + address);
+      resolve(address);
+    });
+    server.on('error', err => {
+      reject(err);
+    });
+  });
 }
 
 export { startApp }

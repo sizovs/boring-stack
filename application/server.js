@@ -1,3 +1,3 @@
 import { startApp } from "./app.js"
 
-startApp(process.env.PORT)
+await startApp(process.env.PORT)

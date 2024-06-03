@@ -1,8 +1,7 @@
 #!/usr/bin/env bash
 
 if [[ -z "${DOMAIN}" ]]; then
-  echo "DOMAIN environment variable is not set. Exiting." >&2
-  exit 1
+  DOMAIN="localhost"
 fi
 
 export APP_NAME==$(grep '"name"' ../package.json | sed -E 's/.*"name": *"([^"]+)".*/\1/')

@@ -5,7 +5,6 @@ dotenv:
 
 env:
   NODE_ENV: development
-  COOKIE_SECRET: unsecure
 
 tasks:
   test:
