@@ -27,7 +27,7 @@ Create `<project_dir>/.env` with the following content:
 # Path to a public key used for accessing your VPS. Optional, defaults to ~/.ssh/hetzner.pub
 HETZNER_PUBLIC_KEY=<value>
 
-# Your public app domain such as sizovs.net. Optional, defaults to <IP address of your Hetzner VPS>.nip.io
+# Your public domain such as sizovs.net. Optional, defaults to <server ip>.nip.io
 DOMAIN=<value>
 ```
 
@@ -41,7 +41,7 @@ If you're using a custom app domain, point your DNS records to the IP address of
 # Deploying to production
 
 ```
-SERVER_IP=<IP address of your Hetzner VPS> task deploy
+SERVER_IP=<server ip> task deploy
 ```
 
 🎉 Your app should be publicly available via HTTPS on your custom domain or via `<server ip>.nip.io`.
