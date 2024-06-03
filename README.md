@@ -25,7 +25,7 @@ By looking into the code, you'll discover lesser-known gems such as Vine validat
 Create `<project_dir>/.env` with the following content:
 ```
 # Path to a public key used for accessing your VPS. Optional, defaults to ~/.ssh/hetzner.pub
-SERVER_PUBLIC_KEY=<value>
+PUBLIC_KEY=<value>
 
 # Your public domain such as sizovs.net. Optional, defaults to <server ip>.nip.io
 DOMAIN=<value>
