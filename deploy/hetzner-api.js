@@ -76,24 +76,21 @@ export class Resource {
     }
 
     const deleteResponse = retry(() => apiClient.delete(`${this.#kinds}/${match.id}`))
-    const deleteActionId = deleteResponse.data.action.id;
-
-    const waitForActionCompletion = async () => {
+    const waitUntilDeletionCompletes = async () => {
       while (true) {
-        const actionResponse = await apiClient.get(`/actions/${deleteActionId}`);
-        const actionStatus = actionResponse.data.action.status;
-        if (actionStatus === 'success') {
+        const deletion = await apiClient.get(`/actions/${deleteResponse.data.action.id}`);
+        const status = deletion.data.action.status;
+        if (status === 'success') {
           break;
         }
-        if (actionStatus === 'error') {
+        if (status === 'error') {
           throw new Error(`Error occurred while deleting ${this.#kinds} with ID ${match.id}`);
         }
         await new Promise(resolve => setTimeout(resolve, 2500));
       }
     };
 
-    await waitForActionCompletion(deleteActionId);
-
+    await waitUntilDeletionCompletes();
   }
 
   async delete() {
