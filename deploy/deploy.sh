@@ -1,12 +1,13 @@
 #!/usr/bin/env bash
 
 if [[ -z "${DOMAIN}" ]]; then
-  echo "Environment variable DOMAIN is not set" >&2
-  exit 1
+  IP_ADDRESS=$(hostname -I | awk '{print $1}')
+  DOMAIN="${IP_ADDRESS}.nip.io"
 fi
 
+echo "App will be available via ${DOMAIN}"
+
 export APP_NAME=$(grep '"name"' "$HOME/latest/package.json" | sed -E 's/.*"name": *"([^"]+)".*/\1/')
-echo "$APP_NAME"
 export DB_LOCATION="$HOME/db.sqlite3"
 export DB_BACKUP="/mnt/backup"
 

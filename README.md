@@ -27,7 +27,7 @@ Create `<project_dir>/.env`:
 # Path to a public key used for accessing your VPS. Optional, defaults to ~/.ssh/hetzner.pub
 HETZNER_PUBLIC_KEY=<value>
 
-# App domain such as sizovs.net. If you don't have a custom domain, use <ip of your Hetzner VPS>.nip.io
+# App domain such as sizovs.net. Optional, defaults to <ip of your Hetzner VPS>.nip.io
 DOMAIN=<value>
 ```
 
