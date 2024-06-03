@@ -46,7 +46,7 @@ SERVER_IP=<server ip> task deploy
 
 🎉 Your app should be publicly available via HTTPS on your custom domain or via `<server ip>.nip.io`.
 
-# Running an app locally
+# Running locally
 ```
 task dev
 ```
