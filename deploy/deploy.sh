@@ -7,10 +7,10 @@ fi
 
 echo "App will be available via ${DOMAIN}"
 
-export APP_DIR="$HOME/latest"
-export APP_NAME=$(grep '"name"' "$APP_DIR/package.json" | sed -E 's/.*"name": *"([^"]+)".*/\1/')
-export DB_LOCATION="$HOME/db.sqlite3"
-export DB_BACKUP="/mnt/backup"
+APP_DIR="$HOME/latest"
+APP_NAME=$(grep '"name"' "$APP_DIR/package.json" | sed -E 's/.*"name": *"([^"]+)".*/\1/')
+DB_LOCATION="$HOME/db.sqlite3"
+DB_BACKUP="/mnt/backup"
 
 NVM_VERSION="0.39.7"
 NODE_VERSION="22.2.0"

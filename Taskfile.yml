@@ -16,13 +16,13 @@ tasks:
   dev:
     env:
       PORT: 3000
-      DB_LOCATION: ./modules/database/db.sqlite3
+      DB_LOCATION: ~/db.sqlite3
     cmds:
       - npm install
       - npm run dev
   db:pull:
     env:
-      DB_LOCATION: ./modules/database/db.sqlite3
+      DB_LOCATION: ~/db.sqlite3
     cmds:
       - rm -rf ./backup
       - scp -r devops@$SERVER_IP:/mnt/backup ./backup
@@ -32,5 +32,5 @@ tasks:
       - npm run infra
   deploy:
     cmds:
-      - rsync -a --exclude 'node_modules' --exclude 'deploy' --exclude 'db.sqlite3*' ./ devops@$SERVER_IP:/home/devops/latest
+      - rsync -a --exclude 'node_modules' ./ devops@$SERVER_IP:/home/devops/latest
       - ssh devops@$SERVER_IP "DOMAIN=$DOMAIN bash -s" < ./deploy/deploy.sh

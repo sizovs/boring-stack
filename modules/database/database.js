@@ -1,6 +1,7 @@
 import Database from 'better-sqlite3';
 
 const createDatabase = (location) => {
+  location = location?.replace("~", process.env.HOME)
   if (!location) {
     throw new Error('Cannot create database. Please provide the DB location')
   }
