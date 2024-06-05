@@ -16,23 +16,27 @@ tasks:
   dev:
     env:
       PORT: 3000
-      DB_LOCATION: ~/db.sqlite3
+      DB_LOCATION: "{{.HOME}}/db.sqlite3"
     cmds:
       - npm install
       - npm run dev
   db:pull:
+    silent: true
     env:
-      DB_LOCATION: ~/db.sqlite3
+      DB_BACKUP: "{{.HOME}}/backup"
+      DB_LOCATION: "{{.HOME}}/db.sqlite3"
     cmds:
-      - rm -rf ./backup
-      - scp -r devops@$SERVER_IP:/mnt/backup ./backup
-      - litestream restore -o $DB_LOCATION ./backup
+      - echo ⏳ Pulling DB backup from $SERVER_IP into $DB_BACKUP...
+      - rm -rf $DB_LOCATION
+      - rm -rf $DB_BACKUP && mkdir $DB_BACKUP
+      - rsync -a --exclude 'lost+found' devops@$SERVER_IP:/mnt/backup/ $DB_BACKUP
+      - litestream restore -config ./modules/database/litestream.yml $DB_LOCATION
   infra:
     cmds:
       - npm run infra
   deploy:
     silent: true
     cmds:
-      - echo ⏳ Preparing to deploy to ${SERVER_IP}...
+      - echo ⏳ Preparing to deploy to $SERVER_IP...
       - rsync -a --exclude 'node_modules' --exclude 'test_results' ./ devops@$SERVER_IP:/home/devops/latest
       - ssh devops@$SERVER_IP "DOMAIN=$DOMAIN bash < /home/devops/latest/deploy/deploy.sh"

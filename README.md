@@ -56,6 +56,11 @@ task dev
 task test
 ```
 
+# Pulling production DB to local dev
+```
+task db:pull
+```
+
 # Troubleshooting on prod
 ```
 DB_LOCATION=<db location> npm run repl

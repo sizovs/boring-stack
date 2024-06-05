@@ -50,8 +50,6 @@ const startApp = (port = 0) => {
   initTodos({ router, db })
   initHealth({ router, db })
 
-
-
   return new Promise((resolve, reject) => {
     const server = app.listen(port, () => {
       const address = 'http://localhost:' + server.address().port;
