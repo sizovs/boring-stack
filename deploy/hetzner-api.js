@@ -78,7 +78,7 @@ export class Resource {
     const deleteResponse = await retry(() => apiClient.delete(`${this.#kinds}/${match.id}`))
     const noActionToWaitFor = !deleteResponse.data.action?.id
     if (noActionToWaitFor) {
-      return Promise.resolve(true)
+      return true
     }
     const waitUntilDeletionCompletes = async () => {
       while (true) {
