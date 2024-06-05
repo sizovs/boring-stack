@@ -5,18 +5,50 @@ if [[ -z "${DOMAIN}" ]]; then
   DOMAIN="${IP_ADDRESS}.nip.io"
 fi
 
-echo "App will be available via ${DOMAIN}"
-
 APP_DIR="$HOME/latest"
 APP_NAME=$(grep '"name"' "$APP_DIR/package.json" | sed -E 's/.*"name": *"([^"]+)".*/\1/')
+
+echo "$APP_NAME will be available at $DOMAIN"
+
 DB_LOCATION="$HOME/db.sqlite3"
 DB_BACKUP="/mnt/backup"
 
 NVM_VERSION="0.39.7"
 NODE_VERSION="22.2.0"
+LITESTREAM_VERSION="0.3.13"
 
 BLUE_PORT=3000
 GREEN_PORT=3001
+
+# Install SQLite
+if ! command -v sqlite3 &>/dev/null; then
+  sudo apt-get update
+  sudo apt-get install -y sqlite3
+  echo "SQLite3 installed successfully."
+fi
+
+# Install Litestream
+if ! command -v litestream &>/dev/null || ! litestream version | grep -q "v$LITESTREAM_VERSION"; then
+  arch=$(dpkg --print-architecture)
+  url=https://github.com/benbjohnson/litestream/releases/download/v$LITESTREAM_VERSION/litestream-v$LITESTREAM_VERSION-linux-$arch.deb
+  if ! curl -fLo litestream.deb "$url"; then
+    echo "Error: Failed to download $url"
+    exit 1
+  fi
+  sudo dpkg -i --force-confold litestream.deb
+  rm litestream.deb
+  echo "Litestream version v$LITESTREAM_VERSION installed successfully."
+fi
+
+# Make sure the backup directory exists and fail otherwise.
+if [ ! -d "$DB_BACKUP" ]; then
+  echo "Error: $DB_BACKUP directory does not exist."
+  echo "Consider waiting a bit because mounting may take a while."
+  exit 1
+fi
+
+# Make "devops" owner of the backup directory.
+sudo chown devops:devops "$DB_BACKUP"
 
 # Create litestream.yml config file for continuous data replication
 LITESTREAM_CONFIG=$(
@@ -33,7 +65,16 @@ echo "$LITESTREAM_CONFIG" | sudo tee /etc/litestream.yml >/dev/null
 sudo systemctl enable litestream
 sudo systemctl restart litestream
 
-# Download and install NVM
+# Install Caddy
+if ! command -v caddy &>/dev/null; then
+  apt install -y debian-keyring debian-archive-keyring apt-transport-https
+  curl -1sLf 'https://dl.cloudsmith.io/public/caddy/stable/gpg.key' | gpg --dearmor -o /usr/share/keyrings/caddy-stable-archive-keyring.gpg
+  curl -1sLf 'https://dl.cloudsmith.io/public/caddy/stable/debian.deb.txt' | tee /etc/apt/sources.list.d/caddy-stable.list
+  sudo apt-get update
+  sudo apt-get -y install caddy
+fi
+
+# Install NVM
 if [ ! -d "$HOME/.nvm" ]; then
   curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v$NVM_VERSION/install.sh | bash
 fi
@@ -119,7 +160,6 @@ NODE_ENV=production PORT=$DEPLOY_PORT DB_LOCATION=$DB_LOCATION pm2 start applica
 
 function point_caddy_to() {
   local UPSTREAM_PORT=$1
-  echo "Create Caddyfile that forwards to $UPSTREAM_PORT"
   CADDYFILE_CONTENT=$(
     cat <<EOF
 $DOMAIN {

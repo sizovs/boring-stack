@@ -7,12 +7,9 @@ users:
     ssh_authorized_keys:
       - ${publicKey}
 packages:
-  - jq
   - htop
   - wget
   - fail2ban
-  - micro
-  - sqlite3
 package_update: true
 package_upgrade: true
 package_reboot_if_required: true
@@ -22,44 +19,6 @@ runcmd:
 
   # Symlinks to volumes
   - ln -s /mnt/HC_Volume_${backupVolumeId} /mnt/backup
-
-  # Wait until volumes are mounted
-  - |
-    max_attempts=20
-    attempt=1
-    while [ ! -d /mnt/backup ]; do
-      echo "Attempt $attempt: Waiting for volumes to become available..."
-      sleep 10
-      if [ "$attempt" -ge "$max_attempts" ]; then
-        echo "Reached maximum attempts. Exiting."
-        exit 1
-      fi
-      attempt=$((attempt + 1))
-    done
-    echo "Volumes are now available."
-
-  # Make "devops" owner of the backup directory.
-  - sudo chown devops:devops /mnt/backup
-
-  # Litestream
-  - |
-    LITESTREAM_VERSION="v0.3.13"
-    arch=$(dpkg --print-architecture)
-    url=https://github.com/benbjohnson/litestream/releases/download/$LITESTREAM_VERSION/litestream-$LITESTREAM_VERSION-linux-$arch.deb
-    if ! curl -fLo litestream.deb "$url"; then
-      echo "Error: Failed to download $url"
-      exit 1
-    fi
-    sudo dpkg -i --force-confold litestream.deb
-    rm litestream.deb
-    echo "Litestream version $LITESTREAM_VERSION installed successfully."
-
-  # Caddy
-  - apt install -y debian-keyring debian-archive-keyring apt-transport-https
-  - curl -1sLf 'https://dl.cloudsmith.io/public/caddy/stable/gpg.key' | gpg --dearmor -o /usr/share/keyrings/caddy-stable-archive-keyring.gpg
-  - curl -1sLf 'https://dl.cloudsmith.io/public/caddy/stable/debian.deb.txt' | tee /etc/apt/sources.list.d/caddy-stable.list
-  - apt-get update
-  - apt-get -y install caddy
 
   - printf "[sshd]\nenabled = true\nbanaction = iptables-multiport" > /etc/fail2ban/jail.local
   - systemctl enable fail2ban
