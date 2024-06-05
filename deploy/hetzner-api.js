@@ -14,16 +14,16 @@ apiClient.interceptors.request.use(request => {
   return request
 })
 
-async function retry(promiseFn, retries = 20, delay = 3000) {
+async function retry(promiseFn, attempts = 20, delay = 3000) {
   const shouldRetry = (error) => {
     return error.code === 'ECONNABORTED' || (error.response && error.response.status >= 500);
   };
 
-  for (let attempt = 0; attempt < retries; attempt++) {
+  for (let attempt = 1; attempt <= attempts; attempt++) {
     try {
       return await promiseFn();
     } catch (error) {
-      if (!shouldRetry(error) || attempt === retries - 1) {
+      if (!shouldRetry(error) || attempt === attempts) {
         throw error;
       }
       await new Promise(resolve => setTimeout(resolve, delay));
