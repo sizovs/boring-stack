@@ -33,7 +33,7 @@ DOMAIN=<value>
 
 # Provisioning infra
 ```
-HETZNER_API_TOKEN=<secret goes here> task deploy:infra
+HETZNER_API_TOKEN=<secret goes here> task infra
 ```
 
 If you're using a custom app domain, point your DNS records to the IP address of your Hetzner VPS.

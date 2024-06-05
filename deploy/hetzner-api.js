@@ -93,15 +93,6 @@ export class Resource {
     await waitUntilDeletionCompletes();
   }
 
-  async delete() {
-    let match = await this.find();
-    while (match) {
-      await apiClient.delete(this.#kinds + '/' + match.id);
-      await new Promise(resolve => setTimeout(resolve, 2500));
-      match = await this.find();
-    }
-  }
-
   async create(parameters) {
     const configuration = {
       name: this.#name,

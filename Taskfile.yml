@@ -27,7 +27,7 @@ tasks:
       - rm -rf ./backup
       - scp -r devops@$SERVER_IP:/mnt/backup ./backup
       - litestream restore -o $DB_LOCATION ./backup
-  deploy:infra:
+  infra:
     cmds:
       - npm run infra
   deploy:

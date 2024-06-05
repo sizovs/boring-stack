@@ -7,11 +7,12 @@ fi
 
 echo "App will be available via ${DOMAIN}"
 
-export APP_NAME=$(grep '"name"' "$HOME/latest/package.json" | sed -E 's/.*"name": *"([^"]+)".*/\1/')
+export APP_DIR="$HOME/latest"
+export APP_NAME=$(grep '"name"' "$APP_DIR/package.json" | sed -E 's/.*"name": *"([^"]+)".*/\1/')
 export DB_LOCATION="$HOME/db.sqlite3"
 export DB_BACKUP="/mnt/backup"
 
-NVM_VERSION=v0.39.7
+NVM_VERSION="0.39.7"
 NODE_VERSION="22.2.0"
 
 BLUE_PORT=3000
@@ -34,7 +35,7 @@ sudo systemctl restart litestream
 
 # Download and install NVM
 if [ ! -d "$HOME/.nvm" ]; then
-  curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/$NVM_VERSION/install.sh | bash
+  curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v$NVM_VERSION/install.sh | bash
 fi
 
 # Source NVM to make it available in the current session
@@ -94,16 +95,16 @@ else
   OLD_NODE=green
 fi
 
-# ~/latest becomes ~/<deploy node>
-rm -rf ~/$DEPLOY_NODE
-mv -f "$HOME/latest" "$HOME/$DEPLOY_NODE"
+# Move app contents into ~/<deploy node>
+rm -rf "$HOME/$DEPLOY_NODE"
+mv -f "$APP_DIR" "$HOME/$DEPLOY_NODE"
 
 # Grant "devops" user +rwx access to $HOME and subdirectories (because rsync preserves permissions of the source)
 # Grant users other than "devops" +rx access to $HOME and subdirectories (for Caddy)
 sudo chmod -R u+rwx,o+rx "$HOME"
 
 # Install dependencies
-cd ~/$DEPLOY_NODE || exit
+cd $HOME/$DEPLOY_NODE
 npm ci --production
 
 # If <deploy node> is running, stop it
