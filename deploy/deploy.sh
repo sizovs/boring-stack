@@ -55,7 +55,7 @@ nvm use "$NODE_VERSION"
 if ! command -v pm2 &>/dev/null; then
   npm install -g pm2
   # Make sure PM2 starts automatically on boot
-  sudo env PATH=$PATH:$NODE_DIR/bin $NODE_DIR/lib/node_modules/pm2/bin/pm2 startup systemd -u "$whoami" --hp "$HOME" --service-name pm2
+  sudo env PATH=$PATH:$NODE_DIR/bin $NODE_DIR/lib/node_modules/pm2/bin/pm2 startup systemd -u devops --hp "$HOME" --service-name pm2
 fi
 
 # Create logrotate configuration for application logs
@@ -119,7 +119,7 @@ NODE_ENV=production PORT=$DEPLOY_PORT DB_LOCATION=$DB_LOCATION pm2 start applica
 
 function point_caddy_to() {
   local UPSTREAM_PORT=$1
-  # Create Caddyfile that forwards to <deploy node>
+  echo "Create Caddyfile that forwards to $UPSTREAM_PORT"
   CADDYFILE_CONTENT=$(
     cat <<EOF
 $DOMAIN {
