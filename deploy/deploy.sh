@@ -6,7 +6,7 @@ if [[ -z "${DOMAIN}" ]]; then
 fi
 
 APP_DIR="$HOME/latest"
-APP_NAME=$(grep '"name"' "$APP_DIR/package.json" | sed -E 's/.*"name": *"([^"]+)".*/\1/')
+APP_NAME=$(awk -F'"' '/"name"/ {print $4}' "$APP_DIR/package.json")
 
 echo "$APP_NAME will be available at https://$DOMAIN"
 
@@ -24,7 +24,7 @@ GREEN_PORT=3001
 
 # Install SQLite
 installed_sqlite_version() {
-  command -v sqlite3 &>/dev/null && sqlite3 --version | cut -d ' ' -f1 || echo ""
+  command -v sqlite3 &>/dev/null && sqlite3 --version | awk '{print $1}' || echo ""
 }
 if [ "$(installed_sqlite_version)" != "$SQLITE_VERSION" ]; then
   sudo apt-get update
@@ -60,7 +60,7 @@ fi
 # Make "devops" owner of the backup directory.
 sudo chown devops:devops "$DB_BACKUP"
 
-# Create litestream.yml config file for continuous data replication
+# Create litestream.yml config file for continuous replication
 LITESTREAM_CONFIG=$(
   cat <<EOF
 dbs:
@@ -77,7 +77,7 @@ sudo systemctl restart litestream
 
 # Install Caddy
 installed_caddy_version() {
-  command -v caddy &>/dev/null && caddy version | cut -d ' ' -f1 || echo ""
+  command -v caddy &>/dev/null && caddy version | awk '{print $1}' || echo ""
 }
 if [ "$(installed_caddy_version)" != "v$CADDY_VERSION" ]; then
   sudo apt install -y debian-keyring debian-archive-keyring apt-transport-https
@@ -118,7 +118,7 @@ if ! command -v pm2 &>/dev/null; then
   sudo env PATH=$PATH:$NODE_DIR/bin $NODE_DIR/lib/node_modules/pm2/bin/pm2 startup systemd -u devops --hp "$HOME" --service-name pm2
 fi
 
-# Create logrotate configuration for application logs
+# Create logrotate configuration for app logs
 LOGROTATE_CONFIG=$(
   cat <<EOF
 $HOME/.pm2/logs/*.log {
@@ -221,7 +221,7 @@ done
 
 # If <deploy node> is unhealthy, stop it and interrupt deployment
 if [ "$HEALTHY" = false ]; then
-  echo "$DEPLOY_NODE is not healthy even after $MAX_RETRIES retries. Killing it."
+  echo "$DEPLOY_NODE is not healthy after $MAX_RETRIES retries. Killing it."
   pm2 delete -s "$APP_NAME-$DEPLOY_NODE" || ':'
   point_caddy_to "$OLD_PORT"
   exit 1
