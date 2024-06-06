@@ -8,7 +8,6 @@ users:
       - ${publicKey}
 packages:
   - htop
-  - wget
   - fail2ban
 package_update: true
 package_upgrade: true
