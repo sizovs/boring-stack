@@ -17,7 +17,7 @@ NVM_VERSION="0.39.7"
 NODE_VERSION="22.2.0"
 SQLITE_VERSION="3.45.1"
 LITESTREAM_VERSION="0.3.13"
-CADDY_VERSION="2.6.2"
+CADDY_VERSION="2.8.4"
 
 BLUE_PORT=3000
 GREEN_PORT=3001
@@ -77,12 +77,12 @@ sudo systemctl restart litestream
 
 # Install Caddy
 installed_caddy_version() {
-  command -v caddy &>/dev/null && caddy version || echo ""
+  command -v caddy &>/dev/null && caddy version | cut -d' ' -f1 | sed 's/^v//' || echo ""
 }
 if [ "$(installed_caddy_version)" != "$CADDY_VERSION" ]; then
   sudo apt install -y debian-keyring debian-archive-keyring apt-transport-https
-  curl -1sLf 'https://dl.cloudsmith.io/public/caddy/stable/gpg.key' | gpg --dearmor -o /usr/share/keyrings/caddy-stable-archive-keyring.gpg
-  curl -1sLf 'https://dl.cloudsmith.io/public/caddy/stable/debian.deb.txt' | tee /etc/apt/sources.list.d/caddy-stable.list
+  curl -1sLf 'https://dl.cloudsmith.io/public/caddy/stable/gpg.key' | sudo gpg --dearmor -o /usr/share/keyrings/caddy-stable-archive-keyring.gpg
+  curl -1sLf 'https://dl.cloudsmith.io/public/caddy/stable/debian.deb.txt' | sudo tee /etc/apt/sources.list.d/caddy-stable.list
   sudo apt-get update
   sudo apt-get -y install caddy
   INSTALLED_VERSION=$(installed_caddy_version)
