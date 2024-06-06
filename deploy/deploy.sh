@@ -15,16 +15,25 @@ DB_BACKUP="/mnt/backup"
 
 NVM_VERSION="0.39.7"
 NODE_VERSION="22.2.0"
+SQLITE_VERSION="3.45.1"
 LITESTREAM_VERSION="0.3.13"
 
 BLUE_PORT=3000
 GREEN_PORT=3001
 
 # Install SQLite
-if ! command -v sqlite3 &>/dev/null; then
+installed_sqlite_version() {
+  command -v sqlite3 &>/dev/null && sqlite3 --version | cut -d' ' -f1 || echo ""
+}
+if [ "$(installed_sqlite_version)" != "$SQLITE_VERSION" ]; then
   sudo apt-get update
   sudo apt-get install -y sqlite3
-  echo "SQLite3 installed successfully."
+  INSTALLED_VERSION=$(installed_sqlite_version)
+  if [ "$INSTALLED_VERSION" != "$SQLITE_VERSION" ]; then
+    echo "SQLite version $INSTALLED_VERSION has been installed, but $SQLITE_VERSION is required"
+    exit 1
+  fi
+  echo "SQLite3 $SQLITE_VERSION installed successfully."
 fi
 
 # Install Litestream
