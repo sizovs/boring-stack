@@ -6,7 +6,7 @@ if [[ -z "${DOMAIN}" ]]; then
 fi
 
 APP_DIR="$HOME/latest"
-APP_NAME=$(awk -F'"' '/"name"/ {print $4}' "$APP_DIR/package.json")
+APP_NAME=$(awk -F '"' '/"name"/ {print $4}' "$APP_DIR/package.json")
 
 echo "$APP_NAME will be available at https://$DOMAIN"
 
