@@ -38,7 +38,7 @@ if [ "$(installed_sqlite_version)" != "$SQLITE_VERSION" ]; then
 fi
 
 # Install Litestream
-if ! command -v litestream &>/dev/null || ! litestream version | grep -q "v$LITESTREAM_VERSION"; then
+if ! command -v litestream &>/dev/null || [ "$(litestream version)" != "v$LITESTREAM_VERSION" ]; then
   arch=$(dpkg --print-architecture)
   url=https://github.com/benbjohnson/litestream/releases/download/v$LITESTREAM_VERSION/litestream-v$LITESTREAM_VERSION-linux-$arch.deb
   if ! curl -fLo litestream.deb "$url"; then
@@ -77,16 +77,16 @@ sudo systemctl restart litestream
 
 # Install Caddy
 installed_caddy_version() {
-  command -v caddy &>/dev/null && caddy version | cut -d' ' -f1 | sed 's/^v//' || echo ""
+  command -v caddy &>/dev/null && caddy version | cut -d' ' -f1 || echo ""
 }
-if [ "$(installed_caddy_version)" != "$CADDY_VERSION" ]; then
+if [ "$(installed_caddy_version)" != "v$CADDY_VERSION" ]; then
   sudo apt install -y debian-keyring debian-archive-keyring apt-transport-https
   curl -1sLf 'https://dl.cloudsmith.io/public/caddy/stable/gpg.key' | sudo gpg --dearmor -o /usr/share/keyrings/caddy-stable-archive-keyring.gpg
   curl -1sLf 'https://dl.cloudsmith.io/public/caddy/stable/debian.deb.txt' | sudo tee /etc/apt/sources.list.d/caddy-stable.list
   sudo apt-get update
   sudo apt-get -y install caddy
   INSTALLED_VERSION=$(installed_caddy_version)
-  if [ "$INSTALLED_VERSION" != "$CADDY_VERSION" ]; then
+  if [ "$INSTALLED_VERSION" != "v$CADDY_VERSION" ]; then
     echo "Caddy version $INSTALLED_VERSION has been installed, but $CADDY_VERSION is required"
     exit 1
   fi
