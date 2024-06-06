@@ -8,7 +8,7 @@ fi
 APP_DIR="$HOME/latest"
 APP_NAME=$(grep '"name"' "$APP_DIR/package.json" | sed -E 's/.*"name": *"([^"]+)".*/\1/')
 
-echo "$APP_NAME will be available at $DOMAIN"
+echo "$APP_NAME will be available at https://$DOMAIN"
 
 DB_LOCATION="$HOME/db.sqlite3"
 DB_BACKUP="/mnt/backup"
@@ -24,7 +24,7 @@ GREEN_PORT=3001
 
 # Install SQLite
 installed_sqlite_version() {
-  command -v sqlite3 &>/dev/null && sqlite3 --version | cut -d' ' -f1 || echo ""
+  command -v sqlite3 &>/dev/null && sqlite3 --version | cut -d ' ' -f1 || echo ""
 }
 if [ "$(installed_sqlite_version)" != "$SQLITE_VERSION" ]; then
   sudo apt-get update
@@ -77,7 +77,7 @@ sudo systemctl restart litestream
 
 # Install Caddy
 installed_caddy_version() {
-  command -v caddy &>/dev/null && caddy version | cut -d' ' -f1 || echo ""
+  command -v caddy &>/dev/null && caddy version | cut -d ' ' -f1 || echo ""
 }
 if [ "$(installed_caddy_version)" != "v$CADDY_VERSION" ]; then
   sudo apt install -y debian-keyring debian-archive-keyring apt-transport-https
