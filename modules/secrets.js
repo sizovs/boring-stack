@@ -1,10 +1,10 @@
 export function cookieSecret(db) {
-  const SECRET_KEY = 'COOKIE_SECRET'
+  const SECRET_KEY = 'cookie_secret'
   const stmt = db.transaction(() => {
-    const insertIfAbsent = db.prepare(`INSERT OR IGNORE INTO secrets (id, value) VALUES (?, hex(randomblob(32)))`);
+    const insertIfAbsent = db.prepare(`insert or ignore into secrets (id, value) values (?, hex(randomblob(32)))`);
     insertIfAbsent.run(SECRET_KEY);
 
-    const select = db.prepare(`SELECT value FROM secrets WHERE id = ? LIMIT 1`);
+    const select = db.prepare(`select value from secrets where id = ? limit 1`);
     return select.get(SECRET_KEY);
   });
 

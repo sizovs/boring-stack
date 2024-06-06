@@ -8,14 +8,14 @@ describe('secrets', async () => {
   beforeEach(() => {
     db = new Database(":memory:");
     db.exec(`create table secrets (
-      id TEXT PRIMARY KEY,
-      value TEXT not null
+      id text primary key,
+      value text not null
     ) strict;`)
   });
 
   it('returns existing secret coookie and keeps returning it on consequent calls', () => {
     const existingSecret = '00000000000000000000000000000000000000000000000000000000000000000000000000000'
-    db.exec(`INSERT INTO secrets (id, value) VALUES ('COOKIE_SECRET', '${existingSecret}')`)
+    db.exec(`insert into secrets (id, value) values ('cookie_secret', '${existingSecret}')`)
     const cookies = [cookieSecret(db), cookieSecret(db), cookieSecret(db)]
     cookies.forEach(cookie => assert.equal(cookie, existingSecret))
   })
