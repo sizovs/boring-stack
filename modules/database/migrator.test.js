@@ -1,18 +1,18 @@
-import { fs } from 'memfs';
+import { fs } from 'memfs'
 import { Migrator, Migrations } from './migrator.js'
-import Database from 'better-sqlite3';
-import { faker } from '@faker-js/faker';
-import { describe, it, beforeEach } from 'node:test';
-import assert from 'node:assert';
+import Database from 'better-sqlite3'
+import { faker } from '@faker-js/faker'
+import { describe, it, beforeEach } from 'node:test'
+import assert from 'node:assert'
 
 describe('migrator', async () => {
   let db
   let dir
   beforeEach(() => {
-    db = new Database(":memory:");
+    db = new Database(":memory:")
     dir = faker.word.sample()
     fs.mkdirSync(dir, { recursive: true })
-  });
+  })
   it('does nothing if no migrations found', () => {
     const migrations = new Migrations(dir, fs)
     const migrator = new Migrator(db, migrations)
@@ -72,5 +72,5 @@ describe('migrator', async () => {
 
     assert.equal(migrator.databaseVersion(), 1)
   })
-});
+})
 

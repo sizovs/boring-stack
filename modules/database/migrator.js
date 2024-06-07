@@ -34,7 +34,7 @@ export class Migrator {
   }
 
   databaseVersion() {
-    const userVersion = this.#db.prepare('PRAGMA user_version;').get()?.user_version
+    const userVersion = this.#db.prepare('PRAGMA user_version').get()?.user_version
     if (typeof userVersion !== 'number') {
       throw new Error(`Unexpected result when getting user_version: "${userVersion}".`)
     }
@@ -78,7 +78,7 @@ class Migration {
   #version
   #fs
   constructor(file, version, fs) {
-    this.#file = file;
+    this.#file = file
     this.#version = version
     this.#fs = fs
   }

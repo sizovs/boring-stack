@@ -8,7 +8,7 @@ export const enableHttpLogging = ({ app, logger }) => {
         write: (message) => logger.http(message.trim()),
       },
     }
-  );
+  )
   app.use(morganMiddleware)
 
 }

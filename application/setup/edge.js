@@ -1,4 +1,4 @@
-import staticify from "staticify";
+import staticify from "staticify"
 import { Edge } from 'edge.js'
 import { edgeStacks } from 'edge-stacks'
 import { callbackify } from "util"
@@ -18,17 +18,17 @@ export const enableEdgeTemplates = ({ app, isDevMode }) => {
   })
   app.use(statics.middleware)
 
-  const edge = new Edge({ cache: !isDevMode });
+  const edge = new Edge({ cache: !isDevMode })
   edge.use(edgeStacks)
 
   const viewDirectory = process.env.PWD + '/views'
-  edge.mount('default', viewDirectory);
+  edge.mount('default', viewDirectory)
   edge.global('static', statics.getVersionedPath)
 
   app.engine('edge', (template, options, callback) => {
     const renderer = edge.createRenderer()
     const rendered = renderer.render(template, options)
-    callbackify(() => rendered)(callback);
+    callbackify(() => rendered)(callback)
   })
 
   app.set('views', viewDirectory)

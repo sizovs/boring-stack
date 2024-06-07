@@ -1,17 +1,17 @@
-import Database from 'better-sqlite3';
-import { describe, it, beforeEach } from 'node:test';
-import assert from 'node:assert';
-import { cookieSecret } from './secrets.js';
+import Database from 'better-sqlite3'
+import { describe, it, beforeEach } from 'node:test'
+import assert from 'node:assert'
+import { cookieSecret } from './secrets.js'
 
 describe('secrets', async () => {
   let db
   beforeEach(() => {
-    db = new Database(":memory:");
+    db = new Database(":memory:")
     db.exec(`create table secrets (
       id text primary key,
       value text not null
-    ) strict;`)
-  });
+    ) strict`)
+  })
 
   it('returns existing secret coookie and keeps returning it on consequent calls', () => {
     const existingSecret = '00000000000000000000000000000000000000000000000000000000000000000000000000000'

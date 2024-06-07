@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios from "axios"
 
 const apiToken = process.env.HETZNER_API_TOKEN
 const apiClient = axios.create({
@@ -7,7 +7,7 @@ const apiClient = axios.create({
     'Authorization': `Bearer ${apiToken}`,
     'Content-Type': 'application/json'
   }
-});
+})
 
 apiClient.interceptors.request.use(request => {
   console.log(request.method + " > " + request.url)
@@ -16,24 +16,24 @@ apiClient.interceptors.request.use(request => {
 
 async function retry(promiseFn, attempts = 20, delay = 3000) {
   const shouldRetry = (error) => {
-    return error.code === 'ECONNABORTED' || (error.response && error.response.status >= 500);
-  };
+    return error.code === 'ECONNABORTED' || (error.response && error.response.status >= 500)
+  }
 
   for (let attempt = 1; attempt <= attempts; attempt++) {
     try {
-      return await promiseFn();
+      return await promiseFn()
     } catch (error) {
       if (!shouldRetry(error) || attempt === attempts) {
-        throw error;
+        throw error
       }
-      await new Promise(resolve => setTimeout(resolve, delay));
+      await new Promise(resolve => setTimeout(resolve, delay))
     }
   }
 }
 
 
 export class Resource {
-  #kind
+  #kin
   #kinds
   #name
   constructor(kind, name) {
@@ -65,12 +65,12 @@ export class Resource {
   }
 
   async find() {
-    const resources = (await apiClient.get(this.#kinds)).data[this.#kinds];
-    return resources.find(resource => resource.name === this.#name);
+    const resources = (await apiClient.get(this.#kinds)).data[this.#kinds]
+    return resources.find(resource => resource.name === this.#name)
   }
 
   async delete() {
-    let match = await this.find();
+    let match = await this.find()
     if (!match) {
       return
     }
@@ -82,10 +82,10 @@ export class Resource {
     }
 
     while (true) {
-      const deletion = await apiClient.get(`/actions/${actionToWait.id}`);
-      if (deletion.data.action.status === 'success') break;
-      if (deletion.data.action.status === 'error') throw new Error(`Error occurred while deleting ${this.#kinds} with ID ${match.id}`);
-      await new Promise(resolve => setTimeout(resolve, 2500));
+      const deletion = await apiClient.get(`/actions/${actionToWait.id}`)
+      if (deletion.data.action.status === 'success') break
+      if (deletion.data.action.status === 'error') throw new Error(`Error occurred while deleting ${this.#kinds} with ID ${match.id}`)
+      await new Promise(resolve => setTimeout(resolve, 2500))
     }
   }
 

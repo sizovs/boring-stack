@@ -1,10 +1,10 @@
 import vine from '@vinejs/vine'
-import { validateBody } from "#modules/validator.js";
+import { validateBody } from "#modules/validator.js"
 
 export const initTodos = ({ router, db }) => {
   router.get('/todos', (request, response) => {
     const todos = db.prepare('select * from todos').all()
-    response.render('todos', { todos });
+    response.render('todos', { todos })
   })
 
   router.post('/todos/:id/done', (request, response) => {

@@ -1,4 +1,4 @@
-import { format, createLogger, transports } from "winston";
+import { format, createLogger, transports } from "winston"
 
 const { combine, timestamp, printf, align } = format
 
@@ -15,6 +15,6 @@ const logger = createLogger({
       handleRejections: true
     })
   ],
-});
+})
 
 export default logger

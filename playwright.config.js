@@ -6,5 +6,5 @@ export default defineConfig({
   maxFailures: 1,
   testDir: './tests',
   reporter: 'list'
-});
+})
 

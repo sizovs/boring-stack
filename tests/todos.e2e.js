@@ -1,13 +1,13 @@
-import { startApp } from '#application/app.js';
+import { startApp } from '#application/app.js'
 import { test, expect } from '@playwright/test'
 
 let page
 
 test.beforeAll(async ({ browser }) => {
   const baseUrl = await startApp()
-  page = await browser.newPage();
-  await page.goto(baseUrl);
-});
+  page = await browser.newPage()
+  await page.goto(baseUrl)
+})
 
 
 test('starts with zero todos', async () => {
@@ -32,7 +32,7 @@ test('adds todo items', async () => {
   expect(page.getByTestId('todo-title')).toHaveText([
     'Homework',
     'Repairworks'
-  ]);
+  ])
 
 })
 
