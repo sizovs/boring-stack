@@ -56,9 +56,7 @@ const startApp = (port = 0) => {
       logger.info("Your app is ready on " + address);
       resolve(address);
     });
-    server.on('error', err => {
-      reject(err);
-    });
+    server.on('error', error => reject(error));
   });
 }
 
