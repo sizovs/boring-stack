@@ -12,14 +12,14 @@ Loosely coupled, distributed architectures are challenging to operate, which is 
 
 As a guiding principles, I bet on stability, simplicity, and fewer abstractions. As a result, I made the following tech choices:
 * Node (22+)
-* JS (you don't need TS for large-scale apps if you write tests; rails is a great example)
+* JS (you don't need TS for large-scale apps if you write tests; Rails is a great example)
 * Express.js
 * Edge.js for templating
 * Htmx for SPA experience
 * Alpine.js for sprinkling JS here and there
 * CSS for styling w/o build tools
 * Playwright for E2E tests
-* SQLite with better-sqlite3 for DB acccess w/o ORMs and query builders (nobody switches databases anyway)
+* SQLite with better-sqlite3 for DB access w/o ORMs and query builders (nobody switches databases anyway)
 * Litestream for streaming DB replication
 
 By looking into the code, you'll discover lesser-known gems such as Vine validation library. Generally, the dependencies are minimal, giving a refreshing feel after dealing with bloated frameworks.
