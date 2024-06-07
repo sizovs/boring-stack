@@ -33,7 +33,7 @@ async function retry(promiseFn, attempts = 20, delay = 3000) {
 
 
 export class Resource {
-  #kin
+  #kind
   #kinds
   #name
   constructor(kind, name) {
