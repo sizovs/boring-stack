@@ -1,6 +1,8 @@
 # What is this?
 
-This is my starter for full-stack web app development on Node.
+Starter for full-stack web development with Node.js deployed to Hetzner. Learn it, change it, use it as you wish.
+
+# Motivation
 
 JS and TS ecosystem suffers from extreme churn, making migrations between major framework releases extremely challenging, often forcing 'a big rewrite' on app developers every 3-5 years. If  you're playing long-term game, it's better and safer to build on top of stable and boring foundation. Moreover, the SPA ecosystem, and frameworks like Next and SvelteKit, are complex beasts with too much hidden "magic" under the hood. That magic works until it doesn't. For the problem of sending data over HTTP to and from the database, I find that complexity hard to justify. By making certain architectural trade-offs, such as embracing [hypermedia systems](https://hypermedia.systems/) and ditching unneccessary abstractions, it's possible to eliminate all that accidental complexity.
 
