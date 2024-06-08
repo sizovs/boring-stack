@@ -38,7 +38,7 @@ test('adds todo items', async () => {
 
 test('deletes a todo item', async () => {
   await page.getByRole('checkbox').first().click()
-  expect(page.getByTestId('todo-count')).toHaveText('You have 1 todo')
-  expect(page.getByTestId('todo-title')).toHaveCount(1)
+  await expect(page.getByTestId('todo-count')).toHaveText('You have 1 todo')
+  await expect(page.getByTestId('todo-title')).toHaveCount(1)
 })
 
