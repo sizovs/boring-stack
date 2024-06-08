@@ -11,14 +11,14 @@ test.beforeAll(async ({ browser }) => {
 
 
 test('starts with zero todos', async () => {
-  expect(page.getByTestId('todo-count')).toHaveText('You have 0 todos')
-  expect(page.getByTestId('todo-title')).toHaveCount(0)
-  expect(page.getByTestId('todo-error')).toBeHidden()
+  await expect(page.getByTestId('todo-count')).toHaveText('You have 0 todos')
+  await expect(page.getByTestId('todo-title')).toHaveCount(0)
+  await expect(page.getByTestId('todo-error')).toBeHidden()
 })
 
 test('does not allow empty todo', async () => {
   await page.getByText('Add new todo').click()
-  expect(page.getByTestId('todo-error')).toContainText('The description field must be defined')
+  await expect(page.getByTestId('todo-error')).toContainText('The description field must be defined')
 })
 
 test('adds todo items', async () => {
@@ -28,8 +28,8 @@ test('adds todo items', async () => {
   await page.getByPlaceholder('Description').fill('Repairworks')
   await page.getByText('Add new todo').click()
 
-  expect(page.getByTestId('todo-count')).toHaveText('You have 2 todos')
-  expect(page.getByTestId('todo-title')).toHaveText([
+  await expect(page.getByTestId('todo-count')).toHaveText('You have 2 todos')
+  await expect(page.getByTestId('todo-title')).toHaveText([
     'Homework',
     'Repairworks'
   ])
