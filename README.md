@@ -24,6 +24,8 @@ As a guiding principles, I bet on stability, simplicity, and fewer abstractions.
 
 By looking into the code, you'll discover lesser-known gems such as Vine validation library. Generally, the dependencies are minimal, giving a refreshing feel after dealing with bloated frameworks.
 
+Simplicity is achieved through reduction, not addition. We can build and ship straight from local dev by saying no to Docker and external CI servers. By following the #1 rule of distributing computing (never distribute) and choosing SQLite, we achieve dev/prod environment parity. By eliminating indirection and build tools we can quickly spin up a local dev server unique and run all tests in parallel. Simplicity is great.
+
 # Before deployment
 Create `<project_dir>/.env` with the following content:
 ```
