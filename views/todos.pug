@@ -9,7 +9,7 @@ block content
             input(type="checkbox" name="todo" hx-post=`/todos/${todo.id}/done`, hx-target="body")
           td(data-testid="todo-title")=todo.description
     form(action="/todos" method="post")
-      textarea(name="description" placeholder="Description" aria-invalid=(flash.errors.description ? 'true' : ''))=flash.old.description
+      input(name="description" placeholder="Description" value=flash.old.description aria-invalid=(flash.errors.description ? 'true' : ''))
       if flash.errors.description
         small(data-testid="todo-error")=flash.errors.description
       button(type="submit") Add new todo
