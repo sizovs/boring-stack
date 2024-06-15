@@ -14,7 +14,7 @@ As a guiding principles, I bet on stability, simplicity, and fewer abstractions.
 * Node (22+)
 * JS (you don't need TS for large-scale apps if you write tests; Rails is a great example)
 * Express.js
-* Pug for templating
+* Edge.js for templating
 * Htmx for SPA experience
 * Alpine.js for sprinkling JS here and there
 * CSS for styling w/o build tools
