@@ -21,16 +21,11 @@
   {{-- Pico --}}
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css" />
 
-  {{-- Global styles --}}
+  {{-- Styles --}}
   <link rel="stylesheet" href="{{static('/app.css')}}">
+  <link rel="stylesheet" href="{{static('/todos.css')}}">
 
-  {{-- Components can push their styles here --}}
-  @stack('css')
-
-  {{-- Components can push their JS here --}}
-  @stack('js')
-
-  <title>Hello World</title>
+  <title>Todos</title>
 </head>
 
 <body hx-ext="preload,loading-states" hx-boost="true">

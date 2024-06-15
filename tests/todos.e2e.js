@@ -18,7 +18,7 @@ test('starts with zero todos', async () => {
 
 test('does not allow empty todo', async () => {
   await page.getByText('Add new todo').click()
-  await expect(page.getByTestId('todo-error')).toContainText('The description field must be defined')
+  await expect(page.getByTestId('todo-error')).toContainText('Task description is required')
 })
 
 test('adds todo items', async () => {

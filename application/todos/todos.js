@@ -1,6 +1,3 @@
-import vine from '@vinejs/vine'
-import { validateBody } from "#modules/validator.js"
-
 export const initTodos = ({ router, db }) => {
   router.get('/todos', (request, response) => {
     const todos = db.prepare('select * from todos').all()
@@ -12,20 +9,16 @@ export const initTodos = ({ router, db }) => {
     response.redirect('/todos')
   })
 
-  const schema = vine.compile(
-    vine.object({
-      description: vine.string()
-    })
-  )
-
   router.post('/todos', async (request, response) => {
-    const [newTodo, errors] = await validateBody(request, schema)
-    if (errors) {
+    const description = request.body.description?.trim()
+    if (!description) {
+      request.flash('old', request.body)
+      request.flash('errors', { 'description': 'Task description is required' })
       response.redirect('/todos')
       return
     }
 
-    db.prepare('insert into todos (description) values (?)').run(newTodo.description)
+    db.prepare('insert into todos (description) values (?)').run(description)
     response.redirect('/todos')
   })
 

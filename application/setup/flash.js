@@ -5,7 +5,8 @@ export const enableFlashScope = ({ app }) => {
   app.use((request, response, next) => {
     const originalRender = response.render
     response.render = (view, options, callback) => {
-      options.flash = request.flash()
+      const currentFlash = request.flash()
+      options.flash = Object.keys(currentFlash).length > 0 ? currentFlash : { errors: {}, old: {} }
       originalRender.call(response, view, options, callback)
     }
     next()

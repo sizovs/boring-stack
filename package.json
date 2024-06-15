@@ -11,16 +11,14 @@
     "test:e2e": "npx playwright test"
   },
   "dependencies": {
-    "@vinejs/vine": "^2.0.0",
     "axios": "^1.7.2",
     "better-sqlite3": "^11.0.0",
     "cookie-session": "^2.1.0",
     "cors": "2.8.5",
-    "edge-stacks": "^2.0.0-0",
-    "edge.js": "^6.0.0-10",
     "express": "^4.19.2",
     "express-promise-router": "^4.1.1",
     "morgan": "1.10.0",
+    "pug": "^3.0.3",
     "req-flash": "^0.0.3",
     "staticify": "5.0.0",
     "winston": "3.11.0"

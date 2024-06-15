@@ -14,7 +14,7 @@ As a guiding principles, I bet on stability, simplicity, and fewer abstractions.
 * Node (22+)
 * JS (you don't need TS for large-scale apps if you write tests; Rails is a great example)
 * Express.js
-* Edge.js for templating
+* Pug for templating
 * Htmx for SPA experience
 * Alpine.js for sprinkling JS here and there
 * CSS for styling w/o build tools
@@ -22,7 +22,7 @@ As a guiding principles, I bet on stability, simplicity, and fewer abstractions.
 * SQLite with better-sqlite3 for DB access w/o ORMs and query builders (nobody switches databases anyway)
 * Litestream for streaming DB replication
 
-By looking into the code, you'll discover lesser-known gems such as Vine validation library. Generally, the dependencies are minimal, giving a refreshing feel after dealing with bloated frameworks.
+By looking into the code, you'll discover lesser-known gems such as `staticify` that add hash suffix to static assets for CDN. Generally, the dependencies are minimal, giving a refreshing feel after dealing with bloated frameworks.
 
 Simplicity is achieved through reduction, not addition. We can build and ship straight from local dev by saying no to Docker and external CI servers. By following the #1 rule of distributing systems (don't distribute) and choosing SQLite, we achieve dev/prod environment parity. By eliminating indirection and build tools we can quickly spin up a local dev server unique and run all tests in parallel. Simplicity is great.
 

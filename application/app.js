@@ -7,7 +7,7 @@ import { initTodos } from "./todos/todos.js"
 import { initHealth } from "./health/health.js"
 import { enableFlashScope } from "./setup/flash.js"
 import { enableSessions } from "./setup/session.js"
-import { enableEdgeTemplates } from "./setup/edge.js"
+import { enablePugTemplates } from "./setup/pug.js"
 import { enableHttpLogging } from "./setup/morgan.js"
 import { enableCors } from "./setup/cors.js"
 import { enableBodyParsing } from "./setup/bodyparser.js"
@@ -35,7 +35,7 @@ const startApp = (port = 0) => {
   }
 
   const app = express()
-  enableEdgeTemplates({ app, isDevMode })
+  enablePugTemplates({ app })
   enableSessions({ app, secret: cookieSecret(db) })
   enableFlashScope({ app })
   enableHttpLogging({ app, logger })

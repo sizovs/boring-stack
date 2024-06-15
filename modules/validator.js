@@ -1,7 +1,6 @@
 import vine, { errors } from '@vinejs/vine'
 vine.convertEmptyStringsToNull = true
 
-
 async function validateBody(request, schema) {
   const body = request.body
   try {
