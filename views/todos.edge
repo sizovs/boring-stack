@@ -12,8 +12,8 @@
   </table>
   @end
   <form action="/todos" method="post">
-    <input aria-invalid="{{flash.errors.description ? 'true' : '' }}" name="description" placeholder="Description"
-      aria-label="Description" value="{{flash.old.description ?? ''}}" />
+    <input autofocus aria-invalid="{{flash.errors.description ? 'true' : '' }}" name="description"
+      placeholder="Description" aria-label="Description" value="{{flash.old.description ?? ''}}" />
     @if(flash.errors.description)
     <small data-testid="todo-error">{{flash.errors.description}}</small>
     @end
