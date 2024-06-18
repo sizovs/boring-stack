@@ -1,18 +1,1 @@
-body {
-  min-height: 90vh;
-  width: 100vw;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
 
-main {
-  padding: 20px;
-  width: 600px;
-}
-
-table {
-  td:first-child {
-    width: 90px;
-  }
-}

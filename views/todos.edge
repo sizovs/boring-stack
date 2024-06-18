@@ -1,19 +1,22 @@
 @layout()
-<main>
+<main class="container">
   <h1 data-testid="todo-count">You have {{todos.length}} todo{{todos.length === 1 ? '' : 's'}}</h1>
-  @each(todo in todos)
   <table>
+    @each(todo in todos)
     <tr>
       <td>
-        <input type="checkbox" hx-post="/todos/{{todo.id}}/done" name="todo" hx-target="body" />
+        <label data-testid="todo-title">
+          <input type="checkbox" hx-post="/todos/{{todo.id}}/done" name="todo" hx-target="body" hx-swap="swap:0.15s" />
+          {{todo.description}}
+        </label>
       </td>
-      <td data-testid="todo-title">{{todo.description}}</td>
     </tr>
+    @end
   </table>
-  @end
   <form action="/todos" method="post">
     <input autofocus aria-invalid="{{flash.errors.description ? 'true' : '' }}" name="description"
-      placeholder="Description" aria-label="Description" value="{{flash.old.description ?? ''}}" />
+      placeholder="Type description and hit enter..." aria-label="Description"
+      value="{{flash.old.description ?? ''}}" />
     @if(flash.errors.description)
     <small data-testid="todo-error">{{flash.errors.description}}</small>
     @end
