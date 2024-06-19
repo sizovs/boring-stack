@@ -16,22 +16,32 @@ test('starts with zero todos', async () => {
   await expect(page.getByTestId('todo-error')).toBeHidden()
 })
 
-test('does not allow empty todo', async () => {
+test('does not allow empty todo thanks to client-side validation', async () => {
+  await page.keyboard.press('Enter');
+
+  const validationMessage = await page.$eval('[data-testid="todo-input"]', input => input.validationMessage);
+  expect(validationMessage).toBe('Please fill out this field.')
+  await expect(page.getByTestId('todo-title')).toHaveCount(0)
+})
+
+test('does not allow empty todo thanks to server-side validation', async () => {
+  await page.$eval('[data-testid="todo-input"]', input => input.removeAttribute('required'));
   await page.keyboard.press('Enter');
   await expect(page.getByTestId('todo-error')).toContainText('Task description is required')
+  await expect(page.getByTestId('todo-title')).toHaveCount(0)
 })
 
 test('adds todo items', async () => {
-  await page.getByPlaceholder('Description').fill('Homework')
+  await page.getByTestId('todo-input').fill('Homework')
   await page.keyboard.press('Enter');
 
-  await page.getByPlaceholder('Description').fill('Repairworks')
+  await page.getByTestId('todo-input').fill('Repairwork')
   await page.keyboard.press('Enter');
 
   await expect(page.getByTestId('todo-count')).toHaveText('You have 2 todos')
   await expect(page.getByTestId('todo-title')).toHaveText([
     'Homework',
-    'Repairworks'
+    'Repairwork'
   ])
 
 })
