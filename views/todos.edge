@@ -3,19 +3,21 @@
   <h1 data-testid="todo-count">You have {{todos.length}} todo{{todos.length === 1 ? '' : 's'}}</h1>
   <form>
     @each(todo in todos)
-    <label class="checkbox" data-testid="todo-title">
-      <input type="checkbox" hx-post="/todos/{{todo.id}}/done" name="todo" hx-target="body" />
+    <label data-testid="todo-title">
+      <input type="checkbox" hx-post="/todos/{{todo.id}}/done" name="todo" hx-target="body" hx-swap="swap:0.1s" />
       {{todo.description}}
     </label>
     @end
   </form>
   <form action="/todos" method="post" hx-swap="show:none">
-    <input type="text" autofocus {{flash.errors.description ? 'aria-invalid=true aria-errormessage=todo-error' : '' }}
-      name="description" placeholder="Type description and hit enter..." aria-label="Description"
-      value="{{flash.old.description ?? ''}}" />
-    @if(flash.errors.description)
-    <small id="todo-error" data-testid="todo-error">{{flash.errors.description}}</small>
-    @end
+    <fieldset>
+      <input type="text" autofocus {{flash.errors.description ? 'aria-invalid=true aria-errormessage=todo-error' : '' }}
+        name="description" placeholder="Type description and hit enter..." aria-label="Description"
+        value="{{flash.old.description ?? ''}}" />
+      @if(flash.errors.description)
+      <small id="todo-error" data-testid="todo-error">{{flash.errors.description}}</small>
+      @end
+    </fieldset>
 
   </form>
 </main>

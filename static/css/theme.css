@@ -36,7 +36,7 @@
   --button-loader-primary: url("../images/loader-white.svg");
   --button-loader-secondary: url("../images/loader-primary.svg");
 
-  --input-shadow: 0 0 5pt 2pt #D3D3D3;
+  --input-shadow: 0 0 2pt 2pt #D3D3D3;
 
   --flash-background-color: var(--primary);
   --flash-text-color: var(--white);
