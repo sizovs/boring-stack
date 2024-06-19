@@ -4,39 +4,39 @@
   --light-gray: #EDEDED;
   --dark-gray: #4D4D4D;
   --darkest-gray: #454545;
-  --black: #333333;
+  --black: #010102;
   --deep-black: #222222;
   --primary: #196EC2;
-  --alert: #ee0a6a;
+  --alert: #ef4444;
 
-  --text-color: var(--black);
-  --weak-text-color: var(--dark-gray);
-  --link-color: var(--primary);
-  --icon-color: var(--black);
-  --background-color: var(--white);
-  --hover-color: var(--light-gray);
+  --text-color: var(--white);
+  --weak-text-color: var(--light-gray);
+  --link-color: var(--white);
+  --icon-color: var(--white);
+  --background-color: var(--black);
+  --hover-color: var(--darkest-gray);
 
-  --inverted-background-color: var(--dark-gray);
+  --inverted-background-color: var(--deep-black);
   --inverted-text-color: var(--white);
 
-  --weak-border-color: var(--light-gray);
-  --border-color: var(--dark-gray);
+  --weak-border-color: var(--dark-gray);
+  --border-color: var(--light-gray);
 
   --header-background-color: var(--primary);
   --header-text-color: var(--white);
 
-  --card-background-color: var(--lightest-gray);
-  --toggle-background-off: var(--light-gray);
+  --card-background-color: var(--darkest-gray);
+  --toggle-background-off: var(--dark-gray);
   --toggle-background-on: var(--primary);
 
   --button-background-color: var(--black);
-  --button-border-color: var(--black);
+  --button-border-color: var(--light-gray);
   --button-text-color: var(--white);
   --button-alert-color: var(--alert);
-  --button-loader-primary: url("../images/loader-white.svg");
-  --button-loader-secondary: url("../images/loader-primary.svg");
+  --button-loader-primary: url("images/loader-white.svg");
+  --button-loader-secondary: url("images/loader-white.svg");
 
-  --input-shadow: 0 0 2pt 2pt #D3D3D3;
+  --input-focus: #8ffe0d;
 
   --flash-background-color: var(--primary);
   --flash-text-color: var(--white);
@@ -45,49 +45,16 @@
   --box-shadow: 0 2px 2px 0 rgba(0, 0, 0, .14), 0 3px 1px -2px rgba(0, 0, 0, .2), 0 1px 5px 0 rgba(0, 0, 0, .12);
   --inset-box-shadow: 0 1px 3px rgba(0, 0, 0, .14) inset;
 
-  --dropdown-menu-background: var(--white);
+  --dropdown-menu-background: var(--black);
 
   --header-height: 5rem;
   --body-padding: 2rem;
   --footer-height: 16rem;
   --nav-width: 16rem;
-  --inverted-ic-logo: url("../images/ic-logo-white.svg");
-  --expand-image: url("../images/expand-black.svg");
-  --white-expand-image: url("../images/expand-white.svg");
+  --inverted-ic-logo: url("images/ic-logo-white.svg");
+  --expand-image: url("images/expand-white.svg");
 }
 
 html {
   accent-color: var(--primary);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --text-color: var(--white);
-    --weak-text-color: var(--light-gray);
-    --link-color: var(--white);
-    --icon-color: var(--white);
-    --hover-color: var(--darkest-gray);
-
-    --inverted-background-color: var(--deep-black);
-
-    --weak-border-color: var(--dark-gray);
-    --border-color: var(--light-gray);
-    --background-color: var(--black);
-    --button-border-color: var(--white);
-
-    --button-loader-secondary: url("../images/loader-white.svg");
-
-    --card-background-color: var(--darkest-gray);
-    --dropdown-menu-background: var(--black);
-    --toggle-background-off: var(--dark-gray);
-
-    --expand-image: url("../images/expand-white.svg");
-  }
-}
-
-@media screen and (max-width: 800px) {
-  :root {
-    --header-height: 4rem;
-    --body-padding: 1rem;
-  }
 }

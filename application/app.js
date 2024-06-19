@@ -44,11 +44,11 @@ const startApp = (port = 0) => {
 
   const router = new Router()
   app.use(router)
-  app.use('/', (request, response) => {
-    response.redirect('/todos')
-  })
   initTodos({ router, db })
   initHealth({ router, db })
+  app.get('/', (request, response) => {
+    response.redirect('/todos')
+  })
 
   return new Promise((resolve, reject) => {
     const server = app.listen(port, () => {

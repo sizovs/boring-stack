@@ -11,7 +11,7 @@
   </form>
   <form action="/todos" method="post" hx-swap="show:none">
     <fieldset>
-      <input data-testid="todo-input" type="text" required autofocus {{flash.errors.description
+      <input data-testid="todo-input" type="text" autofocus required {{flash.errors.description
         ? 'aria-invalid=true aria-errormessage=todo-error' : '' }} name="description"
         placeholder="Type description and hit enter..." aria-label="Description"
         value="{{flash.old.description ?? ''}}" />
@@ -19,7 +19,6 @@
       <small id="todo-error" data-testid="todo-error">{{flash.errors.description}}</small>
       @end
     </fieldset>
-
   </form>
 </main>
 @end
