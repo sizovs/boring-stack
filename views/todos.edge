@@ -13,7 +13,7 @@
     </tr>
     @end
   </table>
-  <form action="/todos" method="post">
+  <form action="/todos" method="post" hx-swap="show:none">
     <input autofocus aria-invalid="{{flash.errors.description ? 'true' : '' }}" name="description"
       placeholder="Type description and hit enter..." aria-label="Description"
       value="{{flash.old.description ?? ''}}" />
