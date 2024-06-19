@@ -17,16 +17,16 @@ test('starts with zero todos', async () => {
 })
 
 test('does not allow empty todo', async () => {
-  await page.getByText('Add new todo').click()
+  await page.keyboard.press('Enter');
   await expect(page.getByTestId('todo-error')).toContainText('Task description is required')
 })
 
 test('adds todo items', async () => {
   await page.getByPlaceholder('Description').fill('Homework')
-  await page.getByText('Add new todo').click()
+  await page.keyboard.press('Enter');
 
   await page.getByPlaceholder('Description').fill('Repairworks')
-  await page.getByText('Add new todo').click()
+  await page.keyboard.press('Enter');
 
   await expect(page.getByTestId('todo-count')).toHaveText('You have 2 todos')
   await expect(page.getByTestId('todo-title')).toHaveText([

@@ -1,0 +1,15 @@
+dialog {
+    border: none;
+    padding: 0;
+
+    width: clamp(50vw, 40rem, calc(100vw - 2 * var(--body-padding)));
+}
+
+dialog > article, dialog > footer {
+    padding: 2rem;
+}
+
+dialog > footer {
+    border-top: 1px solid var(--weak-border-color);
+    background-color: var(--card-background-color);
+}

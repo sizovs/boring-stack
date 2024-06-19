@@ -1,0 +1,93 @@
+:root {
+  --white: #FFFFFF;
+  --lightest-gray: #FAFAFA;
+  --light-gray: #EDEDED;
+  --dark-gray: #4D4D4D;
+  --darkest-gray: #454545;
+  --black: #333333;
+  --deep-black: #222222;
+  --primary: #196EC2;
+  --alert: #ee0a6a;
+
+  --text-color: var(--black);
+  --weak-text-color: var(--dark-gray);
+  --link-color: var(--primary);
+  --icon-color: var(--black);
+  --background-color: var(--white);
+  --hover-color: var(--light-gray);
+
+  --inverted-background-color: var(--dark-gray);
+  --inverted-text-color: var(--white);
+
+  --weak-border-color: var(--light-gray);
+  --border-color: var(--dark-gray);
+
+  --header-background-color: var(--primary);
+  --header-text-color: var(--white);
+
+  --card-background-color: var(--lightest-gray);
+  --toggle-background-off: var(--light-gray);
+  --toggle-background-on: var(--primary);
+
+  --button-background-color: var(--black);
+  --button-border-color: var(--black);
+  --button-text-color: var(--white);
+  --button-alert-color: var(--alert);
+  --button-loader-primary: url("../images/loader-white.svg");
+  --button-loader-secondary: url("../images/loader-primary.svg");
+
+  --input-shadow: 0 0 5pt 2pt #D3D3D3;
+
+  --flash-background-color: var(--primary);
+  --flash-text-color: var(--white);
+  --flash-alert-color: var(--alert);
+
+  --box-shadow: 0 2px 2px 0 rgba(0, 0, 0, .14), 0 3px 1px -2px rgba(0, 0, 0, .2), 0 1px 5px 0 rgba(0, 0, 0, .12);
+  --inset-box-shadow: 0 1px 3px rgba(0, 0, 0, .14) inset;
+
+  --dropdown-menu-background: var(--white);
+
+  --header-height: 5rem;
+  --body-padding: 2rem;
+  --footer-height: 16rem;
+  --nav-width: 16rem;
+  --inverted-ic-logo: url("../images/ic-logo-white.svg");
+  --expand-image: url("../images/expand-black.svg");
+  --white-expand-image: url("../images/expand-white.svg");
+}
+
+html {
+  accent-color: var(--primary);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --text-color: var(--white);
+    --weak-text-color: var(--light-gray);
+    --link-color: var(--white);
+    --icon-color: var(--white);
+    --hover-color: var(--darkest-gray);
+
+    --inverted-background-color: var(--deep-black);
+
+    --weak-border-color: var(--dark-gray);
+    --border-color: var(--light-gray);
+    --background-color: var(--black);
+    --button-border-color: var(--white);
+
+    --button-loader-secondary: url("../images/loader-white.svg");
+
+    --card-background-color: var(--darkest-gray);
+    --dropdown-menu-background: var(--black);
+    --toggle-background-off: var(--dark-gray);
+
+    --expand-image: url("../images/expand-white.svg");
+  }
+}
+
+@media screen and (max-width: 800px) {
+  :root {
+    --header-height: 4rem;
+    --body-padding: 1rem;
+  }
+}

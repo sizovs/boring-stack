@@ -1,28 +1,22 @@
 @layout()
-<main class="container">
+<main>
   <h1 data-testid="todo-count">You have {{todos.length}} todo{{todos.length === 1 ? '' : 's'}}</h1>
-  <table>
+  <form>
     @each(todo in todos)
-    <tr>
-      <td>
-        <label data-testid="todo-title">
-          <input type="checkbox" hx-post="/todos/{{todo.id}}/done" name="todo" hx-target="body" hx-swap="swap:0.15s" />
-          {{todo.description}}
-        </label>
-      </td>
-    </tr>
+    <label class="checkbox" data-testid="todo-title">
+      <input type="checkbox" hx-post="/todos/{{todo.id}}/done" name="todo" hx-target="body" />
+      {{todo.description}}
+    </label>
     @end
-  </table>
+  </form>
   <form action="/todos" method="post" hx-swap="show:none">
-    <input autofocus aria-invalid="{{flash.errors.description ? 'true' : '' }}" name="description"
-      placeholder="Type description and hit enter..." aria-label="Description"
-      value="{{flash.old.description ?? ''}}" />
+    <input type="text" autofocus aria-invalid="{{flash.errors.description ? 'true' : '' }}"
+      aria-errormessage="todo-error" name="description" placeholder="Type description and hit enter..."
+      aria-label="Description" value="{{flash.old.description ?? ''}}" />
     @if(flash.errors.description)
-    <small data-testid="todo-error">{{flash.errors.description}}</small>
+    <small id="todo-error" data-testid="todo-error">{{flash.errors.description}}</small>
     @end
-    <button type="submit">Add new todo</button>
 
   </form>
-
 </main>
 @end
