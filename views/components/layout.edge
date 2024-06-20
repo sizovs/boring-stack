@@ -6,6 +6,17 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   {{-- Htmx --}}
   <script src="https://cdn.jsdelivr.net/npm/htmx.org@2.0.0/dist/htmx.min.js"></script>
+  <script>
+    const handleServerError = () => {
+      const errorHtml = `<div class="flash">Action failed. Something went wrong while talking to the server.</div>`
+      const errorTemplate = document.createElement('template');
+      errorTemplate.innerHTML = errorHtml;
+      const error = errorTemplate.content.firstChild;
+      document.body.appendChild(error);
+    }
+    document.addEventListener('htmx:sendError', handleServerError);
+    document.addEventListener('htmx:responseError', handleServerError);
+  </script>
 
   {{-- Alpine --}}
   <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.14.1/dist/cdn.min.js" defer></script>
