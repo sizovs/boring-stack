@@ -1,5 +1,6 @@
 import { basename } from 'path'
 import fs from "fs"
+import logger from '#modules/logger.js'
 
 export class Migrator {
   #db
@@ -30,7 +31,7 @@ export class Migrator {
     while (tx.immediate()) {
     }
 
-    console.log(`Database ${this.#db.name} is up-to-date.`)
+    logger.info(`Database ${this.#db.name} is up-to-date.`)
   }
 
   databaseVersion() {
@@ -48,7 +49,7 @@ export class Migrations {
   constructor(directory = import.meta.dirname + '/migrations', filesystem = fs) {
     this.#fs = filesystem
     this.#migrations = this.migrationFiles(directory).map((file, index) => new Migration(file, index + 1, filesystem))
-    console.log(`${this.#migrations.length} migration(s) in directory.`)
+    logger.info(`${this.#migrations.length} migration(s) in directory.`)
   }
 
   empty() {
@@ -85,12 +86,12 @@ class Migration {
 
   execute(db) {
     try {
-      console.log(`Migrating to v${this.version} using ${this.name}`)
+      logger.info(`Migrating to v${this.version} using ${this.name}`)
       db.exec(this.statements)
       db.exec(`PRAGMA user_version = ${this.version}`)
     } catch (error) {
       const message = `Unable to execute migration ${this.name}: ${error}`
-      console.error(message)
+      logger.error(message)
       throw new Error(message, { cause: error })
     }
   }
