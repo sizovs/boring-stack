@@ -1,6 +1,6 @@
 export function cookieSecret(db) {
   const SECRET_KEY = 'cookie_secret'
-  const stmt = db.transaction(() => {
+  const tx = db.transaction(() => {
     const insertIfAbsent = db.prepare(`insert or ignore into secrets (id, value) values (?, hex(randomblob(32)))`)
     insertIfAbsent.run(SECRET_KEY)
 
@@ -8,7 +8,7 @@ export function cookieSecret(db) {
     return select.get(SECRET_KEY)
   })
 
-  const secret = stmt()
+  const secret = tx.immediate()
   return secret.value
 }
 
