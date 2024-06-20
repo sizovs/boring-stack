@@ -4,7 +4,7 @@
   --light-gray: #EDEDED;
   --dark-gray: #4D4D4D;
   --darkest-gray: #454545;
-  --black: #010102;
+  --black: #161f2c;
   --deep-black: #222222;
   --primary: #196EC2;
   --alert: #ef4444;
@@ -36,7 +36,7 @@
   --button-loader-primary: url("images/loader-white.svg");
   --button-loader-secondary: url("images/loader-white.svg");
 
-  --input-focus: #8ffe0d;
+  --input-focus: #4efb7a;
 
   --flash-background-color: var(--primary);
   --flash-text-color: var(--white);
