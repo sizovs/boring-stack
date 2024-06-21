@@ -16,8 +16,8 @@ As a guiding principles, I bet on stability, simplicity, and fewer abstractions.
 * Express.js
 * Edge.js for templating
 * Htmx for SPA experience
-* Alpine.js for sprinkling JS here and there
-* CSS for styling w/o frameworks and build tools, see [Do I need CSS Framework?](https://doineedacssframework.com)
+* Vanilla.js because we're not building spreadsheets in a browser (also see [You Might Not Need jQuery](https://youmightnotneedjquery.com/))
+* CSS for styling w/o frameworks and build tools (see [Do I Need CSS Framework?](https://doineedacssframework.com))
 * Playwright for E2E tests
 * SQLite with better-sqlite3 for DB access w/o ORMs and query builders (nobody switches databases anyway)
 * Litestream for streaming DB replication
