@@ -1,9 +1,9 @@
 @layout()
 <main>
-  <h1 data-testid="todo-count">You have {{todos.length}} todo{{todos.length === 1 ? '' : 's'}}</h1>
+  <h1 data-testid="todo-count">{{todos.length}} todo{{todos.length === 1 ? '' : 's'}}</h1>
   <form>
     @each(todo in todos)
-    <label data-testid="todo-title">
+    <label data-testid="todo-item">
       <input type="checkbox" hx-post="/todos/{{todo.id}}/done" name="todo" hx-target="body" hx-swap="swap:0.1s" />
       {{todo.description}}
     </label>
