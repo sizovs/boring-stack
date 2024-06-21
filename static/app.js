@@ -8,5 +8,5 @@ const handleServerError = () => {
   }, 3000);
 }
 
-document.addEventListener('htmx:afterSwap', handleServerError);
+document.addEventListener('htmx:sendError', handleServerError);
 document.addEventListener('htmx:responseError', handleServerError);
