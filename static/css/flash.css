@@ -7,25 +7,4 @@
   padding: 1rem 1.5rem;
   color: var(--white);
   background-color: color-mix(in srgb, var(--alert) 85%, transparent);
-
-  animation: disappear .1s ease-in 3s;
-  animation-fill-mode: forwards;
-}
-
-@keyframes disappear {
-  0% {
-    opacity: 1;
-    height: auto;
-  }
-
-  99% {
-    opacity: 0;
-    height: auto;
-  }
-
-  100% {
-    visibility: hidden;
-    opacity: 0;
-    height: 0;
-  }
 }
