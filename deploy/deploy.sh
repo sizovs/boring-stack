@@ -143,16 +143,19 @@ if /usr/bin/nc -z localhost "$BLUE_PORT" >/dev/null 2>&1; then
   DEPLOY_NODE=green
   DEPLOY_PORT=$GREEN_PORT
   OLD_NODE=blue
+  OLD_PORT=$BLUE_PORT
 elif /usr/bin/nc -z localhost "$GREEN_PORT" >/dev/null 2>&1; then
   echo "Green node is running. Will deploy to blue..."
   DEPLOY_NODE=blue
   DEPLOY_PORT=$BLUE_PORT
   OLD_NODE=green
+  OLD_PORT=$GREEN_PORT
 else
   echo "Nodes are not running. Will deploy to blue."
   DEPLOY_NODE=blue
   DEPLOY_PORT=$BLUE_PORT
   OLD_NODE=green
+  OLD_PORT=$GREEN_PORT
 fi
 
 # Move app contents into ~/<deploy node>
