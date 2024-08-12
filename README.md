@@ -80,3 +80,6 @@ It's well-known that SQLite doesn't support concurrent writes – while one proc
 
 # Web analytics
 For web analytics I use self-hosted https://plausible.io, but https://goaccess.io is also a great option because it can run on the same server (and it's not subject to ad-blocking).
+
+# TODOS
+[ ] Backup to R2 instead of Hetzner. Otherwise, how do you restore the data when Hetzner is down? :-)
