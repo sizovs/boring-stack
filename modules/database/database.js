@@ -1,10 +1,11 @@
+import logger from '#modules/logger.js'
 import Database from 'better-sqlite3'
 
 const createDatabase = (location) => {
   if (!location) {
     throw new Error('Cannot create database. Please provide the DB location')
   }
-  const db = new Database(location, {})
+  const db = new Database(location, { verbose: logger.verbose })
   db.pragma('journal_mode = WAL')
   db.pragma('foreign_keys = true')
   db.pragma('busy_timeout = 5000')
