@@ -16,8 +16,8 @@ Since stability, simplicity, and fewer abstractions are the guiding principles, 
 * Express.js
 * Edge.js for templating
 * Htmx for SPA experience
-* Vanilla.js because all heavy lifting like state and routing is done on the server, we're not building client-heavy app like spreadsheets, and JS today is much better than most people think (see [Low JS](https://edofic.com/posts/2022-01-28-low-js/), [Designed to Last](https://jeffhuang.com/designed_to_last/), and [You Might Not Need jQuery](https://youmightnotneedjquery.com/))
-* CSS for styling w/o frameworks and build tools (see [Do I Need CSS Framework?](https://doineedacssframework.com))
+* Vanilla.js because all heavy lifting like state and routing is done on the server, we're not building client-heavy app like spreadsheets, and JS today is much better than most people think (see [Low JS](https://edofic.com/posts/2022-01-28-low-js/), [Designed to Last](https://jeffhuang.com/designed_to_last/), and [You Might Not Need jQuery](https://youmightnotneedjquery.com/)). You can use [Alpine.js](https://alpinejs.dev/), if you like.
+* CSS for styling w/o frameworks and build tools (see [Do I Need CSS Framework?](https://doineedacssframework.com)). You can use [Tailwind](https://tailwindui.com/), if you like.
 * Playwright for E2E tests
 * SQLite with better-sqlite3 for DB access w/o ORMs and query builders (nobody switches databases anyway)
 * Litestream for streaming DB replication
