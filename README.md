@@ -54,6 +54,7 @@ SERVER_IP=<server ip> task deploy
 # Running locally
 ```
 task dev
+task dev:tailwind
 ```
 
 # Running tests
