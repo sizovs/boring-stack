@@ -16,8 +16,8 @@ Since stability, simplicity, and fewer abstractions are the guiding principles, 
 * Express.js
 * Edge.js for templating
 * Htmx for SPA experience
-* Vanilla.js because all heavy lifting like state and routing is done on the server, we're not building client-heavy app like spreadsheets, and JS today is much better than most people think (see [Low JS](https://edofic.com/posts/2022-01-28-low-js/), [Designed to Last](https://jeffhuang.com/designed_to_last/), and [You Might Not Need jQuery](https://youmightnotneedjquery.com/)). If you need reactivity, use [Alpine.js](https://alpinejs.dev/).
-* Tailwind for styling, because it eliminates switching between markup and styles and results in better DX. You can also do vanilla CSS, if you like.
+* Vanilla JS and [Alpine.js](https://alpinejs.dev/) for reactivity
+* Tailwind for styling for better DX. You can use vanilla CSS, if you like.
 * Playwright for E2E tests
 * SQLite with better-sqlite3 for DB access w/o ORMs and query builders (nobody switches databases anyway)
 * Litestream for streaming DB replication
