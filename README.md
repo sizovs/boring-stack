@@ -17,7 +17,7 @@ Since stability, simplicity, and fewer abstractions are the guiding principles, 
 * Edge.js for templating
 * Htmx for SPA experience
 * Vanilla JS and [Alpine.js](https://alpinejs.dev/) for reactivity
-* Tailwind for styling for better DX. You can use vanilla CSS, if you like.
+* Tailwind for styling with great DX. You can use vanilla CSS, if you like.
 * Playwright for E2E tests
 * SQLite with better-sqlite3 for DB access w/o ORMs and query builders (nobody switches databases anyway)
 * Litestream for streaming DB replication
