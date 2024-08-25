@@ -26,10 +26,10 @@
     "winston": "3.11.0"
   },
   "imports": {
-    "#application/*": "./application/*",
-    "#modules/*": "./modules/*",
-    "#root/*": "./*",
-    "#tests/*": "./tests/*"
+    "#application/*": "./application/*.js",
+    "#modules/*": "./modules/*.js",
+    "#root/*": "./*.js",
+    "#tests/*": "./tests/*.js"
   },
   "devDependencies": {
     "@faker-js/faker": "^8.4.1",

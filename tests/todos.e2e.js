@@ -1,4 +1,4 @@
-import { startApp } from '#application/app.js'
+import { startApp } from '#application/app'
 import { test, expect } from '@playwright/test'
 
 let page

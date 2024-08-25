@@ -1,4 +1,4 @@
-import logger from '#modules/logger.js'
+import logger from '#modules/logger'
 import Database from 'better-sqlite3'
 
 const createDatabase = (location) => {
