@@ -2,6 +2,7 @@ backup
 logs
 *.log
 npm-debug.log*
+app-built.css
 dist
 lib-cov
 coverage

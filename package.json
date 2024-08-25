@@ -4,6 +4,8 @@
   "type": "module",
   "scripts": {
     "dev": "node --watch ./application/server.js",
+    "dev:tailwind": "npx tailwindcss -i ./static/css/app.css -o ./static/css/app-built.css --watch",
+    "build": "npx tailwindcss -i ./static/css/app.css -o ./static/css/app-built.css",
     "repl": "node ./modules/repl.js",
     "migrate": "node ./modules/database/migrate.js",
     "infra": "node ./deploy/deploy-infra.js",
@@ -33,7 +35,10 @@
   "devDependencies": {
     "@faker-js/faker": "^8.4.1",
     "@playwright/test": "^1.44.1",
+    "@tailwindcss/forms": "^0.5.7",
+    "@tailwindcss/typography": "^0.5.14",
     "memfs": "^4.9.2",
-    "playwright": "^1.44.1"
+    "playwright": "^1.44.1",
+    "tailwindcss": "^3.4.10"
   }
 }

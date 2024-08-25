@@ -20,6 +20,9 @@ tasks:
     cmds:
       - npm install
       - npm run dev
+  dev:tailwind:
+    cmds:
+      - npm run dev:tailwind
   db:pull:
     silent: true
     env:
@@ -37,6 +40,8 @@ tasks:
   deploy:
     silent: true
     cmds:
+      - echo ⏳ Building assets...
+      - npm run build
       - echo ⏳ Preparing to deploy to $SERVER_IP...
       - rsync -a --exclude 'node_modules' --exclude 'test_results' ./ devops@$SERVER_IP:/home/devops/latest
       - ssh devops@$SERVER_IP "DOMAIN=$DOMAIN bash < /home/devops/latest/deploy/deploy.sh"

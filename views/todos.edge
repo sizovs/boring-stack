@@ -1,24 +1,20 @@
 @layout()
-<main>
-  <h1 data-testid="todo-count">{{todos.length}} todo{{todos.length === 1 ? '' : 's'}}</h1>
+<main class="max-w-md mx-auto mt-4">
+  <h1 class="text-4xl mb-4 font-bold tracking-tighter" data-testid="todo-count">{{todos.length}} todo{{todos.length === 1 ? '' : 's'}}</h1>
   <form>
     @each(todo in todos)
-    <label data-testid="todo-item">
-      <input type="checkbox" hx-post="/todos/{{todo.id}}/done" name="todo" hx-target="body" hx-swap="swap:0.1s" />
-      {{todo.description}}
-    </label>
+    <div class="flex items-center mb-4">
+      <input type="checkbox" hx-post="/todos/{{todo.id}}/done" name="todo" hx-target="body" hx-swap="swap:0.1s" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+      <label data-testid="todo-item" for="default-checkbox" class="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">{{todo.description}}</label>
+    </div>
     @end
   </form>
-  <form action="/todos" method="post" hx-swap="show:none">
-    <fieldset>
-      <input data-testid="todo-input" type="text" autofocus required {{flash.errors.description
-        ? 'aria-invalid=true aria-errormessage=todo-error' : '' }} name="description"
-        placeholder="Type description and hit enter..." aria-label="Description"
-        value="{{flash.old.description ?? ''}}" />
+  <form action="/todos" method="post" hx-swap="show:none" class="relative z-0 w-full mb-5 group">
+      <input data-testid="todo-input" type="text" placeholder="Type description and hit enter..." required autofocus name="description"
+        value="{{flash.old.description ?? ''}}" class="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b border-gray-300 appearance-none focus:outline-none focus:ring-0 focus:border-black"/>
       @if(flash.errors.description)
-      <small id="todo-error" data-testid="todo-error">{{flash.errors.description}}</small>
+      <small id="todo-error" data-testid="todo-error" class="text-xs text-red-600">{{flash.errors.description}}</small>
       @end
-    </fieldset>
   </form>
 </main>
 @end
