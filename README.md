@@ -14,7 +14,7 @@ Since stability, simplicity, and fewer abstractions are the guiding principles, 
 * Node (22+)
 * JS (you don't need TS for large-scale apps if you write tests; Rails is a great example)
 * Express.js
-* Edge.js for templating
+* Edge.js for templating ([WebC](https://github.com/11ty/webc) would be a good alternative)
 * Htmx for SPA experience
 * Vanilla JS and [Alpine.js](https://alpinejs.dev/) for reactivity
 * Tailwind for styling with great DX. You can use vanilla CSS, if you like.
