@@ -72,10 +72,13 @@ DB_LOCATION=<db location> npm run repl
 ```
 
 # Scaling SQLite write performance
-It's well-known that SQLite doesn't support concurrent writes – while one process is writing, others are waiting. Even though you can still get 1,000 writes/second on a single DB file, you may need higher throughput. Rather than complicating your architecture by (prematurely) splitting a system into multiple self-contained systems, you can split the database into multiple files. For example, db.sqlite3 can become users.sqlite3 and comments.sqlite3. If write concurrency was a bottleneck, this approach nearly doubles your write performance. Simple and effective.
+It's well-known that SQLite doesn't support concurrent writes – while one process is writing, others are waiting. Even though you can still get 1,000 writes/second on a single DB file, you may need higher throughput. Rather than complicating your architecture by (prematurely) splitting a system into multiple self-contained systems, you can split the database into multiple files, preferrably functionally, not using sharding. For example, db.sqlite3 can become users.sqlite3 and comments.sqlite3. If write concurrency was a bottleneck, this approach nearly doubles your write performance. Simple and effective.
 
 # SQLite caveats
 For transactions that contain multiple statements where the first statement is not an INSERT, UPDATE, or DELETE, it is important to run the transaction as `.immediate()`. This ensures that SQLite will queue the write if other writes are in progress, respecting the `busy_timeout` pragma. If you forget to do this, SQLite will run the transaction in a deferred mode. This means it will attempt to acquire a write lock only when it first encounters the INSERT, UPDATE, or DELETE statement and won't respect `busy_timeout` if the database is locked for writing, leading to `sqlite_busy` errors.
+
+# Postgres
+Some people prefer Postgres over SQLite mainly because it's more feature-rich (for example, live migrations are easier, and you can use read replicas). The cool thing about Postgres is that you can run it on the same machine as the application, just like SQLite. Only when you outgrow a single machine do you need to move Postgres elsewhere.
 
 # Web analytics
 For web analytics, you can use self-hosted https://plausible.io, but https://goaccess.io is also a great option because it can run on the same server (and it's not subject to ad-blocking).
