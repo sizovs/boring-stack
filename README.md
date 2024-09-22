@@ -71,6 +71,9 @@ task db:pull
 DB_LOCATION=<db location> npm run repl
 ```
 
+# But... Too many requests will hit my single server, causing high latency.
+Instead of adding multiple servers to reduce latency and get extra horsepower (which *forces* you to move out data, which leads to even more servers to manage), reduce the load on *the* server by batching frequent or heavy requests at the edge, possibly deduplicating them, and sending them to *the* server. It significantly reduces latency and availability w/o adding complexity to your infrastructure. Thanks to [workers](https://workers.cloudflare.com/), this can be implemented in a transparent way as a “layer” that runs in front of your app, meaning your app can be developed and tested without it. Similarly, certain data can be cached at the edge.
+
 # Scaling SQLite write performance
 It's well-known that SQLite doesn't support concurrent writes – while one process is writing, others are waiting. Even though you can still get 1,000 writes/second on a single DB file, you may need higher throughput. Rather than complicating your architecture by (prematurely) splitting a system into multiple self-contained systems, you can split the database into multiple files, preferrably functionally, not using sharding. For example, `db.sqlite3` can become `users.sqlite3` and `comments.sqlite3`. Or, taking the  from Rails, you can use SQLite as a cache and queue, extracting cache.sqlite3 and queue.sqlite3. If write concurrency was a bottleneck, this approach nearly doubles your write performance. Simple and effective.
 
