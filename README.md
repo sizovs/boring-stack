@@ -96,7 +96,7 @@ For web analytics, you can use self-hosted https://plausible.io, but https://goa
 I chose Caddy as a reverse proxy primarily for its ability to automatically provision and manage Let's Encrypt certificates for our server. If Let's Encrypt weren't a factor, I would opt for Nginx due to its extensive built-in features, like sticky sessions and rate limiting, and because I find its syntax more straightforward.
 
 # Bun
-Bun is great, but I prefer building on stable foundation, t.i. – Node.
+Bun is great, but I prefer building on stable foundation, t.i. – Node. Bun is still in its early days and it doesn't support many features Node does.
 
 # Postgres
 Some people prefer Postgres over SQLite mainly because it's more feature-rich (Postgres gives you live migrations, read replicas, higher write concurrency, pub-sub, and much more). If chances of becoming Twitter-scale are high, starting with Postgres is a safer bet because you won't need to migrate from SQLite[^1]. The cool thing about Postgres is that you can run it next to the app, just like SQLite, and move to a separate machine if you outgrow a single box. One of the drawbacks is that it's much harder to achive dev/prod parity with Postgres without fuzzy solutions. This codebase does not support or showcases a use of Postgres.
