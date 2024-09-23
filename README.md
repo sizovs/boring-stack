@@ -75,8 +75,11 @@ DB_LOCATION=<db location> npm run repl
 A traditional front-end/back-end separation via APIs requires developing and maintaining two distinct test suites—one for testing the back-end through the API and another for testing the front-end against a mock API, which can easily fall out of sync with the actual back-end.  This is cumbersome and clunky. By forgoing JSON APIs and instead sending HTML over the wire, we streamline the process, allowing us to test-drive a single app at the user level using Playwright.
 
 
-# Unbusying the server and reducing latency
+# But... Too many requests will overload my server.
 Instead of adding multiple servers to reduce latency and get extra horsepower (which *forces* you to move out data, which leads to even more servers to manage), reduce the load on *the* server by batching frequent or heavy requests at the edge, possibly deduplicating them, and sending them to *the* server. It significantly reduces latency and availability w/o adding complexity to your infrastructure. Thanks to [workers](https://workers.cloudflare.com/), this can be implemented in a transparent way as a “booster layer” that runs in front of your app, meaning you can develop and test your app locally without any changes. Besides write performance gains, certain data can be cached at the edge, improving read performance.
+
+# But... I need more than SQL.
+Don't worry. You can use SQLite as a [KV store](https://rodydavis.com/sqlite/key-value), [JSON store](https://rodydavis.com/sqlite/nosql) and it even has [built-in full-text search capability](https://www.sqlite.org/fts5.html). So, you don't even need Redis.
 
 # Scaling SQLite write performance
 It's well-known that SQLite doesn't support concurrent writes – while one process is writing, others are waiting. Even though you can still get thousands of iops on a single DB file, you may need higher throughput. Rather than complicating your architecture by splitting a system into multiple self-contained systems, you can split the database into multiple files. For example, `db.sqlite3` can become `users.sqlite3` and `comments.sqlite3`. Or, learning from Rails, you can use SQLite as a cache and queue, extracting `cache.sqlite3` and `queue.sqlite3`. If write throughput was a bottleneck, this approach nearly doubles your write performance.
