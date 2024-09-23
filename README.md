@@ -74,7 +74,6 @@ DB_LOCATION=<db location> npm run repl
 # Testing
 A traditional front-end/back-end separation via APIs requires developing and maintaining two distinct test suites—one for testing the back-end through the API and another for testing the front-end against a mock API, which can easily fall out of sync with the actual back-end.  This is cumbersome and clunky. By forgoing JSON APIs and instead sending HTML over the wire, we streamline the process, allowing us to test-drive a single app at the user level using Playwright.
 
-
 # But... Too many requests will overload my server.
 Instead of adding multiple servers to reduce latency and get extra horsepower (which *forces* you to move out data, which leads to even more servers to manage), reduce the load on *the* server by batching frequent or heavy requests at the edge, possibly deduplicating them, and sending them to *the* server. It significantly reduces latency and availability w/o adding complexity to your infrastructure. Thanks to [workers](https://workers.cloudflare.com/), this can be implemented in a transparent way as a “booster layer” that runs in front of your app, meaning you can develop and test your app locally without any changes. Besides write performance gains, certain data can be cached at the edge, improving read performance.
 
@@ -83,6 +82,9 @@ Don't worry. You can use SQLite as a [KV store](https://rodydavis.com/sqlite/key
 
 # But... SQLite writes don't scale.
 It's well-known that SQLite doesn't support concurrent writes – while one process is writing, others are waiting. Even though you can still get thousands of iops on a single DB file, you may need higher throughput. Rather than complicating your architecture by splitting a system into multiple self-contained systems, you can split the database into multiple files. For example, `db.sqlite3` can become `users.sqlite3` and `comments.sqlite3`. Or, learning from Rails, you can use SQLite as a cache and queue, extracting `cache.sqlite3` and `queue.sqlite3`. If write throughput was a bottleneck, this approach nearly doubles your write performance.
+
+# Stateless
+Since the app runs in cluster mode meaning data won’t be shared across cluster nodes, make sure your app is stateless. Use SQLite to share states between processes. In some cases, instead of sharing data between nodes, consider moving the “shared logic” up to the reverse proxy (e.g. rate limiting is a good use case). You can also move data to the client (JWT) or use sticky sessions (less preferred) if you need consecutive requests from the same client to share data.
 
 # SQLite caveats
 For transactions that contain multiple statements where the first statement is not an INSERT, UPDATE, or DELETE, it is important to run the transaction as `.immediate()`. This ensures that SQLite will queue the write if other writes are in progress, respecting the `busy_timeout` pragma. If you forget to do this, SQLite will run the transaction in a deferred mode. This means it will attempt to acquire a write lock only when it first encounters the INSERT, UPDATE, or DELETE statement and won't respect `busy_timeout` if the database is locked for writing, leading to `sqlite_busy` errors.
