@@ -81,7 +81,7 @@ Instead of adding multiple servers to reduce latency and get extra horsepower (w
 # But... I need more than SQL.
 Don't worry. You can use SQLite as a [KV store](https://rodydavis.com/sqlite/key-value), [JSON store](https://rodydavis.com/sqlite/nosql) and it even has [built-in full-text search capability](https://www.sqlite.org/fts5.html). So, you don't even need Redis.
 
-# Scaling SQLite write performance
+# But... SQLite writes don't scale.
 It's well-known that SQLite doesn't support concurrent writes – while one process is writing, others are waiting. Even though you can still get thousands of iops on a single DB file, you may need higher throughput. Rather than complicating your architecture by splitting a system into multiple self-contained systems, you can split the database into multiple files. For example, `db.sqlite3` can become `users.sqlite3` and `comments.sqlite3`. Or, learning from Rails, you can use SQLite as a cache and queue, extracting `cache.sqlite3` and `queue.sqlite3`. If write throughput was a bottleneck, this approach nearly doubles your write performance.
 
 # SQLite caveats
