@@ -91,14 +91,14 @@ Since the app runs in cluster mode meaning data won’t be shared across cluster
 # SQLite caveats
 For transactions that contain multiple statements where the first statement is not an INSERT, UPDATE, or DELETE, it is important to run the transaction as `.immediate()`. This ensures that SQLite will queue the write if other writes are in progress, respecting the `busy_timeout` pragma. If you forget to do this, SQLite will run the transaction in a deferred mode. This means it will attempt to acquire a write lock only when it first encounters the INSERT, UPDATE, or DELETE statement and won't respect `busy_timeout` if the database is locked for writing, leading to `sqlite_busy` errors.
 
-# Postgres
-Some people prefer Postgres over SQLite mainly because it's more feature-rich (Postgres gives you live migrations, read replicas, higher write concurrency, pub-sub, and much more). If chances of becoming big are high, starting with Postgres is a safer bet because you won't need to migrate from SQLite. The cool thing about Postgres is that you can run it next to the app, just like SQLite, and move to a separate machine if you outgrow a single box. For dev/prod parity you can use [pglite](https://github.com/electric-sql/pglite) or [Testcontainers](https://testcontainers.org/modules/databases/postgres/) (if you fancy Docker)
-
 # Web analytics
 For web analytics, you can use self-hosted https://plausible.io, but https://goaccess.io is also a great option because it can run on the same server (and it's not subject to ad-blocking).
 
 # Caddy
 I chose Caddy as a reverse proxy primarily for its ability to automatically provision and manage Let's Encrypt certificates for our server. If Let's Encrypt weren't a factor, I would opt for Nginx due to its extensive built-in features, like sticky sessions and rate limiting, and because I find its syntax more straightforward.
+
+# Postgres
+Some people prefer Postgres over SQLite mainly because it's more feature-rich (Postgres gives you live migrations, read replicas, higher write concurrency, pub-sub, and much more). If chances of becoming big are high, starting with Postgres is a safer bet because you won't need to migrate from SQLite. The cool thing about Postgres is that you can run it next to the app, just like SQLite, and move to a separate machine if you outgrow a single box. One of the drawbacks is that it's much harder to achive dev/prod parity with Postgres without fuzzy solutions. This codebase does not support or showcases a use of Postgres.
 
 # TODOS
 [ ] Backup to R2 instead of Hetzner. Otherwise, how do you restore the data when Hetzner is down? :-)
