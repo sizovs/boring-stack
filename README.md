@@ -95,5 +95,8 @@ Some people prefer Postgres over SQLite mainly because it's more feature-rich (f
 # Web analytics
 For web analytics, you can use self-hosted https://plausible.io, but https://goaccess.io is also a great option because it can run on the same server (and it's not subject to ad-blocking).
 
+# Caddy
+I chose Caddy as a reverse proxy primarily for its ability to automatically provision and manage Let's Encrypt certificates for our server. If Let's Encrypt weren't a factor, I would opt for Nginx due to its extensive built-in features, like sticky sessions and rate limiting, and because I find its syntax more straightforward.
+
 # TODOS
 [ ] Backup to R2 instead of Hetzner. Otherwise, how do you restore the data when Hetzner is down? :-)
