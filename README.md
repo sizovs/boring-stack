@@ -99,7 +99,7 @@ I chose Caddy as a reverse proxy primarily for its ability to automatically prov
 Bun is great, but I prefer building on stable foundation, t.i. – Node. Bun is still in its early days and it doesn't support many features Node does.
 
 # Postgres
-Some people prefer Postgres over SQLite mainly because it's more feature-rich (Postgres gives you live migrations, read replicas, higher write concurrency, pub-sub, and much more). If chances of becoming Twitter-scale are high, starting with Postgres is a safer bet because you won't need to migrate from SQLite[^1]. The cool thing about Postgres is that you can run it next to the app, just like SQLite, and move to a separate machine if you outgrow a single box. One of the drawbacks is that it's much harder to achive dev/prod parity with Postgres without fuzzy solutions. This codebase does not support or showcases a use of Postgres.
+Some people prefer Postgres over SQLite mainly because it's more feature-rich (Postgres gives you live migrations, read replicas, higher write concurrency, pub-sub, and much more). If chances of becoming Twitter-scale are high and some maintenance downtime is not an option, starting with Postgres is a safer bet because you won't need to migrate from SQLite[^1]. The cool thing about Postgres is that you can run it next to the app, just like SQLite, and move to a separate machine if you outgrow a single box. The major drawback is that it's much harder to achive dev/prod parity with Postgres without shaggy solutions. This codebase does not support or showcases a use of Postgres.
 
 [^1]: Even if migration is necessary, it doesn't mean you have to rewrite the entire app. You can gradually move some parts to PostgreSQL while keeping the rest of the data in SQLite.
 
@@ -108,4 +108,4 @@ For transactions that contain multiple statements where the first statement is n
 
 # TODOS
 - The current implementation uses Livestream to replicate data to a network-attached volume. While this isn't a critical issue, it would be more efficient to replicate to R2 instead. Otherwise, if Hetzner experiences downtime, restoring data could be challenging.
-- The current implementation stores SQLite database on a network-attached volume, which improves redundancy at the expense of throughput. If you want to squeeze more performance from your SQLite, move the database to the local disk.
+- The current implementation stores SQLite database on a network-attached volume, which improves redundancy at the expense of throughput. If you want to squeeze (much) more performance from your SQLite, **move the database to the local disk.**
