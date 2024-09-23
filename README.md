@@ -83,6 +83,9 @@ Don't worry. You can use SQLite as a [KV store](https://rodydavis.com/sqlite/key
 # But... SQLite writes don't scale.
 It's well-known that SQLite doesn't support concurrent writes – while one process is writing, others are waiting. Even though you can still get thousands of iops on a single DB file, you may need higher throughput. Rather than complicating your architecture by splitting a system into multiple self-contained systems, you can split the database into multiple files. For example, `db.sqlite3` can become `users.sqlite3` and `comments.sqlite3`. Or, learning from Rails, you can use SQLite as a cache and queue, extracting `cache.sqlite3` and `queue.sqlite3`. If write throughput was a bottleneck, this approach nearly doubles your write performance.
 
+🧠 Advanced: once the database is split into A and B, instead of having all N nodes interact with both A and B, consider splitting your Node.js cluster so that 50% of the nodes only interact with A, and the other 50% only with B.
+
+
 # Stateless
 Since the app runs in cluster mode meaning data won’t be shared across cluster nodes, make sure your app is stateless. Use SQLite to share states between processes. In some cases, instead of sharing data between nodes, consider moving the “shared logic” up to the reverse proxy (e.g. rate limiting is a good use case). You can also move data to the client (JWT) or use sticky sessions (less preferred) if you need consecutive requests from the same client to share data.
 
