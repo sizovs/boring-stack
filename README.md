@@ -85,7 +85,6 @@ It's well-known that SQLite doesn't support concurrent writes – while one proc
 
 🧠 Advanced: once the database is split into A and B, instead of having all N nodes interact with both A and B, consider splitting your Node.js cluster so that 50% of the nodes only interact with A, and the other 50% only with B.
 
-
 # Stateless
 Since the app runs in cluster mode meaning data won’t be shared across cluster nodes, make sure your app is stateless. Use SQLite to share states between processes. In some cases, instead of sharing data between nodes, consider moving the “shared logic” up to the reverse proxy (e.g. rate limiting is a good use case). You can also move data to the client (JWT) or use sticky sessions (less preferred) if you need consecutive requests from the same client to share data.
 
@@ -93,7 +92,7 @@ Since the app runs in cluster mode meaning data won’t be shared across cluster
 For transactions that contain multiple statements where the first statement is not an INSERT, UPDATE, or DELETE, it is important to run the transaction as `.immediate()`. This ensures that SQLite will queue the write if other writes are in progress, respecting the `busy_timeout` pragma. If you forget to do this, SQLite will run the transaction in a deferred mode. This means it will attempt to acquire a write lock only when it first encounters the INSERT, UPDATE, or DELETE statement and won't respect `busy_timeout` if the database is locked for writing, leading to `sqlite_busy` errors.
 
 # Postgres
-Some people prefer Postgres over SQLite mainly because it's more feature-rich (for example, live migrations are easier, and you can use read replicas). The cool thing about Postgres is that you can run it on the same machine as the application, just like SQLite. Only when you outgrow a single machine do you need to move Postgres elsewhere.
+Some people prefer Postgres over SQLite mainly because it's more feature-rich (Postgres gives you live migrations, read replicas, higher write concurrency, pub-sub, and much more). If chances of becoming big are high, starting with Postgres is a safer bet because you won't need to migrate from SQLite. The cool thing about Postgres is that you can run it next to the app, just like SQLite, and move to a separate machine if you outgrow a single box. For dev/prod parity you can use [pglite](https://github.com/electric-sql/pglite) or [Testcontainers](https://testcontainers.org/modules/databases/postgres/) (if you fancy Docker)
 
 # Web analytics
 For web analytics, you can use self-hosted https://plausible.io, but https://goaccess.io is also a great option because it can run on the same server (and it's not subject to ad-blocking).
