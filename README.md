@@ -16,8 +16,8 @@ Since stability, simplicity, and fewer abstractions are the guiding principles, 
 * Express.js
 * Edge.js for templating ([WebC](https://github.com/11ty/webc) would be a good alternative)
 * Htmx for SPA experience
-* Vanilla JS and [Alpine.js](https://alpinejs.dev/) for reactivity
-* Tailwind for styling with great DX. You can use vanilla CSS, if you like.
+* Vanilla JS and [Alpine.js](https://alpinejs.dev/) for reactivity.
+* Tailwind for styling with great DX. You can use vanilla CSS or [Bulma](https://bulma.io/), if you like.
 * Playwright for E2E tests
 * SQLite with better-sqlite3 for DB access w/o ORMs and query builders (nobody switches databases anyway)
 * Litestream for streaming DB replication
