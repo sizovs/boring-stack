@@ -86,7 +86,6 @@ Don't worry about that. Also don't attempt to coordinate writes between processe
 # Testing
 A traditional front-end/back-end separation via APIs requires developing and maintaining two distinct test suites—one for testing the back-end through the API and another for testing the front-end against a mock API, which can easily fall out of sync with the actual back-end.  This is cumbersome and clunky. By forgoing JSON APIs and instead sending HTML over the wire, we streamline the process, allowing us to test-drive a single app at the user level using Playwright.
 
-
 # Stateless
 Since the app runs in cluster mode meaning data won’t be shared across cluster nodes, make sure your app is stateless. Use SQLite to share states between processes. In some cases, instead of sharing data between nodes, consider moving the “shared logic” up to the reverse proxy (e.g. rate limiting is a good use case). You can also move data to the client (JWT) or use sticky sessions (less preferred) if you need consecutive requests from the same client to share data.
 
@@ -95,6 +94,9 @@ For web analytics, you can use self-hosted https://plausible.io, but https://goa
 
 # Caddy
 I chose Caddy as a reverse proxy primarily for its ability to automatically provision and manage Let's Encrypt certificates for our server. If Let's Encrypt weren't a factor, I would opt for Nginx due to its extensive built-in features, like sticky sessions and rate limiting, and because I find its syntax more straightforward.
+
+# Workers
+In Node.js everything runs in parallel, except your code. What this means is that all I/O code that you write in Node.js is non-blocking, while (conversely) all non-I/O code that you write in Node.js is blocking. Therefore, CPU intensive and synchronous tasks should be offloaded from the main event loop onto dedicated workers. [Piscina](https://github.com/piscinajs/piscina) is the way to go. Note that workers are useful for performing CPU-intensive operations. [They do not help](https://www.nearform.com/insights/learning-to-swim-with-piscina-the-node-js-worker-pool/) much with I/O-intensive work.
 
 # Bun
 Bun is great, but I prefer building on stable foundation, t.i. – Node. Bun is still in its early days and it doesn't support many features Node does.
