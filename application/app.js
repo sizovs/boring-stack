@@ -1,6 +1,5 @@
 import express from "express"
 import logger from "#modules/logger"
-import Router from "express-promise-router"
 import { createDatabase } from "#modules/database/database"
 import { Migrator } from "#modules/database/migrator"
 import { initTodos } from "#application/todos/todos"
@@ -42,7 +41,7 @@ const startApp = (port = 0) => {
   enableCors({ app, isDevMode })
   enableBodyParsing({ app })
 
-  const router = new Router()
+  const router = express.Router()
   app.use(router)
   initTodos({ router, db })
   initHealth({ router, db })

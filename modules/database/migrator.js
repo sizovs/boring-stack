@@ -49,7 +49,7 @@ export class Migrations {
   constructor(directory = import.meta.dirname + '/migrations', filesystem = fs) {
     this.#fs = filesystem
     this.#migrations = this.migrationFiles(directory).map((file, index) => new Migration(file, index + 1, filesystem))
-    logger.info(`${this.#migrations.length} migration(s) in directory.`)
+    logger.debug(`${this.#migrations.length} migration(s) in directory.`)
   }
 
   empty() {
