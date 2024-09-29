@@ -22,8 +22,8 @@ export const enableEdgeTemplates = ({ app, isDevMode }) => {
 
   app.engine('edge', (template, options, callback) => {
     const renderer = edge.createRenderer()
-    const rendered = renderer.render(template, options)
-    callbackify(() => rendered)(callback)
+    const html = renderer.render(template, options)
+    callbackify(() => html)(callback)
   })
 
   app.set('views', viewDirectory)
