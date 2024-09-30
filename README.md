@@ -87,6 +87,9 @@ Don't worry about that. Also don't attempt to coordinate writes between processe
 
 Note on performance: it's true that SQLite performs better when a single process handles writes because it eliminates processes fighting for the lock (aka resource contention). Unfortunately, this is impossible to achieve with Node.js running in a cluster. Nevertheless, for most apps, the throughput should be adequate.
 
+# But... Rust is faster
+Unless you're very CPU/RAM limited, for web applications applications, your bottleneck will be I/O, not CPU or RAM, so Rust won't really help you handle more users on a single box. Moreover, you don't need to code in Rust to get the performance on part with Rust. You can just run your JS app on Deno or Bun, as both are written in Rust. But again, the bottleneck will be in I/O, so don't bother.
+
 # Testing
 A traditional front-end/back-end separation via APIs requires developing and maintaining two distinct test suites—one for testing the back-end through the API and another for testing the front-end against a mock API, which can easily fall out of sync with the actual back-end.  This is cumbersome and clunky. By forgoing JSON APIs and instead sending HTML over the wire, we streamline the process, allowing us to test-drive a single app at the user level using Playwright.
 
