@@ -1,7 +1,7 @@
 import logger from '#modules/logger'
 import Database from 'better-sqlite3'
 
-const createDatabase = (location) => {
+const connect = (location) => {
   if (!location) {
     throw new Error('Cannot create database. Please provide the DB location')
   }
@@ -26,5 +26,5 @@ const createDatabase = (location) => {
   return db
 }
 
-export { createDatabase }
+export { connect }
 

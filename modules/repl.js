@@ -1,7 +1,7 @@
 import { start } from 'node:repl'
-import { db, initializeDb } from "#modules/database/database.js"
+import { connect } from "#modules/database/database"
 
 const repl = start()
-initializeDb()
+const db = connect(process.env.DB_LOCATION)
 
 repl.context.db = db

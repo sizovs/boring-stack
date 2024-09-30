@@ -1,6 +1,6 @@
 import express from "express"
 import logger from "#modules/logger"
-import { createDatabase } from "#modules/database/database"
+import { connect } from "#modules/database/database"
 import { Migrator } from "#modules/database/migrator"
 import { initTodos } from "#application/todos/todos"
 import { initHealth } from "#application/health/health"
@@ -25,7 +25,7 @@ const isDevMode = process.env.NODE_ENV !== "production"
 
 const startApp = (port = 0) => {
 
-  const db = createDatabase(process.env.DB_LOCATION)
+  const db = connect(process.env.DB_LOCATION)
   // In dev mode, we run migrations upon startup.
   // In production, migrations are run by the deployment script.
   if (isDevMode) {
