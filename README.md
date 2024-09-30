@@ -19,7 +19,7 @@ Since stability, simplicity, and fewer abstractions are the guiding principles, 
 * Vanilla JS with [Alpine.js](https://alpinejs.dev/) for reactivity
 * Tailwind for styling with great DX
 * Playwright for E2E tests
-* SQLite with better-sqlite3 for DB access w/o ORMs and query builders (nobody switches databases anyway)
+* SQLite with better-sqlite3 for DB access w/o ORMs and query builders
 * Litestream for streaming DB replication
 
 ☺️ The dependencies are minimal, giving a refreshing feel after dealing with bloated frameworks.
