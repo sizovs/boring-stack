@@ -22,7 +22,7 @@ Since stability, simplicity, and fewer abstractions are the guiding principles, 
 * SQLite with better-sqlite3 for DB access w/o ORMs and query builders (nobody switches databases anyway)
 * Litestream for streaming DB replication
 
-Generally, the dependencies are minimal, giving a refreshing feel after dealing with bloated frameworks.
+☺️ The dependencies are minimal, giving a refreshing feel after dealing with bloated frameworks.
 
 Simplicity is achieved through reduction, not addition. The project is built and shipped straight from local dev, making Docker, artifact repo, and external CI server unnecessary. By following the #1 rule of distributing systems (don't distribute) and choosing SQLite, the project enjoys dev/prod environment parity. By eliminating indirection and build tools we can quickly spin up a local dev server and run all tests in parallel. Simplicity is great.
 
