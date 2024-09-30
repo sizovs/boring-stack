@@ -1,6 +1,6 @@
-export const initHealth = ({ router, db }) => {
-  router.get('/health', (request, response) => {
+export const initHealth = ({ app, db }) => {
+  app.get('/health', (request, reply) => {
     const { health } = db.prepare("select 'OK' as health").get()
-    response.send(health)
+    reply.send(health)
   })
 }

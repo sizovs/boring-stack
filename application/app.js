@@ -1,16 +1,19 @@
-import express from "express"
-import logger from "#modules/logger"
 import { connect } from "#modules/database/database"
 import { Migrator } from "#modules/database/migrator"
 import { initTodos } from "#application/todos/todos"
 import { initHealth } from "#application/health/health"
-import { enableFlashScope } from "#application/setup/flash"
-import { enableSessions } from "#application/setup/session"
-import { enableEdgeTemplates } from "#application/setup/edge"
-import { enableHttpLogging } from "#application/setup/morgan"
-import { enableCors } from "#application/setup/cors"
-import { enableBodyParsing } from "#application/setup/bodyparser"
 import { cookieSecret } from "#modules/secrets"
+import { logger } from "#modules/logger"
+
+import { Edge } from 'edge.js'
+
+import fastify from 'fastify'
+import formBody from '@fastify/formbody'
+import cors from '@fastify/cors'
+import statics from '@fastify/static'
+import session from '@fastify/secure-session'
+import flash from '@fastify/flash'
+
 
 if (!process.env.DB_LOCATION) {
   throw new Error('DB_LOCATION environment variable is missing.')
@@ -33,30 +36,69 @@ const startApp = (port = 0) => {
     migrator.migrate()
   }
 
-  const app = express()
-  enableEdgeTemplates({ app, isDevMode })
-  enableSessions({ app, secret: cookieSecret(db) })
-  enableFlashScope({ app })
-  enableHttpLogging({ app, logger })
-  enableCors({ app, isDevMode })
-  enableBodyParsing({ app })
+  // All static assets will have a version number appended at the end.
+  // Increment the version number to invalidate the CDN cache.
+  const staticVersion = 1;
+  const edge = new Edge({ cache: !isDevMode })
+  const viewDirectory = process.env.PWD + '/views'
+  edge.mount('default', viewDirectory)
+  edge.global('static', file => file = `${file}?v=${staticVersion}`)
 
-  const router = express.Router()
-  app.use(router)
-  initTodos({ router, db })
-  initHealth({ router, db })
-  app.get('/', (request, response) => {
-    response.redirect('/todos')
+  const app = fastify({
+    loggerInstance: logger
+  })
+
+  // URL-Encoded forms
+  app.register(formBody)
+
+  // Cors
+  app.register(cors)
+
+  // Sessions
+  app.register(session, {
+    key: Buffer.from(cookieSecret(db), 'hex'),
+  })
+
+  // Flash scope
+  app.register(flash)
+
+  // Static files
+  app.register(statics, {
+    root: process.env.PWD + '/static',
+  })
+
+  app.decorateReply('render', async function (view, payload) {
+    const currentFlash = this.flash()
+    const flash = { errors: currentFlash?.errors?.[0] ?? {}, old: currentFlash?.old?.[0] ?? {} }
+    const html = await edge.render(view, { ...payload, flash })
+    this.type('text/html')
+    this.send(html)
+  })
+
+  app.setErrorHandler(async (err, request, reply) => {
+    request.log.error({ err })
+    reply.code(500)
+    return 'Oops, something went wrong. Please try again later.'
+  })
+
+  app.setNotFoundHandler(async (request, reply) => {
+    reply.code(404)
+    return "Sorry, this page isn't available."
+  })
+
+  initTodos({ app, db })
+  initHealth({ app, db })
+
+  app.get('/', (request, reply) => {
+    reply.redirect('/todos')
   })
 
   return new Promise((resolve, reject) => {
-    const server = app.listen(port, () => {
-      const address = 'http://localhost:' + server.address().port
-      logger.info("Your app is ready on " + address)
-      resolve(address)
+    app.listen({port}, (error, address) => {
+      if (error) reject(error)
+      else resolve(address)
     })
-    server.on('error', reject)
   })
-}
 
+}
 export { startApp }

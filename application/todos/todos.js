@@ -1,25 +1,25 @@
-export const initTodos = ({ router, db }) => {
-  router.get('/todos', (request, response) => {
+export const initTodos = ({ app, db }) => {
+  app.get('/todos', (request, reply) => {
     const todos = db.prepare('select * from todos').all()
-    response.render('todos', { todos })
+    return reply.render('todos', { todos })
   })
 
-  router.post('/todos/:id/done', (request, response) => {
+  app.post('/todos/:id/done', (request, reply) => {
     db.prepare('delete from todos where id = ?').run(request.params.id)
-    response.redirect(request.headers.referer)
+    reply.redirect(request.headers.referer)
   })
 
-  router.post('/todos', async (request, response) => {
+  app.post('/todos', async (request, reply) => {
     const description = request.body.description?.trim()
     if (!description) {
       request.flash('old', request.body)
       request.flash('errors', { 'description': 'Task description is required' })
-      response.redirect(request.headers.referer)
+      reply.redirect(request.headers.referer)
       return
     }
 
     db.prepare('insert into todos (description) values (?)').run(description)
-    response.redirect(request.headers.referer)
+    reply.redirect(request.headers.referer)
   })
 
 }

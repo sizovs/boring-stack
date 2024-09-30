@@ -13,7 +13,7 @@ Loosely coupled, distributed architectures are challenging to operate, so they a
 Since stability, simplicity, and fewer abstractions are the guiding principles, the following tech choices were made:
 * Node (22+)
 * JS (you don't really need TS for large-scale apps if you write tests)
-* Express.js
+* Fastify web server
 * Edge.js for templating
 * Htmx for SPA experience
 * Vanilla JS with [Alpine.js](https://alpinejs.dev/) for reactivity
@@ -22,7 +22,7 @@ Since stability, simplicity, and fewer abstractions are the guiding principles, 
 * SQLite with better-sqlite3 for DB access w/o ORMs and query builders (nobody switches databases anyway)
 * Litestream for streaming DB replication
 
-By looking into the code, you'll discover lesser-known gems such as `staticify` that add a hash suffix to static assets for CDN. Generally, the dependencies are minimal, giving a refreshing feel after dealing with bloated frameworks.
+Generally, the dependencies are minimal, giving a refreshing feel after dealing with bloated frameworks.
 
 Simplicity is achieved through reduction, not addition. The project is built and shipped straight from local dev, making Docker, artifact repo, and external CI server unnecessary. By following the #1 rule of distributing systems (don't distribute) and choosing SQLite, the project enjoys dev/prod environment parity. By eliminating indirection and build tools we can quickly spin up a local dev server and run all tests in parallel. Simplicity is great.
 

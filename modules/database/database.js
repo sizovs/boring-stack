@@ -1,4 +1,4 @@
-import logger from '#modules/logger'
+import { logger } from '#modules/logger'
 import Database from 'better-sqlite3'
 
 const connect = (location) => {
