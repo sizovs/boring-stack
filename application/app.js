@@ -14,7 +14,6 @@ import statics from '@fastify/static'
 import session from '@fastify/secure-session'
 import flash from '@fastify/flash'
 
-
 if (!process.env.DB_LOCATION) {
   throw new Error('DB_LOCATION environment variable is missing.')
 }
@@ -26,9 +25,10 @@ if (!envs.includes(process.env.NODE_ENV)) {
 
 const isDevMode = process.env.NODE_ENV !== "production"
 
-const startApp = async (port = 0) => {
+export const startApp = async (port = 0) => {
 
   const db = await connect(process.env.DB_LOCATION)
+
   // In dev mode, we run migrations upon startup.
   // In production, migrations are run by the deployment script.
   if (isDevMode) {
@@ -93,12 +93,11 @@ const startApp = async (port = 0) => {
     reply.redirect('/todos')
   })
 
-  return new Promise((resolve, reject) => {
-    app.listen({port}, (error, address) => {
-      if (error) reject(error)
-      else resolve(address)
-    })
+  process.on('SIGINT', () => {
+    db.close()
+    process.exit(0)
   })
 
+  return app.listen({ port })
 }
-export { startApp }
+
