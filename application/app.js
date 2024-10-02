@@ -98,10 +98,7 @@ export const startApp = async (port = 0) => {
   })
 
   app.after(() => {
-    app.gracefulShutdown(async (signal) => {
-      logger.info('Received signal to shutdown: %s', signal)
-      db.close()
-    })
+    app.gracefulShutdown(_signal => db.close())
   })
 
   return app.listen({ port })
