@@ -56,7 +56,7 @@ export const startApp = async (port = 0) => {
 
   // Sessions
   app.register(session, {
-    key: Buffer.from(cookieSecret(db), 'hex'),
+    key: cookieSecret(db)
   })
 
   // Flash scope
