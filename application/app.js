@@ -26,9 +26,9 @@ if (!envs.includes(process.env.NODE_ENV)) {
 
 const isDevMode = process.env.NODE_ENV !== "production"
 
-const startApp = (port = 0) => {
+const startApp = async (port = 0) => {
 
-  const db = connect(process.env.DB_LOCATION)
+  const db = await connect(process.env.DB_LOCATION)
   // In dev mode, we run migrations upon startup.
   // In production, migrations are run by the deployment script.
   if (isDevMode) {
@@ -86,8 +86,8 @@ const startApp = (port = 0) => {
     return "Sorry, this page isn't available."
   })
 
-  initTodos({ app, db })
-  initHealth({ app, db })
+  await initTodos({ app, db })
+  await initHealth({ app, db })
 
   app.get('/', (request, reply) => {
     reply.redirect('/todos')

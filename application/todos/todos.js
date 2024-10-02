@@ -1,4 +1,4 @@
-export const initTodos = ({ app, db }) => {
+export const initTodos = async ({ app, db }) => {
   app.get('/todos', (request, reply) => {
     const todos = db.prepare('select * from todos').all()
     return reply.render('todos', { todos })

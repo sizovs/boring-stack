@@ -111,6 +111,9 @@ Bun is great, but I prefer building on stable foundation, t.i. – Node. Bun is 
 # Postgres
 Some people prefer Postgres over SQLite mainly because it's more feature-rich (Postgres gives you live migrations, read replicas, higher write concurrency, pub-sub, and much more). If chances of becoming Twitter-scale are high and some maintenance downtime for data migrations is not an option, starting with Postgres is a safer bet because you won't need to migrate from SQLite[^1]. The cool thing about Postgres is that you can run it next to the app, just like SQLite, and move to a separate machine if you outgrow a single box. The major drawback is that it's much harder to achive dev/prod parity with Postgres without shaggy solutions. This codebase does not support or showcases a use of Postgres.
 
+#### ⚡ Postgres vs. SQLite benchmark
+On my laptop, a single SQLite database file achieves ~7.5-8.5K writes/sec. Using 2 shards increases this to 11.5-15K writes/sec, and 4 shards to 19-25K writes/sec, with no further improvement beyond that due to disk I/O limits. Postgres delivers throughput similar to 2 files. Therefore, well-sharded SQLite outperformed Postgres on a single machine (Postgres 17 with Postgres.js driver). On Hetzner, for SQLite to roughly match Postgres write throughput, I needed to create from 4 to 12 shards, with throughput increasing linearly from 5-10K writes/second to 120K writes/second on a dedicated cloud AMD machine (CCX33). As the number of shards increases, the administrative overhead grows as each shard needs to be backed up, reducing the benefits of SQLite and making PostgreSQL a smarter choice. It’s also worth mentioning that AMD machines did 2-3 times better than ARM for in SQLite and Postgres tests.
+
 [^1]: Even if migration is necessary, it doesn't mean you have to rewrite the entire app. You can gradually move some parts to PostgreSQL while keeping the rest of the data in SQLite.
 
 # SQLite caveats
@@ -118,4 +121,3 @@ For transactions that contain multiple statements where the first statement is n
 
 # TODOS
 - The current implementation uses Livestream to replicate data to a network-attached volume. While this isn't a critical issue, it would be more efficient to replicate to R2 instead. Otherwise, if Hetzner experiences downtime, restoring data could be challenging.
-- The current implementation stores SQLite database on a network-attached volume, which improves redundancy at the expense of throughput. If you want to squeeze (much) more performance from your SQLite, **move the database to the local disk.**
