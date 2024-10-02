@@ -8,6 +8,7 @@ import { logger } from "#modules/logger"
 import { Edge } from 'edge.js'
 
 import fastify from 'fastify'
+import gracefulShutdown from 'fastify-graceful-shutdown'
 import formBody from '@fastify/formbody'
 import cors from '@fastify/cors'
 import statics from '@fastify/static'
@@ -47,6 +48,9 @@ export const startApp = async (port = 0) => {
   const app = fastify({
     loggerInstance: logger
   })
+
+  app.register(gracefulShutdown)
+
 
   // URL-Encoded forms
   app.register(formBody)
@@ -93,9 +97,11 @@ export const startApp = async (port = 0) => {
     reply.redirect('/todos')
   })
 
-  process.on('SIGINT', () => {
-    db.close()
-    process.exit(0)
+  app.after(() => {
+    app.gracefulShutdown(async (signal) => {
+      logger.info('Received signal to shutdown: %s', signal)
+      db.close()
+    })
   })
 
   return app.listen({ port })
