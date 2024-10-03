@@ -88,7 +88,7 @@ Don't worry about that. Also don't attempt to coordinate writes between processe
 Note on performance: it's true that SQLite performs better when a single process handles writes because it eliminates processes fighting for the lock (aka resource contention). Unfortunately, this is impossible to achieve with Node.js running in a cluster. Nevertheless, for most apps, the throughput should be adequate.
 
 # But... JS sucks.
-Modern JS is not the same JS many developers disliked a decade ago. It offers one of the best developer experiences (DX), a vibrant ecosystem, and is a highly agile language that doesn't require re-compilation (DX goes to the moon). It is well-suited for I/O-heavy applications, like most web apps. The throughput is pretty much on par with Go, give or take.
+Modern JS is not the same JS many developers disliked a decade ago. It offers one of the best developer experiences (DX), a vibrant ecosystem, and is a highly agile language that doesn't require re-compilation (DX goes to the moon). It is well-suited for I/O-heavy applications, like most web apps. The throughput is pretty much on par with Go.
 
 You might squeeze more performance from your server with Rust, but who cares? Unless you're very CPU/RAM limited, the bottleneck for web apps will be I/O, not CPU or RAM, so Rust won’t necessarily help you handle more users on a single box (it might reduce latency, though, since it doesn't have garbage collection). The cool thing about JS runtimes is that they are built using "fast" languages—C++ or Rust—so you get all the speed benefits without sacrificing DX.
 
