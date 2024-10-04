@@ -8,7 +8,9 @@ JS and TS ecosystem suffers from extreme churn, making migrations between major 
 
 It's unreasonable to split apps prematurely across all axes — 1) vertically into microservices, 2) horizontally into BE and FE, and 3) across 'tiers' with DB running on a separate machine. Instead, start with [self-contained](https://scs-architecture.org), [monolithic](https://signalvnoise.com/svn3/the-majestic-monolith) systems that run on a single server. Such systems can handle [10,000s of requests on a beefy VPS](https://blog.wesleyac.com/posts/consider-sqlite) (which is enough for most apps), scale up to the moon, and, if necessary, can be split into multiple self-contained systems for scalability. Since every self-contained system includes a UI, integration can be achieved through dynamic inclusion using iframes or server-side includes at the reverse-proxy level. Simple hyperlinks can be utilized to navigate between systems.
 
-Loosely coupled, distributed architectures are challenging to operate, so they are better suited for running on the cloud. This is one of the reasons why cloud providers advocate for such architectures. On the other hand, monolithic, self-contained architectures diminish the benefit of running on PaaS or cloud hyperscalers that are opaque and insanely expensive abstractions over good old servers. Thanks to deliberate architectural simplification, we can run our app on a single Hetzner VPS, which is one of, if not the most cost-efficient and robust cloud provider on the market. To simplify ops and alleviate tooling fatigue, this project includes custom scripts for database migrations, zero-downtime deployments, and infrastructure provisioning (Terraform state management is a hassle and HCL syntax too restrictive).
+Loosely coupled, distributed architectures are challenging to operate, so they are better suited for running on the cloud. This is one of the reasons why cloud providers advocate for such architectures. On the other hand, monolithic, self-contained architectures diminish the benefit of running on PaaS or cloud hyperscalers that are opaque and insanely expensive abstractions over good old servers.
+
+Thanks to deliberate architectural simplification, we can run our app on a single Hetzner VPS, which is one of, if not the most cost-efficient and robust cloud provider on the market. 20TB transfer on Vercel is $2850, on Hetzner it's free. 🙂 Go check the math, you'll be mind-blown by how much you're being ripped off by AWS and alike. To simplify ops and alleviate tooling fatigue, this project includes custom scripts for database migrations, zero-downtime deployments, and infrastructure provisioning (Terraform state management is a hassle and HCL syntax too restrictive).
 
 Since stability, simplicity, and fewer abstractions are the guiding principles, the following tech choices were made:
 * JS (you don't really need TS for large-scale apps if you write tests)
@@ -21,6 +23,7 @@ Since stability, simplicity, and fewer abstractions are the guiding principles, 
 * Playwright for E2E tests
 * SQLite with better-sqlite3 for DB access w/o ORMs and query builders
 * Litestream for streaming DB replication
+* Caddy for zero-downtime deployments and and automatic TLS
 
 ☺️ The dependencies are minimal, giving a refreshing feel after dealing with bloated frameworks.
 
@@ -75,7 +78,7 @@ DB_LOCATION=<db location> npm run repl
 Instead of adding multiple servers to reduce latency and get extra horsepower (which *forces* you to move out data, which leads to even more servers to manage), reduce the load on *the* server by batching frequent or heavy requests at the edge, possibly deduplicating them, and sending them to *the* server. It significantly reduces latency and availability w/o adding complexity to your infrastructure. Thanks to [workers](https://workers.cloudflare.com/), this can be implemented in a transparent way as a “booster layer” that runs in front of your app, meaning you can develop and test your app locally without any changes. Besides write performance gains, certain data can be cached at the edge, improving read performance.
 
 # But... I need more than SQL.
-Don't worry. You can use SQLite as a [KV store](https://rodydavis.com/sqlite/key-value), [JSON store](https://rodydavis.com/sqlite/nosql) and it even has [built-in full-text search capability](https://www.sqlite.org/fts5.html). Moreover, there are a lot of [SQLite extensions](https://github.com/nalgeon/sqlean) out there. So, if you choose SQLite, very unlikely you'll need additional databases such as Redis. Nevertheless, nothing stops you from adding another specialized database, such as Redis or DuckDB to the mix.
+Don't worry. You can use SQLite as a [KV store](https://rodydavis.com/sqlite/key-value), [JSON store](https://rodydavis.com/sqlite/nosql) and it even has [built-in full-text search capability](https://www.sqlite.org/fts5.html). Moreover, there are a lot of [SQLite extensions](https://github.com/nalgeon/sqlean) out there. So, if you choose SQLite, very unlikely you'll need an additional database. Nevertheless, nothing stops you from adding another specialized database, such as Redis (e.g. for [queues](https://bullmq.io/)) or DuckDB to the mix.
 
 # But... SQLite writes don't scale.
 It's well-known that SQLite doesn't support concurrent writes – while one process is writing, others are waiting. Even though you can still get thousands of iops on a single DB file, you may need higher throughput. You can achieve that by splitting the database into multiple files. For example, `db.sqlite3` can become `users.sqlite3` and `comments.sqlite3`. Or, learning from Rails, you can use SQLite as a cache and queue, extracting `cache.sqlite3` and `queue.sqlite3`
@@ -102,9 +105,6 @@ Since the app runs in cluster mode meaning data won’t be shared across cluster
 
 # Analytics
 For web analytics, you can use self-hosted https://plausible.io, but https://goaccess.io is also a great option because it can run on the same server (and it's not subject to ad-blocking).
-
-# Caddy
-I chose Caddy as a reverse proxy primarily for its ability to automatically provision and manage Let's Encrypt certificates for our server. If Let's Encrypt weren't a factor, I would opt for Nginx due to its extensive built-in features, like sticky sessions and rate limiting, and because I find its syntax more straightforward.
 
 # Workers
 In Node.js everything runs in parallel, except your code. What this means is that all I/O code that you write in Node.js is non-blocking, while (conversely) all non-I/O code that you write in Node.js is blocking. Therefore, CPU intensive and synchronous tasks should be offloaded from the main event loop onto dedicated workers. [Piscina](https://github.com/piscinajs/piscina) is the way to go. Note that workers are useful for performing CPU-intensive operations. [They do not help](https://nodejs.org/api/worker_threads.html#:~:text=Workers%20(threads)%20are%20useful%20for%20performing%20CPU%2Dintensive%20JavaScript%20operations.%20They%20do%20not%20help%20much%20with%20I/O%2Dintensive%20work.%20The%20Node.js%20built%2Din%20asynchronous%20I/O%20operations%20are%20more%20efficient%20than%20Workers%20can%20be) much with I/O-intensive work.

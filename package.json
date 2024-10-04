@@ -20,8 +20,7 @@
     "axios": "^1.7.2",
     "better-sqlite3": "^11.0.0",
     "edge.js": "^6.0.2",
-    "fastify": "^5.0.0",
-    "fastify-graceful-shutdown": "^4.0.1"
+    "fastify": "^5.0.0"
   },
   "imports": {
     "#application/*": "./application/*.js",
