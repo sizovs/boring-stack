@@ -10,7 +10,9 @@ It's unreasonable to split apps prematurely across all axes — 1) vertically in
 
 Loosely coupled, distributed architectures are challenging to operate, so they are better suited for running on the cloud. This is one of the reasons why cloud providers advocate for such architectures. On the other hand, monolithic, self-contained architectures diminish the benefit of running on PaaS or cloud hyperscalers that are opaque and insanely expensive abstractions over good old servers.
 
-Thanks to deliberate architectural simplification, we can run our app on a single Hetzner VPS, which is one of, if not the most cost-efficient and robust cloud provider on the market. 20TB transfer on Vercel is $2850, on Hetzner it's free. Go check the math, you'll be mind-blown by how much you're being ripped off by AWS and alike. To simplify ops and alleviate tooling fatigue, this project includes custom scripts for database migrations, zero-downtime deployments, and infrastructure provisioning (Terraform state management is a hassle and HCL syntax too restrictive).
+Thanks to deliberate architectural simplification, we can run our app on a single Hetzner VPS, which is one of, if not the most cost-efficient and robust cloud provider on the market. 20TB transfer on Vercel is $2850, on Hetzner it's free. Go check the math, you'll be mind-blown by how much you're being ripped off by AWS and alike.
+
+To simplify ops and alleviate tooling fatigue, this project includes custom scripts for database migrations, zero-downtime deployments, and infrastructure provisioning (Terraform state management is a hassle and HCL syntax too restrictive).
 
 Since stability, simplicity, and fewer abstractions are the guiding principles, the following tech choices were made:
 * JS (you don't really need TS for large-scale apps if you write tests)
