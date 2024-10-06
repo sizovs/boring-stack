@@ -60,7 +60,7 @@ export const startApp = async (port = 0) => {
   // Cors
   app.register(cors, {
     credentials: true,
-    origin: isDevMode || 'https://dev.club'
+    origin: true
   })
 
   // Sessions
