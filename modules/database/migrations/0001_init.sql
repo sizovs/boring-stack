@@ -1,9 +1,9 @@
-create table if not exists secrets (
+CREATE TABLE IF NOT EXISTS secrets (
   id TEXT PRIMARY KEY,
-  value TEXT not null
-) strict;
+  value TEXT NOT NULL
+) STRICT;
 
-create table if not exists todos (
-  id integer primary key autoincrement,
-  description text not null
-) strict;
+CREATE TABLE IF NOT EXISTS todos (
+  id INTEGER PRIMARY KEY,
+  description TEXT NOT NULL
+) STRICT;
