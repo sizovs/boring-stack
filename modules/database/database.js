@@ -31,7 +31,7 @@ const connect = async (location) => {
     // https://litestream.io/tips/#disable-autocheckpoints-for-high-write-load-servers
     db.pragma('wal_autocheckpoint = 0')
 
-    // Enable memory mapped files for speed and smaller memory footprint in multi-connection environments, such as pm2.
+    // Enable memory mapped files for speed and smaller memory footprint in multi-process environments.
     // https://oldmoe.blog/2024/02/03/turn-on-mmap-support-for-your-sqlite-connections/#benchmark-results
     // We set 128mb as a reasonable default, but for larger databases, if memory allows, it can go higher.
     // If it goes too high, the value will be capped at the higher bound enforced by the SQLite at the compile-time.

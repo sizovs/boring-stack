@@ -39,7 +39,7 @@ export const startApp = async (port = 0) => {
   // Increment the version number to invalidate the CDN cache.
   const staticVersion = 1;
   const edge = new Edge({ cache: !isDevMode })
-  const viewDirectory = process.env.PWD + '/views'
+  const viewDirectory = process.cwd() + '/views'
   edge.mount('default', viewDirectory)
   edge.global('static', file => file = `${file}?v=${staticVersion}`)
 
@@ -79,7 +79,7 @@ export const startApp = async (port = 0) => {
 
   // Static files
   app.register(statics, {
-    root: process.env.PWD + '/static',
+    root: process.cwd() + '/static',
   })
 
   app.decorateReply('render', async function (view, payload) {
@@ -91,7 +91,7 @@ export const startApp = async (port = 0) => {
   })
 
   app.setErrorHandler(async (err, request, reply) => {
-    request.log.error({ err })
+    logger.error({ err })
     reply.code(500)
     return 'Oops, something went wrong. Please try again later.'
   })

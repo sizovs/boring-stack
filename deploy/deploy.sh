@@ -14,7 +14,7 @@ DB_LOCATION="$HOME/db.sqlite3"
 DB_BACKUP="/mnt/backup"
 
 NVM_VERSION="0.39.7"
-NODE_VERSION="22.2.0"
+NODE_VERSION="22.9.0"
 LITESTREAM_VERSION="0.3.13"
 CADDY_VERSION="2.8.4"
 
@@ -43,6 +43,7 @@ fi
 
 # Make "devops" owner of the backup directory.
 sudo chown devops:devops "$DB_BACKUP"
+
 
 # Create litestream.yml config file for continuous replication
 LITESTREAM_CONFIG=$(
@@ -95,17 +96,10 @@ fi
 # Set Node version
 nvm use "$NODE_VERSION"
 
-# Install PM2
-if ! command -v pm2 &>/dev/null; then
-  npm install -g pm2
-  # Make sure PM2 starts automatically on boot
-  sudo env PATH=$PATH:$NODE_DIR/bin $NODE_DIR/lib/node_modules/pm2/bin/pm2 startup systemd -u devops --hp "$HOME" --service-name pm2
-fi
-
 # Create logrotate configuration for app logs
 LOGROTATE_CONFIG=$(
   cat <<EOF
-$HOME/.pm2/logs/*.log {
+/var/log/$APP_NAME*.log {
     su devops devops
     daily
     rotate 7
@@ -119,7 +113,7 @@ $HOME/.pm2/logs/*.log {
     create 640 devops devops
 EOF
 )
-echo "$LOGROTATE_CONFIG" | sudo tee /etc/logrotate.d/pm2 >/dev/null
+echo "$LOGROTATE_CONFIG" | sudo tee /etc/logrotate.d/$APP_NAME >/dev/null
 
 # Determine deploy node
 if /usr/bin/nc -z localhost "$BLUE_PORT" >/dev/null 2>&1; then
@@ -142,6 +136,37 @@ else
   OLD_PORT=$GREEN_PORT
 fi
 
+function systemd_service() {
+  local NODE=$1
+  local PORT=$2
+    SERVICEFILE_CONTENT=$(
+    cat <<EOF
+[Unit]
+Description=$APP_NAME ($NODE)
+After=network.target
+
+[Service]
+Type=simple
+User=devops
+Environment=NODE_ENV=production PORT=$PORT DB_LOCATION=$DB_LOCATION
+WorkingDirectory=$HOME/$NODE
+ExecStart=$NODE_DIR/bin/node --env-file-if-exists $HOME/$NODE/.env $HOME/$NODE/application/server.js
+Restart=on-failure
+StandardOutput=append:/var/log/$APP_NAME-out.log
+StandardError=append:/var/log/$APP_NAME-err.log
+
+[Install]
+WantedBy=multi-user.target
+EOF
+  )
+
+  echo "$SERVICEFILE_CONTENT" | sudo tee "/lib/systemd/system/$APP_NAME-$NODE.service" >/dev/null
+}
+
+systemd_service "$OLD_NODE" "$OLD_PORT"
+systemd_service "$DEPLOY_NODE" "$DEPLOY_PORT"
+sudo systemctl daemon-reload
+
 # Move app contents into ~/<deploy node>
 rm -rf "$HOME/$DEPLOY_NODE"
 mv -f "$APP_DIR" "$HOME/$DEPLOY_NODE"
@@ -154,25 +179,14 @@ sudo chmod -R u+rwx,o+rx "$HOME"
 cd $HOME/$DEPLOY_NODE
 npm ci --production
 
-# If <deploy node> is running, stop it
-# https://github.com/Unitech/pm2/issues/325
-pm2 delete -s "$APP_NAME-$DEPLOY_NODE" || ':'
-
 # Migrate database
 DB_LOCATION=$DB_LOCATION npm run migrate
 
-# Run <deploy node>
-NODE_ARGS=""
-if [ -f "$HOME/$DEPLOY_NODE/.env" ]; then
-  NODE_ARGS="--node-args='--env-file $HOME/$DEPLOY_NODE/.env'"
-fi
+# (Re)start
+sudo systemctl restart "$APP_NAME-$DEPLOY_NODE"
 
-NODE_ENV=production PORT=$DEPLOY_PORT DB_LOCATION=$DB_LOCATION \
-pm2 start application/server.js --update-env --kill-timeout 3000 \
-$NODE_ARGS -i max \
--o "$HOME/.pm2/logs/$APP_NAME-out.log" \
--e "$HOME/.pm2/logs/$APP_NAME-err.log" \
--n "$APP_NAME-$DEPLOY_NODE"
+# Start on boot
+sudo systemctl enable "$APP_NAME-$DEPLOY_NODE"
 
 function point_caddy_to() {
   local UPSTREAM_PORT=$1
@@ -219,7 +233,8 @@ done
 # If <deploy node> is unhealthy, stop it and interrupt deployment
 if [ "$HEALTHY" = false ]; then
   echo "$DEPLOY_NODE is not healthy after $MAX_RETRIES retries. Killing it."
-  pm2 delete -s "$APP_NAME-$DEPLOY_NODE" || ':'
+  sudo systemctl stop "$APP_NAME-$DEPLOY_NODE"
+  sudo systemctl disable "$APP_NAME-$DEPLOY_NODE"
   point_caddy_to "$OLD_PORT"
   exit 1
 else
@@ -231,7 +246,8 @@ fi
 sleep 5
 
 # Stop old node
-pm2 delete -s "$APP_NAME-$OLD_NODE" || ':'
+sudo systemctl stop "$APP_NAME-$OLD_NODE"
 
-# Save the app list so PM2 respawns then after reboot
-pm2 save
+# Don't start old node on boot
+sudo systemctl disable "$APP_NAME-$OLD_NODE"
+
