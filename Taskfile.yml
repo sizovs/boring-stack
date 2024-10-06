@@ -32,7 +32,7 @@ tasks:
       - echo ⏳ Pulling DB backup from $SERVER_IP into $DB_BACKUP...
       - rm -rf $DB_LOCATION
       - rm -rf $DB_BACKUP && mkdir $DB_BACKUP
-      - rsync -a --exclude 'lost+found' devops@$SERVER_IP:/mnt/backup/ $DB_BACKUP
+      - rsync --timeout=5 -a --exclude 'lost+found' devops@$SERVER_IP:/mnt/backup/ $DB_BACKUP
       - litestream restore -config ./modules/database/litestream.yml $DB_LOCATION
   infra:
     cmds:
@@ -43,8 +43,8 @@ tasks:
       - echo ⏳ Building assets...
       - npm run build
       - echo ⏳ Preparing to deploy to $SERVER_IP...
-      - rsync -a --exclude-from=./.gitignore --exclude='.*' ./ devops@$SERVER_IP:/home/devops/latest
+      - rsync --timeout=3 -a --exclude-from=./.gitignore --exclude='.*' ./ devops@$SERVER_IP:/home/devops/latest
 
       # Sync .env file separately because it has been excluded by both patterns.
-      - rsync -a .env devops@$SERVER_IP:/home/devops/latest/
+      - rsync --timeout=5 -a .env devops@$SERVER_IP:/home/devops/latest/
       - ssh devops@$SERVER_IP "DOMAIN=$DOMAIN bash < /home/devops/latest/deploy/deploy.sh"
