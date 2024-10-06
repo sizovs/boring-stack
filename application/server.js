@@ -1,5 +1,6 @@
+import { logger } from "#modules/logger"
 import { startApp } from "./app.js"
 
-await startApp(process.env.PORT)
-process.send('ready')
+const address = await startApp(process.env.PORT)
+logger.info(`Running @ ${address}`)
 
