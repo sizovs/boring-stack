@@ -191,6 +191,7 @@ sudo systemctl enable "$APP_NAME-$DEPLOY_NODE"
 
 function point_caddy_to() {
   local UPSTREAM_PORT=$1
+  local UPSTREAM_NODE=$2
   CADDYFILE_CONTENT=$(
     cat <<EOF
 $DOMAIN {
@@ -198,8 +199,12 @@ $DOMAIN {
     reverse_proxy {
       to localhost:$UPSTREAM_PORT
     }
-    encode gzip
   }
+
+	handle @static {
+		root * $HOME/$UPSTREAM_NODE/static
+		file_server
+	}
 
 	@static {
 		path *.ico *.gif *.jpg *.jpeg *.png *.svg *.webp *.js *.css *.woff2
@@ -236,11 +241,11 @@ if [ "$HEALTHY" = false ]; then
   echo "$DEPLOY_NODE is not healthy after $MAX_RETRIES retries. Killing it."
   sudo systemctl stop "$APP_NAME-$DEPLOY_NODE"
   sudo systemctl disable "$APP_NAME-$DEPLOY_NODE"
-  point_caddy_to "$OLD_PORT"
+  point_caddy_to "$OLD_PORT" "$OLD_NODE"
   exit 1
 else
   echo "$DEPLOY_NODE is healthy!"
-  point_caddy_to "$DEPLOY_PORT"
+  point_caddy_to "$DEPLOY_PORT" "$DEPLOY_NODE"
 fi
 
 # Give old node a few seconds to complete existing requests
