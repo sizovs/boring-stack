@@ -1,6 +1,7 @@
 backup
 logs
 *.log
+*.sqlite3
 npm-debug.log*
 app-built.css
 dist
@@ -13,7 +14,6 @@ node_modules
 .idea
 .vscode
 .env*
-db.sqlite3*
 /test-results/
 /playwright-report/
 /blob-report/

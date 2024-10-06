@@ -10,7 +10,7 @@ APP_NAME=$(awk -F '"' '/"name"/ {print $4}' "$APP_DIR/package.json")
 
 echo "$APP_NAME will be available at https://$DOMAIN"
 
-DB_LOCATION="$HOME/db.sqlite3"
+DB_LOCATION="$HOME/$APP_NAME.sqlite3"
 DB_BACKUP="/mnt/backup"
 
 NVM_VERSION="0.39.7"
