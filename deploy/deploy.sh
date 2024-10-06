@@ -139,6 +139,7 @@ fi
 function systemd_service() {
   local NODE=$1
   local PORT=$2
+  local FORKS=$(nproc)
     SERVICEFILE_CONTENT=$(
     cat <<EOF
 [Unit]
@@ -148,7 +149,7 @@ After=network.target
 [Service]
 Type=simple
 User=devops
-Environment=NODE_ENV=production PORT=$PORT DB_LOCATION=$DB_LOCATION
+Environment=NODE_ENV=production PORT=$PORT DB_LOCATION=$DB_LOCATION FORKS=$FORKS
 WorkingDirectory=$HOME/$NODE
 ExecStart=$NODE_DIR/bin/node --env-file-if-exists $HOME/$NODE/.env $HOME/$NODE/application/server.js
 Restart=on-failure
