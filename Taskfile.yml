@@ -16,7 +16,7 @@ tasks:
   dev:
     env:
       PORT: 3000
-      DB_LOCATION: "{{.HOME}}/db.sqlite3"
+      DB_LOCATION: "{{.HOME}}/app.db"
     cmds:
       - npm install
       - npm run dev
@@ -27,7 +27,7 @@ tasks:
     silent: true
     env:
       DB_BACKUP: "{{.HOME}}/backup"
-      DB_LOCATION: "{{.HOME}}/db.sqlite3"
+      DB_LOCATION: "{{.HOME}}/app.db"
     cmds:
       - echo ⏳ Pulling DB backup from $SERVER_IP into $DB_BACKUP...
       - rm -rf $DB_LOCATION
