@@ -162,7 +162,17 @@ pm2 delete -s "$APP_NAME-$DEPLOY_NODE" || ':'
 DB_LOCATION=$DB_LOCATION npm run migrate
 
 # Run <deploy node>
-NODE_ENV=production PORT=$DEPLOY_PORT DB_LOCATION=$DB_LOCATION pm2 start application/server.js --update-env --kill-timeout 3000 --node-args="--env-file $HOME/$DEPLOY_NODE/.env" -i max -o "$HOME/.pm2/logs/$APP_NAME-out.log" -e "$HOME/.pm2/logs/$APP_NAME-err.log" -n "$APP_NAME-$DEPLOY_NODE"
+NODE_ARGS=""
+if [ -f "$HOME/$DEPLOY_NODE/.env" ]; then
+  NODE_ARGS="--node-args='--env-file $HOME/$DEPLOY_NODE/.env'"
+fi
+
+NODE_ENV=production PORT=$DEPLOY_PORT DB_LOCATION=$DB_LOCATION \
+pm2 start application/server.js --update-env --kill-timeout 3000 \
+$NODE_ARGS -i max \
+-o "$HOME/.pm2/logs/$APP_NAME-out.log" \
+-e "$HOME/.pm2/logs/$APP_NAME-err.log" \
+-n "$APP_NAME-$DEPLOY_NODE"
 
 function point_caddy_to() {
   local UPSTREAM_PORT=$1
