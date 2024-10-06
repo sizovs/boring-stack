@@ -4,15 +4,14 @@ import { initTodos } from "#application/todos/todos"
 import { initHealth } from "#application/health/health"
 import { cookieSecret } from "#modules/secrets"
 import { logger } from "#modules/logger"
-
 import { Edge } from 'edge.js'
-
 import fastify from 'fastify'
 import formBody from '@fastify/formbody'
 import cors from '@fastify/cors'
 import statics from '@fastify/static'
 import session from '@fastify/secure-session'
 import flash from '@fastify/flash'
+import helmet from "@fastify/helmet"
 
 if (!process.env.DB_LOCATION) {
   throw new Error('DB_LOCATION environment variable is missing.')
@@ -44,19 +43,29 @@ export const startApp = async (port = 0) => {
   edge.mount('default', viewDirectory)
   edge.global('static', file => file = `${file}?v=${staticVersion}`)
 
-  const app = fastify({
-    loggerInstance: logger
-  })
+  const app = fastify()
+
+  // Helmet
+  app.register(helmet, { global: true })
 
   // URL-Encoded forms
   app.register(formBody)
 
   // Cors
-  app.register(cors)
+  app.register(cors, {
+    credentials: true,
+    origin: isDevMode || 'https://dev.club'
+  })
 
   // Sessions
   app.register(session, {
     key: cookieSecret(db)
+  })
+
+  // Request logging
+  app.addHook('onResponse', (request, reply, done) => {
+    logger.info(`${request.method} ${request.url} ${reply.statusCode} - ${Math.round(reply.elapsedTime)}ms`)
+    done()
   })
 
   // Flash scope
