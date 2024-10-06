@@ -46,7 +46,8 @@ export const startApp = async (port = 0) => {
   const app = fastify()
 
   // Helmet
-  app.register(helmet, { global: true,
+  app.register(helmet, {
+    global: true,
     contentSecurityPolicy: false,
     referrerPolicy: {
       policy: "strict-origin-when-cross-origin",
