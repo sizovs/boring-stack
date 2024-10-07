@@ -24,7 +24,7 @@ if (!envs.includes(process.env.NODE_ENV)) {
 
 const isDevMode = process.env.NODE_ENV !== "production"
 
-export const startApp = async (port = 0) => {
+export const startApp = async (options = { port: 0 }) => {
 
   const db = await connect(process.env.DB_LOCATION)
 
@@ -108,6 +108,6 @@ export const startApp = async (port = 0) => {
     reply.redirect('/todos')
   })
 
-  return app.listen({ port })
+  return app.listen(options)
 }
 

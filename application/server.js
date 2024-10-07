@@ -19,6 +19,6 @@ if (cluster.isPrimary) {
     }
   })
 } else {
-  const address = await startApp(process.env.PORT)
+  const address = await startApp({ port: process.env.PORT })
   logger.info(`Running @ ${address}`)
 }
