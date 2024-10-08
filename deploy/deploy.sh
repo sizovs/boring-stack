@@ -18,9 +18,6 @@ NODE_VERSION="22.9.0"
 LITESTREAM_VERSION="0.3.13"
 CADDY_VERSION="2.8.4"
 
-BLUE_PORT=3000
-GREEN_PORT=3001
-
 # Install Litestream
 if ! command -v litestream &>/dev/null || [ "$(litestream version)" != "v$LITESTREAM_VERSION" ]; then
   arch=$(dpkg --print-architecture)
@@ -44,7 +41,6 @@ fi
 # Make "devops" owner of the backup directory.
 sudo chown devops:devops "$DB_BACKUP"
 
-
 # Create litestream.yml config file for continuous replication
 LITESTREAM_CONFIG=$(
   cat <<EOF
@@ -54,9 +50,9 @@ dbs:
       - url: file:$DB_BACKUP
 EOF
 )
-
 echo "$LITESTREAM_CONFIG" | sudo tee /etc/litestream.yml >/dev/null
 
+# Start Litestream
 sudo systemctl enable litestream
 sudo systemctl restart litestream
 
@@ -116,42 +112,34 @@ EOF
 echo "$LOGROTATE_CONFIG" | sudo tee /etc/logrotate.d/$APP_NAME >/dev/null
 
 # Determine deploy node
-if /usr/bin/nc -z localhost "$BLUE_PORT" >/dev/null 2>&1; then
-  echo "Blue node is running. Will deploy to green..."
-  DEPLOY_NODE=green
-  DEPLOY_PORT=$GREEN_PORT
-  OLD_NODE=blue
-  OLD_PORT=$BLUE_PORT
-elif /usr/bin/nc -z localhost "$GREEN_PORT" >/dev/null 2>&1; then
-  echo "Green node is running. Will deploy to blue..."
-  DEPLOY_NODE=blue
-  DEPLOY_PORT=$BLUE_PORT
-  OLD_NODE=green
-  OLD_PORT=$GREEN_PORT
+if systemctl is-active --quiet "$APP_NAME@3000.service"; then
+  echo "3000 node is running. Will deploy to 3001..."
+  DEPLOY_NODE=3001
+  OLD_NODE=3000
+elif systemctl is-active --quiet "$APP_NAME@3001.service"; then
+  echo "3001 node is running. Will deploy to 3000..."
+  DEPLOY_NODE=3000
+  OLD_NODE=3001
 else
-  echo "Nodes are not running. Will deploy to blue."
-  DEPLOY_NODE=blue
-  DEPLOY_PORT=$BLUE_PORT
-  OLD_NODE=green
-  OLD_PORT=$GREEN_PORT
+  echo "Nodes are not running. Will deploy to 3000."
+  DEPLOY_NODE=3000
+  OLD_NODE=3001
 fi
 
-function systemd_service() {
-  local NODE=$1
-  local PORT=$2
+function create_systemd_service() {
   local FORKS=$(nproc)
     SERVICEFILE_CONTENT=$(
     cat <<EOF
 [Unit]
-Description=$APP_NAME ($NODE)
+Description=$APP_NAME (%i)
 After=network.target
 
 [Service]
 Type=simple
 User=devops
-Environment=NODE_ENV=production PORT=$PORT DB_LOCATION=$DB_LOCATION FORKS=$FORKS
-WorkingDirectory=$HOME/$NODE
-ExecStart=$NODE_DIR/bin/node --env-file-if-exists $HOME/$NODE/.env $HOME/$NODE/application/server.js
+Environment=NODE_ENV=production PORT=%i DB_LOCATION=$DB_LOCATION FORKS=$FORKS
+WorkingDirectory=$HOME/$APP_NAME-%i
+ExecStart=$NODE_DIR/bin/node --env-file-if-exists $HOME/$APP_NAME-%i/.env $HOME/$APP_NAME-%i/application/server.js
 Restart=on-failure
 StandardOutput=append:/var/log/$APP_NAME-out.log
 StandardError=append:/var/log/$APP_NAME-err.log
@@ -161,37 +149,36 @@ WantedBy=multi-user.target
 EOF
   )
 
-  echo "$SERVICEFILE_CONTENT" | sudo tee "/lib/systemd/system/$APP_NAME-$NODE.service" >/dev/null
+  echo "$SERVICEFILE_CONTENT" | sudo tee "/lib/systemd/system/$APP_NAME@.service" >/dev/null
+  sudo systemctl daemon-reload
 }
 
-systemd_service "$OLD_NODE" "$OLD_PORT"
-systemd_service "$DEPLOY_NODE" "$DEPLOY_PORT"
-sudo systemctl daemon-reload
+create_systemd_service
 
 # Move app contents into ~/<deploy node>
-rm -rf "$HOME/$DEPLOY_NODE"
-mv -f "$APP_DIR" "$HOME/$DEPLOY_NODE"
+rm -rf "$HOME/$APP_NAME-$DEPLOY_NODE"
+mv -f "$APP_DIR" "$HOME/$APP_NAME-$DEPLOY_NODE"
 
-# Grant "devops" user +rwx access to $HOME and subdirectories (because rsync preserves permissions of the source)
+# Grant "devops" user +rwx access to $HOME and subdirectories
 # Grant users other than "devops" +rx access to $HOME and subdirectories (for Caddy)
 sudo chmod -R u+rwx,o+rx "$HOME"
 
 # Install dependencies
-cd $HOME/$DEPLOY_NODE
+cd $HOME/$APP_NAME-$DEPLOY_NODE
 npm ci --production
 
 # Migrate database
 DB_LOCATION=$DB_LOCATION npm run migrate
 
 # (Re)start
-sudo systemctl restart "$APP_NAME-$DEPLOY_NODE"
+sudo systemctl restart "$APP_NAME@$DEPLOY_NODE"
 
 # Check if <deploy node> is healthy
 HEALTHY=false
 MAX_RETRIES=3
 WAIT_TIME=5
 while [ $MAX_RETRIES -gt 0 ]; do
-  response=$(curl -s -o /dev/null -w "%{http_code}" "http://localhost:$DEPLOY_PORT/health")
+  response=$(curl -s -o /dev/null -w "%{http_code}" "http://localhost:$DEPLOY_NODE/health")
 
   if [ "$response" -eq 200 ]; then
     HEALTHY=true
@@ -204,19 +191,18 @@ while [ $MAX_RETRIES -gt 0 ]; do
 done
 
 function point_caddy_to() {
-  local UPSTREAM_PORT=$1
-  local UPSTREAM_NODE=$2
+  local NODE=$1
   CADDYFILE_CONTENT=$(
     cat <<EOF
 $DOMAIN {
   handle {
     reverse_proxy {
-      to localhost:$UPSTREAM_PORT
+      to localhost:$NODE
     }
   }
 
 	handle @static {
-		root * $HOME/$UPSTREAM_NODE/static
+		root * $HOME/$APP_NAME-$NODE/static
 		file_server
 	}
 
@@ -235,13 +221,13 @@ EOF
 
 if [ "$HEALTHY" = false ]; then
   echo "$DEPLOY_NODE is not healthy after $MAX_RETRIES retries. Killing it."
-  sudo systemctl stop "$APP_NAME-$DEPLOY_NODE"
-  point_caddy_to "$OLD_PORT" "$OLD_NODE"
+  sudo systemctl stop "$APP_NAME@$DEPLOY_NODE"
+  point_caddy_to "$OLD_NODE"
 else
   echo "$DEPLOY_NODE is healthy! 🎉"
-  point_caddy_to "$DEPLOY_PORT" "$DEPLOY_NODE"
+  point_caddy_to "$DEPLOY_NODE"
   sleep 5
-  sudo systemctl stop "$APP_NAME-$OLD_NODE"
-  sudo systemctl disable "$APP_NAME-$OLD_NODE" &>/dev/null
-  sudo systemctl enable "$APP_NAME-$DEPLOY_NODE" &>/dev/null
+  sudo systemctl stop "$APP_NAME@$OLD_NODE"
+  sudo systemctl disable "$APP_NAME@$OLD_NODE" &>/dev/null
+  sudo systemctl enable "$APP_NAME@$DEPLOY_NODE" &>/dev/null
 fi
