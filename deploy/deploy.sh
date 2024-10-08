@@ -113,17 +113,17 @@ echo "$LOGROTATE_CONFIG" | sudo tee /etc/logrotate.d/$APP_NAME >/dev/null
 
 # Determine deploy node
 if systemctl is-active --quiet "$APP_NAME@3000.service"; then
-  echo "3000 node is running. Will deploy to 3001..."
-  DEPLOY_NODE=3001
   OLD_NODE=3000
+  DEPLOY_NODE=3001
+  echo "$OLD_NODE is running. Will deploy to $DEPLOY_NODE..."
 elif systemctl is-active --quiet "$APP_NAME@3001.service"; then
-  echo "3001 node is running. Will deploy to 3000..."
-  DEPLOY_NODE=3000
   OLD_NODE=3001
+  DEPLOY_NODE=3000
+  echo "$OLD_NODE is running. Will deploy to $DEPLOY_NODE..."
 else
-  echo "Nodes are not running. Will deploy to 3000."
   DEPLOY_NODE=3000
   OLD_NODE=3001
+  echo "$APP_NAME is not running. Will deploy to $DEPLOY_NODE..."
 fi
 
 function create_systemd_service() {
@@ -138,8 +138,8 @@ After=network.target
 Type=simple
 User=devops
 Environment=NODE_ENV=production PORT=%i DB_LOCATION=$DB_LOCATION FORKS=$FORKS
-WorkingDirectory=$HOME/$APP_NAME-%i
-ExecStart=$NODE_DIR/bin/node --env-file-if-exists $HOME/$APP_NAME-%i/.env $HOME/$APP_NAME-%i/application/server.js
+WorkingDirectory=$HOME/$APP_NAME@%i
+ExecStart=$NODE_DIR/bin/node --env-file-if-exists $HOME/$APP_NAME@%i/.env $HOME/$APP_NAME@%i/application/server.js
 Restart=on-failure
 StandardOutput=append:/var/log/$APP_NAME-out.log
 StandardError=append:/var/log/$APP_NAME-err.log
@@ -156,15 +156,15 @@ EOF
 create_systemd_service
 
 # Move app contents into ~/<deploy node>
-rm -rf "$HOME/$APP_NAME-$DEPLOY_NODE"
-mv -f "$APP_DIR" "$HOME/$APP_NAME-$DEPLOY_NODE"
+rm -rf "$HOME/$APP_NAME@$DEPLOY_NODE"
+mv -f "$APP_DIR" "$HOME/$APP_NAME@$DEPLOY_NODE"
 
 # Grant "devops" user +rwx access to $HOME and subdirectories
 # Grant users other than "devops" +rx access to $HOME and subdirectories (for Caddy)
 sudo chmod -R u+rwx,o+rx "$HOME"
 
 # Install dependencies
-cd $HOME/$APP_NAME-$DEPLOY_NODE
+cd $HOME/$APP_NAME@$DEPLOY_NODE
 npm ci --production
 
 # Migrate database
@@ -202,7 +202,7 @@ $DOMAIN {
   }
 
 	handle @static {
-		root * $HOME/$APP_NAME-$NODE/static
+		root * $HOME/$APP_NAME@$NODE/static
 		file_server
 	}
 
