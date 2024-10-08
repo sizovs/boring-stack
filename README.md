@@ -25,7 +25,7 @@ Since stability, simplicity, and fewer abstractions are the guiding principles, 
 * Playwright for E2E tests
 * SQLite with better-sqlite3 for DB access w/o ORMs and query builders
 * Litestream for streaming DB replication
-* Caddy for zero-downtime deployments and and automatic TLS[^1]
+* Caddy for zero-downtime deployments and automatic TLS[^1]
 
 [^1]: If I were to build the app with Go, the Caddy reverse proxy could have been eliminated, leaving us with fewer moving parts and less overhead. Go apps can do [TLS automation](github.com/caddyserver/certmagic) (Caddy uses it under the hood) and [graceful upgrades](https://blog.cloudflare.com/graceful-upgrades-in-go/) similar to Caddy and Nginx. Thanks to systemd, you can [safely](https://mgdm.net/weblog/systemd/) bind it to port 80 or 443 without compromising security.
 
