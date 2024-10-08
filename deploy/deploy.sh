@@ -143,6 +143,7 @@ ExecStart=$NODE_DIR/bin/node --env-file-if-exists $HOME/$APP_NAME@%i/.env $HOME/
 Restart=on-failure
 StandardOutput=append:/var/log/$APP_NAME-out.log
 StandardError=append:/var/log/$APP_NAME-err.log
+TimeoutStopSec=15 # Wait 15 seconds before sending SIGKILL
 
 [Install]
 WantedBy=multi-user.target
