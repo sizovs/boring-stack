@@ -43,5 +43,5 @@ tasks:
       - echo ⏳ Building assets...
       - npm run build
       - echo ⏳ Preparing to deploy to $SERVER_IP...
-      - rsync --timeout=3 --delete --recursive --exclude-from=./deploy/.rsync_ignore ./ devops@$SERVER_IP:/home/devops/latest
+      - rsync --timeout=5 --delete --recursive --exclude-from=./deploy/.rsync_ignore ./ devops@$SERVER_IP:/home/devops/latest
       - ssh devops@$SERVER_IP "DOMAIN=$DOMAIN bash < /home/devops/latest/deploy/deploy.sh"
