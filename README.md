@@ -33,7 +33,9 @@ Since stability, simplicity, and fewer abstractions are the guiding principles, 
 
 Simplicity is achieved through reduction, not addition. The project is built and shipped straight from the local dev machine, eliminating the need for Docker, artifact repositories, and external CI servers. By following the #1 rule of distributing systems — don't distribute — and choosing SQLite, we achieve parity between development and production environments. By eliminating heavy tools and abstractions we can quickly spin up a local dev server, run all tests in parallel against the real database, and know within seconds if our app works.
 
-# Before deployment
+# Deployment & Running
+
+#### Before deployment
 Create `<project_dir>/.env` with the following content:
 ```
 # Path to a public key used for accessing your VPS. Optional, defaults to ~/.ssh/hetzner.pub
@@ -43,14 +45,14 @@ PUBLIC_KEY=<value>
 DOMAIN=<value>
 ```
 
-# Provisioning infra
+#### Provisioning infra
 ```
 HETZNER_API_TOKEN=<secret goes here> task infra
 ```
 
 If you're using a custom app domain, point your DNS records to the IP address of your Hetzner VPS.
 
-# Deploying to production
+#### Deploying to production
 
 ```
 SERVER_IP=<server ip> task deploy
@@ -58,24 +60,24 @@ SERVER_IP=<server ip> task deploy
 
 🎉 Your app should be publicly available via HTTPS on your custom domain or via `<server ip>.nip.io`.
 
-# Running locally
+#### Running locally
 ```
 task dev
 ```
 
-# Running tests
+##### Running tests
 ```
 task test
 ```
 
-# Pulling production DB to local dev
-```
-task db:pull
-```
-
-# Troubleshooting on prod
+##### Running REPL
 ```
 DB_LOCATION=<db location> npm run repl
+```
+
+#### Pulling production DB locally
+```
+task db:pull
 ```
 
 # JS
