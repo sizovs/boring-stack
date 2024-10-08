@@ -32,7 +32,7 @@ tasks:
       - echo ⏳ Pulling DB backup from $SERVER_IP into $DB_BACKUP...
       - rm -rf $DB_LOCATION
       - rm -rf $DB_BACKUP && mkdir $DB_BACKUP
-      - rsync --timeout=5 -a --exclude 'lost+found' devops@$SERVER_IP:/mnt/backup/ $DB_BACKUP
+      - rsync --timeout=5 --recursive --exclude 'lost+found' devops@$SERVER_IP:/mnt/backup/ $DB_BACKUP
       - litestream restore -config ./modules/database/litestream.yml $DB_LOCATION
   infra:
     cmds:
