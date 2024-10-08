@@ -186,8 +186,22 @@ DB_LOCATION=$DB_LOCATION npm run migrate
 # (Re)start
 sudo systemctl restart "$APP_NAME-$DEPLOY_NODE"
 
-# Start on boot
-sudo systemctl enable "$APP_NAME-$DEPLOY_NODE"
+# Check if <deploy node> is healthy
+HEALTHY=false
+MAX_RETRIES=3
+WAIT_TIME=5
+while [ $MAX_RETRIES -gt 0 ]; do
+  response=$(curl -s -o /dev/null -w "%{http_code}" "http://localhost:$DEPLOY_PORT/health")
+
+  if [ "$response" -eq 200 ]; then
+    HEALTHY=true
+    break
+  else
+    echo "$DEPLOY_NODE is not healthy. Retrying in $WAIT_TIME seconds..."
+    sleep $WAIT_TIME
+    ((MAX_RETRIES--))
+  fi
+done
 
 function point_caddy_to() {
   local UPSTREAM_PORT=$1
@@ -219,41 +233,15 @@ EOF
   sudo systemctl reload caddy
 }
 
-# Check if <deploy node> is healthy
-HEALTHY=false
-MAX_RETRIES=3
-WAIT_TIME=5
-while [ $MAX_RETRIES -gt 0 ]; do
-  response=$(curl -s -o /dev/null -w "%{http_code}" "http://localhost:$DEPLOY_PORT/health")
-
-  if [ "$response" -eq 200 ]; then
-    HEALTHY=true
-    break
-  else
-    echo "$DEPLOY_NODE is not healthy. Retrying in $WAIT_TIME seconds..."
-    sleep $WAIT_TIME
-    ((MAX_RETRIES--))
-  fi
-done
-
-# If <deploy node> is unhealthy, stop it and interrupt deployment
 if [ "$HEALTHY" = false ]; then
   echo "$DEPLOY_NODE is not healthy after $MAX_RETRIES retries. Killing it."
   sudo systemctl stop "$APP_NAME-$DEPLOY_NODE"
-  sudo systemctl disable "$APP_NAME-$DEPLOY_NODE"
   point_caddy_to "$OLD_PORT" "$OLD_NODE"
-  exit 1
 else
-  echo "$DEPLOY_NODE is healthy!"
+  echo "$DEPLOY_NODE is healthy! 🎉"
   point_caddy_to "$DEPLOY_PORT" "$DEPLOY_NODE"
+  sleep 5
+  sudo systemctl stop "$APP_NAME-$OLD_NODE"
+  sudo systemctl disable "$APP_NAME-$OLD_NODE" &>/dev/null
+  sudo systemctl enable "$APP_NAME-$DEPLOY_NODE" &>/dev/null
 fi
-
-# Give old node a few seconds to complete existing requests
-sleep 5
-
-# Stop old node
-sudo systemctl stop "$APP_NAME-$OLD_NODE"
-
-# Don't start old node on boot
-sudo systemctl disable "$APP_NAME-$OLD_NODE"
-

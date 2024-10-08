@@ -19,12 +19,6 @@ if (cluster.isPrimary) {
     }
   })
 } else {
-  const options = process.env.PORT
-    ? { port: process.env.PORT }
-    : process.env.SOCKET
-    ? { path: process.env.SOCKET }
-    : undefined
-
-  const address = await startApp(options)
+  const address = await startApp({ port: process.env.PORT })
   logger.info(`Running @ ${address}`)
 }
