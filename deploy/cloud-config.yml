@@ -8,6 +8,7 @@ users:
       - ${publicKey}
 packages:
   - htop
+  - jq
   - fail2ban
 package_update: true
 package_upgrade: true
