@@ -33,7 +33,27 @@ Since stability, simplicity, and fewer abstractions are the guiding principles, 
 
 Simplicity is achieved through reduction, not addition. The project is built and shipped straight from the local dev machine, eliminating the need for Docker, artifact repositories, and external CI servers. By following the #1 rule of distributing systems — don't distribute — and choosing SQLite, we achieve parity between development and production environments. By eliminating heavy tools and abstractions we can quickly spin up a local dev server, run all tests in parallel against the real database, and know within seconds if our app works.
 
-# Deployment & Running
+# Running & Deploying
+
+#### Running locally
+```
+task dev
+```
+
+##### Running tests
+```
+task test
+```
+
+##### Running REPL
+```
+DB_LOCATION=<db location> npm run repl
+```
+
+#### Pulling production DB locally
+```
+task db:pull
+```
 
 #### Before deployment
 Create `<project_dir>/.env` with the following content:
@@ -60,25 +80,6 @@ SERVER_IP=<server ip> task deploy
 
 🎉 Your app should be publicly available via HTTPS on your custom domain or via `<server ip>.nip.io`.
 
-#### Running locally
-```
-task dev
-```
-
-##### Running tests
-```
-task test
-```
-
-##### Running REPL
-```
-DB_LOCATION=<db location> npm run repl
-```
-
-#### Pulling production DB locally
-```
-task db:pull
-```
 
 # JS
 Modern JS is not the same JS many developers disliked a decade ago. It offers one of the best developer experiences (DX), a vibrant ecosystem, and is a highly agile language that doesn't require re-compilation (DX goes to the moon). It is well-suited for I/O-heavy applications, like most web apps. The throughput is on par with Go.
