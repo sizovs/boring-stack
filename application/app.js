@@ -48,10 +48,7 @@ export const startApp = async (options = { port: 0 }) => {
   // Helmet
   app.register(helmet, {
     global: true,
-    contentSecurityPolicy: false,
-    referrerPolicy: {
-      policy: "strict-origin-when-cross-origin",
-    }
+    contentSecurityPolicy: false
   })
 
   // URL-Encoded forms
