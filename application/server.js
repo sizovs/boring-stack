@@ -9,6 +9,9 @@ const numForks = Number(process.env.FORKS) || 2
 // Mapping between pids and wids (wid = worked id that doesn't change between restarts)
 const wids = new Map()
 
+// Mapping wids to workers
+const workers = new Map()
+
 // Mapping between wids and number of restart attempts
 const restartAttempts = new Map()
 
@@ -27,12 +30,13 @@ class Wrk {
     const worker = cluster.fork()
     const pid = worker.process.pid
     wids.set(pid, wid)
+    workers.set(wid, new Wrk(pid, wid))
   }
 
   static find(worker) {
     const pid = worker.process.pid
     const wid = wids.get(pid)
-    return new Wrk(pid, wid)
+    return workers.get(wid)
   }
 
   ready() {
