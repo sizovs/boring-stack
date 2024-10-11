@@ -1,10 +1,11 @@
 import { startApp } from '#application/app'
 import { test, expect } from '@playwright/test'
 
+let baseUrl
 let page
 
 test.beforeAll(async ({ browser }) => {
-  const baseUrl = await startApp()
+  baseUrl = await startApp()
   page = await browser.newPage()
   await page.goto(baseUrl)
 })
@@ -50,5 +51,24 @@ test('deletes a todo item', async () => {
   await page.getByRole('checkbox').first().click()
   await expect(page.getByTestId('todo-count')).toHaveText('1 todo')
   await expect(page.getByTestId('todo-item')).toHaveCount(1)
+  await page.getByRole('checkbox').first().click()
 })
 
+test('disallows CSRF attacks', async ({ page }) => {
+    const maliciousTodo = "You've been pwned"
+    const maliciousPageContent = `
+    <html>
+      <body>
+        <h1>Malicious Page</h1>
+        <form id="csrf-form" method="POST" action="${baseUrl}/todos">
+          <input type="hidden" name="description" value="${maliciousTodo}">
+        </form>
+        <script>
+          document.getElementById('csrf-form').submit()
+        </script>
+      </body>
+    </html>
+  `
+  await page.setContent(maliciousPageContent)
+  await expect(page.locator('body')).toHaveText("Missing csrf secret")
+})

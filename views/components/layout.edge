@@ -9,7 +9,7 @@
   <script src="https://unpkg.com/alpinejs@3.14.1/dist/cdn.min.js" defer></script>
 
   {{-- Scripts --}}
-  <script src="{{static('/app.js')}}" defer></script>
+  <script src="{{static('/app.js')}}" data-csrftoken="{{ csrfToken }}" defer></script>
 
   {{-- Styles --}}
   <link rel="stylesheet" href="{{static('/css/app-built.css')}}" >

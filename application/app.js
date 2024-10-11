@@ -6,6 +6,7 @@ import { cookieSecret } from "#modules/secrets"
 import { logger } from "#modules/logger"
 import { Edge } from 'edge.js'
 import fastify from 'fastify'
+import csrf from "@fastify/csrf-protection"
 import formBody from '@fastify/formbody'
 import statics from '@fastify/static'
 import session from '@fastify/secure-session'
@@ -75,10 +76,25 @@ export const startApp = async (options = { port: 0 }) => {
     root: process.cwd() + '/static',
   })
 
+  // Csrf
+  await app.register(csrf, {
+    sessionPlugin: '@fastify/secure-session'
+  })
+
+  // Protect against CSRF
+  app.addHook('preHandler', (request, reply, done) => {
+    if (['POST', 'PUT', 'PATCH', 'DELETE'].includes(request.method)) {
+      app.csrfProtection(request, reply, done)
+    } else {
+      done()
+    }
+  })
+
   app.decorateReply('render', async function (view, payload) {
     const currentFlash = this.flash()
+    const csrfToken = this.generateCsrf()
     const flash = { errors: currentFlash?.errors?.[0] ?? {}, old: currentFlash?.old?.[0] ?? {} }
-    const html = await edge.render(view, { ...payload, flash })
+    const html = await edge.render(view, { ...payload, flash, csrfToken })
     this.type('text/html')
     this.send(html)
   })
@@ -86,7 +102,7 @@ export const startApp = async (options = { port: 0 }) => {
   app.setErrorHandler(async (err, request, reply) => {
     logger.error({ err })
     reply.code(500)
-    return 'Oops, something went wrong. Please try again later.'
+    return err?.message || 'Oops, something went wrong. Please try again later.'
   })
 
   app.setNotFoundHandler(async (request, reply) => {
