@@ -4,7 +4,7 @@ import process from 'node:process'
 import { logger } from "#modules/logger"
 import { startApp } from "./app.js"
 
-const forks = Number(process.env.FORKS) || 2
+const numForks = Number(process.env.FORKS) || 2
 
 // Mapping between pids and wids (wid = worked id that doesn't change between restarts)
 const wids = new Map()
@@ -60,7 +60,7 @@ class Wrk {
 }
 
 if (cluster.isPrimary) {
-  for (let wid = 0; wid < forks; wid++) {
+  for (let wid = 0; wid < numForks; wid++) {
     Wrk.new(wid)
   }
 
