@@ -37,7 +37,7 @@ export const startApp = async (options = { port: 0 }) => {
 
   // All static assets will have a version number appended at the end.
   // Increment the version number to invalidate the CDN cache.
-  const staticVersion = 1;
+  const staticVersion = 1
   const edge = new Edge({ cache: !isDevMode })
   const viewDirectory = process.cwd() + '/views'
   edge.mount('default', viewDirectory)
