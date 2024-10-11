@@ -47,7 +47,6 @@ export const startApp = async (options = { port: 0 }) => {
 
   // Helmet
   app.register(helmet, {
-    global: true,
     contentSecurityPolicy: false
   })
 
