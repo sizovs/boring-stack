@@ -9,6 +9,7 @@ const forks = Number(process.env.FORKS) || 2
 // Mapping between pids and wids (wid = worked id that doesn't change between restarts)
 const wids = new Map()
 
+// Mapping between wids and number of restart attempts
 const restartAttempts = new Map()
 
 class Wrk {
