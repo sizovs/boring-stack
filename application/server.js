@@ -21,17 +21,16 @@ class Wrk {
     this.#wid = wid
   }
 
-  static find(worker) {
-    const pid = worker.process.pid
-    const wid = wids.get(pid)
-    return new Wrk(pid, wid)
-  }
-
-
   static new(wid) {
     const worker = cluster.fork()
     const pid = worker.process.pid
     wids.set(pid, wid)
+  }
+
+  static find(worker) {
+    const pid = worker.process.pid
+    const wid = wids.get(pid)
+    return new Wrk(pid, wid)
   }
 
   ready() {
@@ -40,10 +39,6 @@ class Wrk {
 
   exitedOk() {
     restartAttempts.delete(this.#wid)
-  }
-
-  get name() {
-    return `Worker (wid: ${this.#wid} / pid: ${this.#pid})`
   }
 
   restart() {
@@ -57,6 +52,11 @@ class Wrk {
       logger.fatal(`No more restarts attempts for ${this.name}.`)
     }
   }
+
+  get name() {
+    return `Worker (wid: ${this.#wid} / pid: ${this.#pid})`
+  }
+
 }
 
 if (cluster.isPrimary) {
