@@ -7,7 +7,6 @@ import { logger } from "#modules/logger"
 import { Edge } from 'edge.js'
 import fastify from 'fastify'
 import formBody from '@fastify/formbody'
-import cors from '@fastify/cors'
 import statics from '@fastify/static'
 import session from '@fastify/secure-session'
 import flash from '@fastify/flash'
@@ -56,12 +55,6 @@ export const startApp = async (options = { port: 0 }) => {
 
   // URL-Encoded forms
   app.register(formBody)
-
-  // Cors
-  app.register(cors, {
-    credentials: true,
-    origin: true
-  })
 
   // Sessions
   app.register(session, {
