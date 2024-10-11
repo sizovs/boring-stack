@@ -13,18 +13,17 @@ import session from '@fastify/secure-session'
 import flash from '@fastify/flash'
 import helmet from "@fastify/helmet"
 
-if (!process.env.DB_LOCATION) {
-  throw new Error('DB_LOCATION environment variable is missing.')
-}
-
-const envs = ['development', 'production']
-if (!envs.includes(process.env.NODE_ENV)) {
-  throw new Error(`NODE_ENV environment variable must be one of ${envs}.`)
-}
-
-const isDevMode = process.env.NODE_ENV !== "production"
-
 export const startApp = async (options = { port: 0 }) => {
+  const isDevMode = process.env.NODE_ENV !== "production"
+
+  if (!process.env.DB_LOCATION) {
+    throw new Error('DB_LOCATION environment variable is missing.')
+  }
+
+  const envs = ['development', 'production']
+  if (!envs.includes(process.env.NODE_ENV)) {
+    throw new Error(`NODE_ENV environment variable must be one of ${envs}.`)
+  }
 
   const db = await connect(process.env.DB_LOCATION)
 
