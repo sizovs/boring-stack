@@ -5,7 +5,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   {{-- Htmx --}}
-  <script src="https://unpkg.com/htmx.org@2.0.2/dist/htmx.min.js"></script>
+  <script src="https://unpkg.com/htmx.org@2.0.3/dist/htmx.js"></script>
   <script src="https://unpkg.com/alpinejs@3.14.1/dist/cdn.min.js" defer></script>
 
   {{-- Scripts --}}
@@ -20,7 +20,7 @@
   </style>
 </head>
 
-<body hx-ext="preload,loading-states" hx-boost="true">
+<body hx-boost="true">
   {{{ await $slots.main() }}}
   <footer x-data>
     <div class="mx-auto w-full max-w-screen-xl p-4 py-6 lg:py-8">
