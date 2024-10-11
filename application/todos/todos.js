@@ -11,7 +11,6 @@ export const initTodos = async ({ app, db }) => {
 
   app.post('/todos', async (request, reply) => {
     const description = request.body.description?.trim()
-    console.log(description)
     if (!description) {
       request.flash('old', request.body)
       request.flash('errors', { 'description': 'Task description is required' })

@@ -47,7 +47,12 @@ export const startApp = async (options = { port: 0 }) => {
 
   // Helmet
   app.register(helmet, {
-    contentSecurityPolicy: false
+    contentSecurityPolicy: {
+      directives: {
+        // Allow non-https requests for local dev (null) disallow for production ([])
+        upgradeInsecureRequests: isDevMode ? null : []
+      }
+    }
   })
 
   // URL-Encoded forms
@@ -69,6 +74,7 @@ export const startApp = async (options = { port: 0 }) => {
 
   // Static files
   app.register(statics, {
+    prefix: '/static',
     root: process.cwd() + '/static',
   })
 

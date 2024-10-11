@@ -4,15 +4,15 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  {{-- Htmx --}}
-  <script src="https://unpkg.com/htmx.org@2.0.3/dist/htmx.js"></script>
-  <script src="https://unpkg.com/alpinejs@3.14.1/dist/cdn.min.js" defer></script>
+  {{-- https://blog.wesleyac.com/posts/why-not-javascript-cdn --}}
+  <script src="/static/vendored/htmx@2.0.3.js"></script>
+  <script src="/static/vendored/alpine@3.14.1.js" defer></script>
 
   {{-- Scripts --}}
-  <script src="{{static('/app.js')}}" data-csrftoken="{{ csrfToken }}" defer></script>
+  <script src="{{static('/static/app.js')}}" data-csrftoken="{{ csrfToken }}" defer></script>
 
   {{-- Styles --}}
-  <link rel="stylesheet" href="{{static('/css/app-built.css')}}" >
+  <link rel="stylesheet" href="{{static('/static/css/app-built.css')}}" >
 
   <title>Todos</title>
   <style>
