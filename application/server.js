@@ -27,7 +27,7 @@ class Wrk {
   }
 
 
-  static fork(wid) {
+  static new(wid) {
     const worker = cluster.fork()
     const pid = worker.process.pid
     wids.set(pid, wid)
@@ -50,7 +50,7 @@ class Wrk {
     const maxAttempts = 5
     if (attempt <= maxAttempts) {
       logger.info(`${this.name} restart attempt (${attempt}/${maxAttempts})`)
-      setTimeout(() => Wrk.fork(this.#wid), 1000)
+      setTimeout(() => Wrk.new(this.#wid), 1000)
       restartAttempts.set(this.#wid, attempt + 1)
     } else {
       logger.fatal(`No more restarts attempts for ${this.name}.`)
@@ -60,7 +60,7 @@ class Wrk {
 
 if (cluster.isPrimary) {
   for (let wid = 0; wid < forks; wid++) {
-    Wrk.fork(wid)
+    Wrk.new(wid)
   }
 
   cluster.on('message', (worker, message) => {
@@ -72,10 +72,10 @@ if (cluster.isPrimary) {
   cluster.on('exit', (worker, code) => {
     const wrk = Wrk.find(worker)
     const successfulExit = code === 0
-    if (!successfulExit) {
-      wrk.restart()
-    } else {
+    if (successfulExit) {
       wrk.exitedOk()
+    } else {
+      wrk.restart()
     }
   })
 } else {
