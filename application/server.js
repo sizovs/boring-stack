@@ -1,5 +1,5 @@
-import cluster from 'node:cluster';
-import process from 'node:process';
+import cluster from 'node:cluster'
+import process from 'node:process'
 
 import { logger } from "#modules/logger"
 import { startApp } from "./app.js"
