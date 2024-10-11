@@ -12,8 +12,10 @@ const wids = new Map()
 // Mapping between wids and number of restart attempts
 const restartAttempts = new Map()
 
+// Signal for IPC
+const APP_READY = 'ready'
+
 class Wrk {
-  static READY = 'ready'
   #pid
   #wid
   constructor(pid, wid) {
@@ -65,7 +67,7 @@ if (cluster.isPrimary) {
   }
 
   cluster.on('message', (worker, message) => {
-    if (message === Wrk.READY) {
+    if (message === APP_READY) {
       Wrk.find(worker).ready()
     }
   })
@@ -82,5 +84,5 @@ if (cluster.isPrimary) {
 } else {
   const address = await startApp({ port: process.env.PORT })
   logger.info(`Running @ ${address}`)
-  process.send(Wrk.READY)
+  process.send(APP_READY)
 }
