@@ -35,6 +35,8 @@ Simplicity is achieved through reduction, not addition. The project is built and
 
 # Running & Deploying
 
+Make sure you have [Task](https://taskfile.dev/) installed locally.
+
 #### Running locally
 ```
 task dev
