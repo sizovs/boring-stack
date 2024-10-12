@@ -27,10 +27,11 @@ class Wrk {
   }
 
   static new(wid) {
-    const worker = cluster.fork()
+    const worker = cluster.fork( { wid } )
     const pid = worker.process.pid
     wids.set(pid, wid)
     workers.set(wid, new Wrk(pid, wid))
+    return workers.get(wid)
   }
 
   static find(worker) {
