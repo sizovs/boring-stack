@@ -34,6 +34,7 @@
     "@playwright/test": "^1.44.1",
     "@tailwindcss/forms": "^0.5.7",
     "@tailwindcss/typography": "^0.5.14",
+    "@types/better-sqlite3": "^7.6.11",
     "@types/node": "^22.7.5",
     "concurrently": "^8.2.2",
     "memfs": "^4.9.2",

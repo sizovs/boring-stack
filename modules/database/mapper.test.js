@@ -25,18 +25,6 @@ class User  {
   }
 }
 
-const assertMapping = user => {
-  // adds getters
-  assert.equal(user.fullname, 'Jeff Bezos')
-
-  // adds methods
-  assert.equal(user.greeting(), 'Hello, Jeff Bezos')
-
-  // adds dynamic fields
-  assert.equal(user.creationDate, new Date().toISOString().substring(0, 10))
-
-}
-
 describe('mapper', () => {
   const sql = `select *, DATE(creationTs, 'unixepoch') AS creationDate from users`
 
@@ -49,4 +37,14 @@ describe('mapper', () => {
     assertMapping(user)
   })
 
+  const assertMapping = user => {
+    // adds getters
+    assert.equal(user.fullname, 'Jeff Bezos')
+
+    // adds methods
+    assert.equal(user.greeting(), 'Hello, Jeff Bezos')
+
+    // adds dynamic fields
+    assert.equal(user.creationDate, new Date().toISOString().substring(0, 10))
+  }
 })
