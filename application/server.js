@@ -12,9 +12,6 @@ const wids = new Map()
 // Mapping wids to workers
 const workers = new Map()
 
-// Mapping between wids and number of restart attempts
-const restartAttempts = new Map()
-
 // Signal for IPC
 const APP_HEALTHY = 'app-healthy'
 
@@ -30,17 +27,19 @@ const broadcast = message => {
 class Wrk {
   #pid
   #wid
-  constructor(pid, wid) {
-    this.#pid = pid
+  #restarts = 0
+  constructor(wid) {
     this.#wid = wid
   }
 
   static new(wid) {
     const worker = cluster.fork( { wid } )
     const pid = worker.process.pid
+    const wrk = workers.get(wid) || new Wrk(wid)
+    wrk.#pid = pid
     wids.set(pid, wid)
-    workers.set(wid, new Wrk(pid, wid))
-    return workers.get(wid)
+    workers.set(wid, wrk)
+    return wrk
   }
 
   static find(worker) {
@@ -50,20 +49,19 @@ class Wrk {
   }
 
   healthy() {
-    restartAttempts.delete(this.#wid)
+    this.#restarts = 0
   }
 
   exitedOk() {
-    restartAttempts.delete(this.#wid)
+    workers.delete(this.#wid)
   }
 
   restart() {
-    const attempt = restartAttempts.get(this.#wid) || 1
+    const attempt = ++this.#restarts
     const maxAttempts = 5
     if (attempt <= maxAttempts) {
       logger.info(`${this.name} restart attempt (${attempt}/${maxAttempts})`)
       setTimeout(() => Wrk.new(this.#wid), 1000)
-      restartAttempts.set(this.#wid, attempt + 1)
     } else {
       logger.fatal(`No more restarts attempts for ${this.name}.`)
     }
