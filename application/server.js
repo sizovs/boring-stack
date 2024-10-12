@@ -16,7 +16,16 @@ const workers = new Map()
 const restartAttempts = new Map()
 
 // Signal for IPC
-const APP_READY = 'ready'
+const APP_HEALTHY = 'app-healthy'
+
+// Signal for IPC
+const CLUSTER_HEALTHY = 'cluster-healthy'
+
+const broadcast = message => {
+  for (const worker of Object.values(cluster.workers)) {
+    worker.send(message)
+  }
+}
 
 class Wrk {
   #pid
@@ -67,13 +76,21 @@ class Wrk {
 }
 
 if (cluster.isPrimary) {
+
+  let numWorkersReady = 0
+
   for (let wid = 0; wid < numForks; wid++) {
     Wrk.new(wid)
   }
 
   cluster.on('message', (worker, message) => {
-    if (message === APP_READY) {
-      Wrk.find(worker).ready()
+    if (message === APP_HEALTHY) {
+      const wrk = Wrk.find(worker)
+      wrk.ready()
+      numWorkersReady++
+      if (numWorkersReady === numForks) {
+        broadcast(CLUSTER_HEALTHY)
+      }
     }
   })
 
@@ -86,8 +103,9 @@ if (cluster.isPrimary) {
       wrk.restart()
     }
   })
+
 } else {
   const address = await startApp({ port: process.env.PORT })
   logger.info(`Running @ ${address}`)
-  process.send(APP_READY)
+  process.send(APP_HEALTHY)
 }

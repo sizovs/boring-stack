@@ -1,6 +1,15 @@
-export const initHealth = async ({ app, db }) => {
+/**
+* @param {{ app: import("fastify").FastifyInstance }}
+*/
+export const initHealth = async ({ app }) => {
+
+  let status = 503
+  process.on('message', message => {
+    if (message === 'cluster-healthy') {
+      status = 200
+    }
+  })
   app.get('/health', (request, reply) => {
-    const { health } = db.prepare("select 'OK' as health").get()
-    reply.send(health)
+    reply.status(status).send('')
   })
 }
