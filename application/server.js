@@ -49,7 +49,7 @@ class Wrk {
     return workers.get(wid)
   }
 
-  ready() {
+  healthy() {
     restartAttempts.delete(this.#wid)
   }
 
@@ -77,7 +77,7 @@ class Wrk {
 
 if (cluster.isPrimary) {
 
-  let numWorkersReady = 0
+  let numWorkersHealthy = 0
 
   for (let wid = 0; wid < numForks; wid++) {
     Wrk.new(wid)
@@ -86,9 +86,9 @@ if (cluster.isPrimary) {
   cluster.on('message', (worker, message) => {
     if (message === APP_HEALTHY) {
       const wrk = Wrk.find(worker)
-      wrk.ready()
-      numWorkersReady++
-      if (numWorkersReady === numForks) {
+      wrk.healthy()
+      numWorkersHealthy++
+      if (numWorkersHealthy === numForks) {
         broadcast(CLUSTER_HEALTHY)
       }
     }
