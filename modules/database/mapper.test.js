@@ -19,7 +19,7 @@ before(() => {
 class User  {
   #newPrivateProperty = 'private'
   newProperty = 'public'
-  prop = 'overridden'
+  prop = 'Local value'
   constructor(item) {
     Object.assign(this, item)
   }
@@ -34,33 +34,33 @@ class User  {
   }
 }
 
-const assertItem = (user) => {
+const assertMapping = user => {
   // adds getters
   assert.equal(user.fullname, 'Jeff Bezos')
+
   // adds methods
   assert.equal(user.greeting(), 'Hello, Jeff Bezos')
+
   // adds new properties
   assert.deepStrictEqual(user.newProperties, ['private', 'public'])
+
+  // adds dynamic properties
+  assert.equal(user.creationDate, new Date().toISOString().substring(0, 10))
+
+  // DB values take precedence over target entity fields when names match
+  assert.equal(user.prop, 'DB value')
 }
 
-describe('mapper', async () => {
+describe('mapper', () => {
+  const sql = `select *, DATE(creationTs, 'unixepoch') AS creationDate, 'DB value' as prop from users`
+
   it('maps rows like a boss 🎉', () => {
-    db.prepare('select * from users').all().map(as(User)).forEach(assertItem)
+    db.prepare(sql).all().map(as(User)).forEach(assertMapping)
   })
 
   it('recommends using all() even if one record is retrieved so that map.as(N) can be used', () => {
-    const [user] = db.prepare('select * from users limit 1').all().map(as(User))
-    assertItem(user)
-  })
-
-  it('recommends using SQL for adding dynamic properties', () => {
-    const [user] = db.prepare(`select *, DATE(creationTs, 'unixepoch') AS creationDate from users limit 1`).all().map(as(User))
-    assert.equal(user.creationDate, new Date().toISOString().substring(0, 10))
-  })
-
-  it('overrides mapper fields with DB fields when name collides', () => {
-    const [user] = db.prepare(`select *, 'prop' as prop from users limit 1`).all().map(as(User))
-    assert.equal(user.prop, 'prop')
+    const [user] = db.prepare(sql + ' limit 1').all().map(as(User))
+    assertMapping(user)
   })
 
 })
