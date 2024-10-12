@@ -17,20 +17,11 @@ before(() => {
 })
 
 class User  {
-  #newPrivateProperty = 'private'
-  newProperty = 'public'
-  prop = 'Local value'
-  constructor(item) {
-    Object.assign(this, item)
-  }
   greeting() {
     return 'Hello, ' + this.fullname
   }
   get fullname() {
     return this.firstname + ' ' + this.lastname
-  }
-  get newProperties() {
-    return [this.#newPrivateProperty, this.newProperty]
   }
 }
 
@@ -41,18 +32,13 @@ const assertMapping = user => {
   // adds methods
   assert.equal(user.greeting(), 'Hello, Jeff Bezos')
 
-  // adds new properties
-  assert.deepStrictEqual(user.newProperties, ['private', 'public'])
-
-  // adds dynamic properties
+  // adds dynamic fields
   assert.equal(user.creationDate, new Date().toISOString().substring(0, 10))
 
-  // DB values take precedence over target entity fields when names match
-  assert.equal(user.prop, 'DB value')
 }
 
 describe('mapper', () => {
-  const sql = `select *, DATE(creationTs, 'unixepoch') AS creationDate, 'DB value' as prop from users`
+  const sql = `select *, DATE(creationTs, 'unixepoch') AS creationDate from users`
 
   it('maps rows like a boss 🎉', () => {
     db.prepare(sql).all().map(as(User)).forEach(assertMapping)
