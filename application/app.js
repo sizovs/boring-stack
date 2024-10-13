@@ -48,6 +48,7 @@ export const startApp = async (options = { port: 0 }) => {
   app.register(helmet, {
     contentSecurityPolicy: {
       directives: {
+        // unsafe-eval is for Alpine.js
         scriptSrc: ["'self'", "'unsafe-eval'"],
         // Allow non-https requests for local dev (null) disallow for production ([])
         upgradeInsecureRequests: isDevMode ? null : []
