@@ -54,10 +54,7 @@
 
         function maintenanceText() {
             const texts = [
-              "503 | Under Maintenance",
-              "We're still under maintenance",
-              "Still working on updates",
-              "We'll be back soon! 😌"
+              "<!--# echo var="status" --> | <!--# echo var="status_text" -->",
             ]
             return texts[attempt() % texts.length]
         }
@@ -68,15 +65,17 @@
         title.textContent = maintenanceText()
         document.title = title.textContent
 
-        let countdown = 10
-        const subtitleText = () => `Page will refresh in ${countdown} seconds`
-        subtitle.textContent = subtitleText()
-        setInterval(() => {
-            subtitle.textContent = subtitleText()
-            if (--countdown === 0) {
-                refresh()
-            }
-        }, 1000)
+        let countdown = <!--# if expr="$retry_after" --><!--# echo var="retry_after" --><!--#else -->0<!--# endif -->
+        if (countdown) {
+          const subtitleText = () => `Page will refresh in ${countdown} seconds`
+          subtitle.textContent = subtitleText()
+          setInterval(() => {
+              subtitle.textContent = subtitleText()
+              if (--countdown === 0) {
+                  refresh()
+              }
+          }, 1000)
+        }
     </script>
 </body>
 
