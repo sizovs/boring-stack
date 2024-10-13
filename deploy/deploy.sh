@@ -210,7 +210,7 @@ $DOMAIN {
 	}
 
 	@static {
-		path *.ico *.gif *.jpg *.jpeg *.png *.svg *.webp *.js *.css *.woff2
+		path /static
 	}
 
 	header @static Cache-Control "public, max-age=31536000"
