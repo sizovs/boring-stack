@@ -14,8 +14,7 @@
     "infra": "node ./deploy/deploy-infra.js",
     "predeploy": "npm run build",
     "deploy": "rsync -v --timeout=5 --recursive --include-from=./deploy/.includes --exclude='*' ./ devops@$SERVER_IP:/home/devops/latest && ssh devops@$SERVER_IP \"DOMAIN=$DOMAIN bash < /home/devops/latest/deploy/deploy.sh\"",
-    "db:pull": "rsync -v --timeout=5 --recursive --exclude 'lost+found' devops@$SERVER_IP:/mnt/backup/ /tmp/backup && litestream restore -o $npm_package_name.db file://tmp/backup",
-    "prepare": "husky"
+    "db:pull": "rsync -v --timeout=5 --recursive --exclude 'lost+found' devops@$SERVER_IP:/mnt/backup/ /tmp/backup && litestream restore -o $npm_package_name.db file://tmp/backup"
   },
   "dependencies": {
     "@fastify/csrf-protection": "^7.0.1",
