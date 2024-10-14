@@ -2,7 +2,7 @@ import { defineConfig } from '@playwright/test'
 
 export default defineConfig({
   testMatch: /.*\.e2e\.js/,
-  timeout: 3 * 60 * 1000,
+  timeout: 5 * 1000, // 5 seconds
   maxFailures: 1,
   testDir: './tests',
   reporter: 'list'

@@ -1,17 +1,18 @@
 import { startApp } from '#application/app'
 import { test, expect } from '@playwright/test'
 
-let page
 let baseUrl
-
-test.beforeAll(async ({ browser }) => {
+test.beforeAll(async () => {
   baseUrl = await startApp()
-  page = await browser.newPage()
 })
 
-
-test('returns OK if app starts successfully', async () => {
+test('returns 503 if cluster is unhealthy', async ({page}) => {
   const response = await page.goto(baseUrl + '/health')
-  const body = await response.text()
-  expect(body).toBe('OK')
+  expect(response.status()).toBe(503)
+})
+
+test('returns 200 if cluster is healthy', async ({page}) => {
+  process.emit('message', 'cluster-healthy')
+  const response = await page.goto(baseUrl + '/health')
+  expect(response.status()).toBe(200)
 })
