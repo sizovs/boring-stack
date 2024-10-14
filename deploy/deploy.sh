@@ -234,11 +234,10 @@ EOF
 if [ "$HEALTHY" = false ]; then
   echo "$DEPLOY_NODE is not healthy after $MAX_RETRIES retries. Killing it."
   sudo systemctl stop "$APP_NAME@$DEPLOY_NODE"
-  point_caddy_to "$OLD_NODE"
 else
   echo "$DEPLOY_NODE is healthy! 🎉"
   point_caddy_to "$DEPLOY_NODE"
-  sleep 5
+  sleep 5 # Give old node some time to finish requests
   sudo systemctl stop "$APP_NAME@$OLD_NODE" &>/dev/null
   sudo systemctl disable "$APP_NAME@$OLD_NODE" &>/dev/null
   sudo systemctl enable "$APP_NAME@$DEPLOY_NODE" &>/dev/null
