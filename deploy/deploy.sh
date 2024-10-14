@@ -197,26 +197,35 @@ function point_caddy_to() {
   local NODE=$1
   CADDYFILE_CONTENT=$(
     cat <<EOF
-$DOMAIN {
-  handle {
-    reverse_proxy {
-      to localhost:$NODE
-    }
-  }
+$DOMAIN
+root * $HOME/$APP_NAME@$NODE
+reverse_proxy :$NODE
+encode zstd gzip
 
-	handle @static {
-		root * $HOME/$APP_NAME@$NODE/static
-		file_server
+@maintenance {
+	file $APP_NAME.m {
+		root $HOME
 	}
+	not header X-Bypass-Maintenance *
+}
 
-	@static {
-		path /static
-	}
+handle @maintenance {
+	error "We'll be back soon! 😌" 503
+}
 
-	header @static Cache-Control "public, max-age=31536000"
+handle /static/* {
+	file_server
+	header Cache-Control max-age=31536000
+}
+
+handle_errors 503 {
+	rewrite * /static/maintenance.html
+	templates
+	file_server
+	header Retry-After 60
 }
 EOF
-  )
+)
 
   echo "$CADDYFILE_CONTENT" | sudo tee /etc/caddy/Caddyfile >/dev/null
   sudo systemctl reload caddy
