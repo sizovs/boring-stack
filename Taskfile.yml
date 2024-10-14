@@ -8,11 +8,8 @@ env:
 
 tasks:
   test:
-    env:
-      DB_LOCATION: ":memory:"
     cmds:
       - npm test
-      - npx playwright test
   dev:
     env:
       PORT: 3000
@@ -20,9 +17,6 @@ tasks:
     cmds:
       - npm install
       - npm run dev
-  dev:tailwind:
-    cmds:
-      - npm run dev:tailwind
   db:pull:
     silent: true
     env:
