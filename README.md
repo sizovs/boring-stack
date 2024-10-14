@@ -55,19 +55,20 @@ DB_LOCATION=<db location> npm run repl
 npm run db:pull
 ```
 
+#### Provisioning infra
+```
+HETZNER_API_TOKEN=<secret goes here> npm run infra
+```
+
 #### Before deployment
 Create `<project_dir>/.env` with the following content:
 ```
 # Path to a public key used for accessing your VPS. Optional, defaults to ~/.ssh/hetzner.pub
+# How to generate SSH public key: https://git-scm.com/book/en/v2/Git-on-the-Server-Generating-Your-SSH-Public-Key
 PUBLIC_KEY=<value>
 
 # Your public domain such as sizovs.net. Optional, defaults to <server ip>.nip.io
 DOMAIN=<value>
-```
-
-#### Provisioning infra
-```
-HETZNER_API_TOKEN=<secret goes here> npm run infra
 ```
 
 If you're using a custom app domain, point your DNS records to the IP address of your Hetzner VPS.
