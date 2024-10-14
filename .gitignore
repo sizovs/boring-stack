@@ -2,7 +2,7 @@ backup
 logs
 *.log
 *.sqlite3
-*.db
+*.db*
 npm-debug.log*
 app-built.css
 dist

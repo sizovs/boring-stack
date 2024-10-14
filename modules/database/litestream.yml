@@ -1,4 +1,0 @@
-dbs:
-  - path: $DB_LOCATION
-    replicas:
-      - url: file:$DB_BACKUP

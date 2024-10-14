@@ -1,0 +1,7 @@
+application/***
+deploy/***
+modules/***
+static/***
+views/***
+package*.json
+jsconfig.json

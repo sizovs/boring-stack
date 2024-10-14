@@ -35,16 +35,14 @@ Simplicity is achieved through reduction, not addition. The project is built and
 
 # Running & Deploying
 
-Make sure you have [Task](https://taskfile.dev/) installed locally.
-
 #### Running locally
 ```
-task dev
+npm run dev
 ```
 
 ##### Running tests
 ```
-task test
+npm test
 ```
 
 ##### Running REPL
@@ -54,7 +52,7 @@ DB_LOCATION=<db location> npm run repl
 
 #### Pulling production DB locally
 ```
-task db:pull
+npm run db:pull
 ```
 
 #### Before deployment
@@ -69,7 +67,7 @@ DOMAIN=<value>
 
 #### Provisioning infra
 ```
-HETZNER_API_TOKEN=<secret goes here> task infra
+HETZNER_API_TOKEN=<secret goes here> npm run infra
 ```
 
 If you're using a custom app domain, point your DNS records to the IP address of your Hetzner VPS.
@@ -77,7 +75,7 @@ If you're using a custom app domain, point your DNS records to the IP address of
 #### Deploying to production
 
 ```
-SERVER_IP=<server ip> task deploy
+SERVER_IP=<server ip> npm run deploy
 ```
 
 🎉 Your app should be publicly available via HTTPS on your custom domain or via `<server ip>.nip.io`.

@@ -168,7 +168,7 @@ sudo chmod -R u+rwx,o+rx "$HOME"
 
 # Install dependencies
 cd $HOME/$APP_NAME@$DEPLOY_NODE
-npm ci --production
+HUSKY=0 npm ci --production
 
 # Migrate database
 DB_LOCATION=$DB_LOCATION npm run migrate
