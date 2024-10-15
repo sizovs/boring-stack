@@ -1,40 +1,21 @@
-import axios from "axios"
+import ky from 'ky'
 
 const apiToken = process.env.HETZNER_API_TOKEN
 if (!apiToken) {
   throw new Error("Please provide HETZNER_API_TOKEN")
 }
 
-const apiClient = axios.create({
-  baseURL: 'https://api.hetzner.cloud/v1/',
+const apiClient = ky.create({
+  prefixUrl: 'https://api.hetzner.cloud/v1/',
   headers: {
-    'Authorization': `Bearer ${apiToken}`,
-    'Content-Type': 'application/json'
-  }
+    Authorization: `Bearer ${apiToken}`
+  },
+	hooks: {
+		beforeRequest: [ (request) =>
+      console.log(request.method + " > " + request.url)
+    ],
+	},
 })
-
-apiClient.interceptors.request.use(request => {
-  console.log(request.method + " > " + request.url)
-  return request
-})
-
-async function retry(promiseFn, attempts = 20, delay = 3000) {
-  const shouldRetry = (error) => {
-    return error.code === 'ECONNABORTED' || (error.response && error.response.status >= 500)
-  }
-
-  for (let attempt = 1; attempt <= attempts; attempt++) {
-    try {
-      return await promiseFn()
-    } catch (error) {
-      if (!shouldRetry(error) || attempt === attempts) {
-        throw error
-      }
-      await new Promise(resolve => setTimeout(resolve, delay))
-    }
-  }
-}
-
 
 export class Resource {
   #kind
@@ -46,9 +27,9 @@ export class Resource {
     this.#name = name
   }
 
-  async action(name, parameters) {
+  async action(name, json) {
     const match = await this.find()
-    await apiClient.post(`/${this.#kinds}/${match.id}/actions/${name}`, parameters)
+    await apiClient.post(`${this.#kinds}/${match.id}/actions/${name}`, { json }).json()
   }
 
   async id() {
@@ -69,7 +50,7 @@ export class Resource {
   }
 
   async find() {
-    const resources = (await apiClient.get(this.#kinds)).data[this.#kinds]
+    const resources = (await apiClient.get(this.#kinds).json())[this.#kinds]
     return resources.find(resource => resource.name === this.#name)
   }
 
@@ -79,26 +60,26 @@ export class Resource {
       return
     }
 
-    const deleteResponse = await retry(() => apiClient.delete(`${this.#kinds}/${match.id}`))
-    const actionToWait = deleteResponse.data.action
+    const deleteResponse = await apiClient.delete(`${this.#kinds}/${match.id}`, { retry: { limit: 20, statusCodes: [422] } }).json()
+    const actionToWait = deleteResponse.action
     if (!actionToWait) {
       return
     }
 
     while (true) {
-      const deletion = await apiClient.get(`/actions/${actionToWait.id}`)
-      if (deletion.data.action.status === 'success') break
-      if (deletion.data.action.status === 'error') throw new Error(`Error occurred while deleting ${this.#kinds} with ID ${match.id}`)
+      const deletion = await apiClient.get(`actions/${actionToWait.id}`).json()
+      if (deletion.action.status === 'success') break
+      if (deletion.action.status === 'error') throw new Error(`Error occurred while deleting ${this.#kinds} with ID ${match.id}`)
       await new Promise(resolve => setTimeout(resolve, 2500))
     }
   }
 
   async create(parameters) {
-    const configuration = {
+    const json = {
       name: this.#name,
       ...parameters
     }
-    const creation = (await apiClient.post(this.#kinds, configuration)).data[this.#kind]
+    const creation = (await apiClient.post(this.#kinds, { json }))[this.#kind]
     return creation
   }
 
