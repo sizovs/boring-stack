@@ -15,6 +15,7 @@ const ops = {
   "Create infrastructure": create,
   "Destroy infrastructure": destroy,
   "Deploy application": deploy,
+  "Toggle maintenance mode": toggleMaintenanceMode,
   "Pull DB locally": db,
 }
 
@@ -31,6 +32,12 @@ if (!op) {
 }
 
 await op()
+
+async function toggleMaintenanceMode() {
+  const { ip } = await primaryIp.get()
+  const maintenanceFlag = `/home/devops/${npm_package_name}/maintenance.on`
+  await $`ssh devops@${ip} '[ -f ${maintenanceFlag} ] && rm ${maintenanceFlag} || touch ${maintenanceFlag}'`
+}
 
 async function deploy() {
   const { ip } = await primaryIp.get()
