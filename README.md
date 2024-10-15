@@ -10,12 +10,12 @@ It's unreasonable to split apps prematurely across all axes — 1) vertically in
 
 Loosely coupled, distributed architectures are challenging to operate, so they are better suited for running on the cloud. This is one of the reasons why cloud providers advocate for such architectures. On the other hand, monolithic, self-contained architectures diminish the benefit of running on PaaS or cloud hyperscalers that are opaque and insanely expensive abstractions over good old servers.
 
-Thanks to deliberate architectural simplification, we can run our app on a single Hetzner VPS, which is one of, if not the most cost-efficient and robust cloud provider on the market. 20TB transfer on Vercel is $2850, on Hetzner it's free. Go check the math, you'll be mind-blown by how much you're being ripped off by AWS and alikes.
+Thanks to deliberate architectural simplification, we can run our app on a single Hetzner VPS, which is one of, if not the most cost-efficient and robust cloud provider on the market. 20TB transfer on Vercel is $2850, on Hetzner it's free. Do the math, and you'll be mind-blown by how much you're being ripped off by AWS and alikes.
 
 To simplify ops and alleviate tooling fatigue, this project includes custom scripts for database migrations, zero-downtime deployments, and infrastructure provisioning (Terraform state management is a hassle and HCL syntax is too restrictive for my taste).
 
 Since stability, simplicity, and fewer abstractions are the guiding principles, the following tech choices are made:
-* JS (you don't really need TS for large-scale apps if you write tests)
+* JS
 * Node (22+)
 * Fastify web server
 * Edge.js for templating
@@ -25,13 +25,11 @@ Since stability, simplicity, and fewer abstractions are the guiding principles, 
 * Playwright for E2E tests
 * SQLite with better-sqlite3 for DB access w/o ORMs and query builders
 * Litestream for streaming DB replication
-* Caddy for zero-downtime deployments and automatic TLS[^1]
-
-[^1]: If I were to build the app with Go, the Caddy reverse proxy could have been eliminated, leaving us with fewer moving parts and less overhead. Go apps can do [TLS automation](github.com/caddyserver/certmagic) (Caddy uses it under the hood) and [graceful upgrades](https://blog.cloudflare.com/graceful-upgrades-in-go/) similar to Caddy and Nginx. Thanks to systemd, you can [safely](https://mgdm.net/weblog/systemd/) bind it to port 80 or 443 without compromising security.
-
-☺️ The dependencies are minimal, giving a refreshing feel after dealing with bloated frameworks. Just think about it—you can manually track the GitHub repositories of these projects and stay updated easily. There’s not much to follow, no complicated frameworks to know – just the fundamentals and a few libraries. Enjoy low cognitive load, low anxiety, and peace of mind.
+* Caddy for zero-downtime deployments and automatic TLS
 
 Simplicity is achieved through reduction, not addition. The project is built and shipped straight from the local dev machine, eliminating the need for Docker, artifact repositories, and external CI servers. By following the #1 rule of distributing systems — don't distribute — and choosing SQLite, we achieve parity between development and production environments. By eliminating heavy tools and abstractions we can quickly spin up a local dev server, run all tests in parallel against the real database, and know within seconds if our app works.
+
+☺️ The dependencies are minimal, giving a refreshing feel after dealing with bloated frameworks. Just think about it—you can manually track the GitHub repositories of these projects and stay updated easily. There’s not much to follow, no complicated frameworks to know – just the fundamentals and a few libraries. Enjoy low cognitive load, low anxiety, and peace of mind.
 
 # Running & Deploying
 
@@ -82,9 +80,8 @@ SERVER_IP=<server ip> npm run db
 DB_LOCATION=<db location> npm run repl
 ```
 
-
 # JS
-Modern JS is not the same JS many developers disliked a decade ago. It offers one of the best developer experiences (DX), a vibrant ecosystem, and is a highly agile language that doesn't require re-compilation (DX goes to the moon). It is well-suited for I/O-heavy applications, like most web apps. The throughput is on par with Go.
+Modern JS is not the same JS many developers disliked a decade ago. It offers one of the best developer experiences (DX), a vibrant ecosystem, and is a highly agile language that doesn't require re-compilation. It is well-suited for I/O-heavy applications, like most web apps.
 
 You might squeeze more performance from your server with Rust, but who cares? Unless you're very CPU/RAM limited, the bottleneck for web apps will be I/O, not CPU or RAM, so Rust won’t necessarily help you handle more users on a single box (it might reduce latency, though, since it doesn't have garbage collection). The cool thing about JS runtimes is that they are built using "fast" languages—C++ or Rust—so you get all the speed benefits without sacrificing DX.
 
@@ -113,7 +110,7 @@ P.S. there's a lot of innovation happening in the SQLite space, with initiatives
 On my laptop, a single SQLite database file achieves ~7.5-8.5K writes/sec. Using 2 shards increases this to 11.5-15K writes/sec, and 4 shards to 19-25K writes/sec, with no further improvement beyond that due to disk I/O limits. Postgres delivers throughput similar to 2 files. Therefore, well-sharded SQLite outperformed Postgres on a single machine (Postgres 17 with Postgres.js driver). On Hetzner, for SQLite to roughly match Postgres write throughput, I needed to create from 4 to 12 shards, with throughput increasing linearly from 5-10K writes/second to 120K writes/second on a dedicated cloud AMD machine (CCX33). As the number of shards increases, the administrative overhead also rises since each shard requires backup, diminishing SQLite's advantages and making Postgres a more sensible choice. **It's worth mentioning that AMD machines scored better than ARM in SQLite and Postgres tests.**
 
 #### SQLite as NoSQL store
-You can use SQLite as a [KV store](https://rodydavis.com/sqlite/key-value), [JSON store](https://rodydavis.com/sqlite/nosql) and it even has [built-in full-text search capability](https://www.sqlite.org/fts5.html). Moreover, there are a lot of [SQLite extensions](https://github.com/nalgeon/sqlean) out there. So, if you choose SQLite, very unlikely you'll need an additional database. Nevertheless, nothing stops you from adding another specialized database, such as Redis (e.g. for [queues](https://bullmq.io/)) or DuckDB to the mix.
+You can use SQLite as a KV store, JSON store and it even has [built-in full-text search capability](https://www.sqlite.org/fts5.html). Moreover, there are a lot of [SQLite extensions](https://github.com/nalgeon/sqlean) out there. So, if you choose SQLite, very unlikely you'll need an additional database. Nevertheless, nothing stops you from adding another specialized database, such as Redis (e.g. for [queues](https://bullmq.io/)) or DuckDB to the mix.
 
 #### SQLite and parallel writers
 It's well-known that SQLite doesn't support parallel writes – while one process is writing, others are waiting. Even though you can still get thousands of iops on a single DB file, you may need higher throughput. You can achieve that by splitting the database into multiple files. For example, `app.db` can become `users.db` and `comments.db`. Or, learning from Rails, you can use SQLite as a cache and queue, extracting `cache.db` and `queue.db`
