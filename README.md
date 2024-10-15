@@ -52,7 +52,7 @@ HETZNER_API_TOKEN=<secret goes here> npm run infra
 
 1. Make sure your public key is available under  ~/.ssh/hetzner.pub.
 
-2. Optional: If you have a custom domain, set it in the package.json, and point your DNS records to the IP address of your Hetzner VPS. If not set, the default domain will be <server ip>.nip.io
+2. Optional: If you have a custom domain, set it in the package.json, and point your DNS records to the IP address of your Hetzner VPS. If not set, the default domain will be `<server ip>.nip.io`
 
 #### Deploying to production
 
