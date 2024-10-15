@@ -103,7 +103,7 @@ if (cluster.isPrimary) {
   })
 
 } else {
-  const address = await startApp({ port: process.env.PORT })
-  logger.info(`Running @ ${address}`)
+  const app = await startApp({ port: process.env.PORT })
+  logger.info(`Running @ ${app.url}`)
   process.send(APP_HEALTHY)
 }
