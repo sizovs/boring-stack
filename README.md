@@ -57,7 +57,7 @@ HETZNER_API_TOKEN=<secret goes here> npm run devops
 #### Deploying to production
 
 ```
-npm run devops
+HETZNER_API_TOKEN=<secret goes here> npm run devops
 ```
 
 🎉 Your app should be publicly available via HTTPS on your custom domain or via `<server ip>.nip.io`.
