@@ -1,13 +1,13 @@
 import { startApp } from '#application/app'
 import { test, expect } from '@playwright/test'
 
-let baseUrl
+let app
 let page
 
 test.beforeAll(async ({ browser }) => {
-  baseUrl = await startApp()
+  app = await startApp()
   page = await browser.newPage()
-  await page.goto(baseUrl)
+  await page.goto(app.url)
 })
 
 test('starts with zero todos', async () => {
@@ -64,5 +64,13 @@ test('shows warning on server error', async () => {
   await page.getByTestId('todo-input').fill('Homework')
   await page.keyboard.press('Enter')
   await expect(page.getByRole('alert')).toHaveText("Action failed. Please refresh the page and try again.")
+  await page.unroute('**/*');
+})
+
+test('shows warning on new version', async () => {
+  app.bumpVersion()
+  await page.getByTestId('todo-input').fill('Homework')
+  await page.keyboard.press('Enter')
+  await expect(page.getByRole('alert')).toHaveText("Your app is out of date. Please refresh the page to use the latest version.")
   await page.unroute('**/*');
 })

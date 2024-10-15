@@ -13,7 +13,10 @@ import session from '@fastify/secure-session'
 import flash from '@fastify/flash'
 import helmet from "@fastify/helmet"
 
+let appVersion = 1.1
+
 export const startApp = async (options = { port: 0 }) => {
+
   const isDevMode = process.env.NODE_ENV !== "production"
 
   if (!process.env.DB_LOCATION) {
@@ -93,11 +96,22 @@ export const startApp = async (options = { port: 0 }) => {
     }
   })
 
+  // Ask client to reload by sending 205 when client is older than the server
+  app.addHook('preHandler', (request, reply, done) => {
+    const clientVersion = request.headers['x-app-version']
+    if (clientVersion && clientVersion < appVersion) {
+      reply.status(205).send()
+    }
+    done()
+  })
+
   app.decorateReply('render', async function (view, payload) {
     const currentFlash = this.flash()
     const csrfToken = this.generateCsrf()
     const flash = { errors: currentFlash?.errors?.[0] ?? {}, old: currentFlash?.old?.[0] ?? {} }
-    const html = await edge.render(view, { ...payload, flash, csrfToken })
+    const edgeRenderer = edge.createRenderer()
+    edgeRenderer.share({ ...payload, flash, appVersion, csrfToken })
+    const html = await edgeRenderer.render(view)
     this.type('text/html')
     this.send(html)
   })
@@ -120,6 +134,9 @@ export const startApp = async (options = { port: 0 }) => {
     reply.redirect('/todos')
   })
 
-  return app.listen(options)
+  const url = await app.listen(options)
+
+  const bumpVersion = () => appVersion++
+  return { url, bumpVersion }
 }
 

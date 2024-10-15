@@ -1,10 +1,10 @@
 import { startApp } from '#application/app'
 import { test, expect } from '@playwright/test'
 
-let baseUrl
+let app
 
 test.beforeAll(async () => {
-  baseUrl = await startApp()
+  app = await startApp()
 })
 
 test('disallows CSRF attacks', async ({ page }) => {
@@ -13,7 +13,7 @@ test('disallows CSRF attacks', async ({ page }) => {
   <html>
     <body>
       <h1>Malicious Page</h1>
-      <form id="csrf-form" method="POST" action="${baseUrl}/any">
+      <form id="csrf-form" method="POST" action="${app.url}/any">
         <input type="hidden" name="description" value="${maliciousTodo}">
       </form>
       <script>

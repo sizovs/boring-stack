@@ -4,12 +4,11 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  {{-- https://blog.wesleyac.com/posts/why-not-javascript-cdn --}}
   <script src="/static/vendored/htmx@2.0.3.js"></script>
   <script src="/static/vendored/alpine@3.14.1.js" defer></script>
 
   {{-- Scripts --}}
-  <script src="{{static('/static/app.js')}}" data-csrftoken="{{ csrfToken }}" defer></script>
+  <script src="{{static('/static/app.js')}}" data-csrftoken="{{ csrfToken }}" data-appversion="{{ appVersion }}" defer></script>
 
   {{-- Styles --}}
   <link rel="stylesheet" href="{{static('/static/css/app-built.css')}}" >
@@ -36,10 +35,8 @@
       </div>
     </div>
   </footer>
-  <template x-if="msg" x-data="{ msg: '', flash(msg) { this.msg = msg; setTimeout(() => this.msg = '', 5000) } }"
-      @htmx:response-error.window="flash('Action failed. Please refresh the page and try again.')"
-      @htmx:send-error.window="flash('Action failed. Are you connected to the internet?')">
-    <div class="absolute bottom-0 right-0 flex items-center p-4 m-4 text-sm text-red-800 border border-red-300 rounded-lg bg-red-50 " role="alert">
+  <template @htmx:flash.window="flash" x-if="msg" x-data="{ msg: '', flash(e) { this.msg = e.detail; setTimeout(() => this.msg = '', 7500) } }">
+    <div class="absolute bottom-0 right-0 flex items-center p-4 m-4 text-xl text-red-800 border border-red-300 rounded-lg bg-red-50 " role="alert">
       <svg class="flex-shrink-0 inline w-4 h-4 me-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
         <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5ZM9.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM12 15H8a1 1 0 0 1 0-2h1v-3H8a1 1 0 0 1 0-2h2a1 1 0 0 1 1 1v4h1a1 1 0 0 1 0 2Z"/>
       </svg>

@@ -1,6 +1,5 @@
 {
   "name": "todos",
-  "version": "1.0",
   "type": "module",
   "config": {
     "domain": ""
