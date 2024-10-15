@@ -1,6 +1,10 @@
 import axios from "axios"
 
 const apiToken = process.env.HETZNER_API_TOKEN
+if (!apiToken) {
+  throw new Error("Please provide HETZNER_API_TOKEN")
+}
+
 const apiClient = axios.create({
   baseURL: 'https://api.hetzner.cloud/v1/',
   headers: {

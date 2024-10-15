@@ -37,22 +37,12 @@ Simplicity is achieved through reduction, not addition. The project is built and
 
 #### Running locally
 ```
-npm run dev
+npm start
 ```
 
 ##### Running tests
 ```
 npm test
-```
-
-##### Running REPL
-```
-DB_LOCATION=<db location> npm run repl
-```
-
-#### Pulling production DB locally
-```
-npm run db:pull
 ```
 
 #### Provisioning infra
@@ -80,6 +70,17 @@ SERVER_IP=<server ip> npm run deploy
 ```
 
 🎉 Your app should be publicly available via HTTPS on your custom domain or via `<server ip>.nip.io`.
+
+
+#### Pulling production DB locally
+```
+SERVER_IP=<server ip> npm run db
+```
+
+##### Running REPL
+```
+DB_LOCATION=<db location> npm run repl
+```
 
 
 # JS

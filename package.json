@@ -6,16 +6,16 @@
     "port": "3000"
   },
   "scripts": {
-    "dev": "NODE_ENV=development DB_LOCATION=$npm_package_name.db PORT=$npm_package_config_port concurrently 'node --watch ./application/server.js | npx pino-pretty -S' 'npx tailwindcss -i ./static/css/app.css -o ./static/css/app-built.css --watch'",
+    "start": "NODE_ENV=development DB_LOCATION=$npm_package_name.db PORT=$npm_package_config_port concurrently 'node --watch ./application/server.js | npx pino-pretty -S' 'npx tailwindcss -i ./static/css/app.css -o ./static/css/app-built.css --watch'",
     "test": "NODE_ENV=development DB_LOCATION=:memory: concurrently 'node --test' 'npx playwright test'",
     "build": "npx tailwindcss -i ./static/css/app.css -o ./static/css/app-built.css",
     "repl": "node ./modules/repl.js",
     "migrate": "node ./modules/database/migrate.js",
     "infra": "node ./deploy/deploy-infra.js",
     "predeploy": "npm run build",
-    "deploy": "rsync -v --timeout=5 --recursive --include-from=./deploy/.includes --exclude='*' ./ devops@$SERVER_IP:/home/devops/latest && ssh devops@$SERVER_IP \"DOMAIN=$DOMAIN bash < /home/devops/latest/deploy/deploy.sh\"",
-    "db:pull": "rsync -v --timeout=5 --recursive --exclude 'lost+found' devops@$SERVER_IP:/mnt/backup/ /tmp/backup && litestream restore -o $npm_package_name.db file://tmp/backup",
-    "prepare": "[ -d '.git' ] && husky install || echo 'skipping husky'"
+    "deploy": "rsync -v --timeout=5 --recursive --include-from=./deploy/.includes --exclude='*' ./ devops@$SERVER_IP:/home/devops/latest && cat deploy/deploy.sh | ssh devops@$SERVER_IP \"DOMAIN=$DOMAIN APP_NAME=$npm_package_name bash -s\"",
+    "db": "rsync -v --timeout=5 --recursive devops@$SERVER_IP:/mnt/backup/$npm_package_name /tmp/backup && litestream restore -o $npm_package_name.db file://tmp/backup/$npm_package_name",
+    "prepare": "[ -d '.git' ] && husky || echo 'skipping husky'"
   },
   "dependencies": {
     "@fastify/csrf-protection": "^7.0.1",
@@ -37,6 +37,7 @@
   },
   "devDependencies": {
     "@faker-js/faker": "^8.4.1",
+    "@inquirer/prompts": "^7.0.0",
     "@playwright/test": "^1.44.1",
     "@tailwindcss/forms": "^0.5.7",
     "@tailwindcss/typography": "^0.5.14",

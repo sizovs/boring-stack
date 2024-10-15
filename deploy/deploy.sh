@@ -1,17 +1,21 @@
 #!/usr/bin/env bash
 
+if [[ -z "${APP_NAME}" ]]; then
+  echo "APP_NAME env variable is missing"
+  exit 1
+fi
+
 if [[ -z "${DOMAIN}" ]]; then
   IP_ADDRESS=$(hostname -I | awk '{print $1}')
   DOMAIN="${IP_ADDRESS}.nip.io"
 fi
 
 APP_DIR="$HOME/latest"
-APP_NAME=$(awk -F '"' '/"name"/ {print $4}' "$APP_DIR/package.json")
 
 echo "$APP_NAME will be available at https://$DOMAIN"
 
 DB_LOCATION="$HOME/$APP_NAME.db"
-DB_BACKUP="/mnt/backup"
+DB_BACKUP="/mnt/backup/$APP_NAME"
 
 NVM_VERSION="0.39.7"
 NODE_VERSION="22.9.0"
@@ -32,9 +36,10 @@ if ! command -v litestream &>/dev/null || [ "$(litestream version)" != "v$LITEST
 fi
 
 # Make sure the backup directory exists and fail otherwise.
-if [ ! -d "$DB_BACKUP" ]; then
-  echo "Error: $DB_BACKUP directory does not exist."
-  echo "Consider waiting a bit because mounting may take a while."
+sudo mkdir -p "$DB_BACKUP"
+if [[ $? -ne 0 ]]; then
+  echo "Cannot create $DB_BACKUP directory."
+  echo "Consider waiting a bit because volume mounting may take a while."
   exit 1
 fi
 
@@ -114,11 +119,11 @@ EOF
 echo "$LOGROTATE_CONFIG" | sudo tee /etc/logrotate.d/$APP_NAME >/dev/null
 
 # Determine deploy node
-if systemctl is-active --quiet "$APP_NAME@3000.service"; then
+if systemctl is-active --quiet "$APP_NAME@3000"; then
   OLD_NODE=3000
   DEPLOY_NODE=3001
   echo "$OLD_NODE is running. Will deploy to $DEPLOY_NODE..."
-elif systemctl is-active --quiet "$APP_NAME@3001.service"; then
+elif systemctl is-active --quiet "$APP_NAME@3001"; then
   OLD_NODE=3001
   DEPLOY_NODE=3000
   echo "$OLD_NODE is running. Will deploy to $DEPLOY_NODE..."
