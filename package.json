@@ -8,7 +8,7 @@
   "scripts": {
     "start": "NODE_ENV=development DB_LOCATION=$npm_package_name.db PORT=3000 concurrently 'node --watch ./application/server.js | npx pino-pretty -S' 'npx tailwindcss -i ./static/css/app.css -o ./static/css/app-built.css --watch'",
     "test": "NODE_ENV=development DB_LOCATION=:memory: concurrently 'node --test' 'npx playwright test'",
-    "build": "npx tailwindcss -i ./static/css/app.css -o ./static/css/app-built.css",
+    "build": "npx tailwindcss -i ./static/css/app.css -o ./static/css/app-built.css --minify",
     "repl": "node ./modules/repl.js",
     "migrate": "node ./modules/database/migrate.js",
     "predevops": "npm run build",
