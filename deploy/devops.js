@@ -1,5 +1,7 @@
 import fs from "fs"
+import { $, question, tmpdir, chalk } from 'zx'
 import { Resource } from "./hetzner-api.js"
+const { npm_package_name, npm_package_config_domain } = process.env
 
 const firewall = new Resource('firewall', 'web')
 const backupVolume = new Resource('volume', 'backup')
@@ -8,17 +10,53 @@ const sshKey = new Resource('ssh_key', 'devops')
 const server = new Resource('server', 'web')
 const primaryIp = new Resource("primary_ip", "public")
 
-import { rawlist } from '@inquirer/prompts'
 
-const answer = await rawlist({
-  message: 'Select an operation',
-  choices: [
-    { name: 'Create infrastructure', value: 'create' },
-    { name: 'Destroy infrastructure', value: 'destroy' },
-  ]
+const ops = {
+  "Create infrastructure": create,
+  "Destroy infrastructure": destroy,
+  "Deploy application": deploy,
+  "Pull DB locally": db,
+}
+
+console.log('Available operations: ')
+Object.entries(ops).forEach(([description, op]) => {
+  console.log(chalk.green(op.name) + ` — ${description}`)
 })
 
-if (answer === 'destroy') {
+const answer = await question(`What you'd like to do? `)
+const op = Object.values(ops).find(it => it.name === answer)
+if (!op) {
+  console.log(`Wrong operation.`)
+  process.exit(0)
+}
+
+await op()
+
+async function deploy() {
+  const { ip } = await primaryIp.get()
+  $.verbose = true
+  await $`rsync -v --timeout=5 --recursive --include-from=./deploy/.includes --exclude='*' ./ devops@${ip}:/home/devops/latest`
+  await $`cat deploy/deploy.sh | ssh devops@${ip} "DOMAIN=${npm_package_config_domain} APP_NAME=${npm_package_name} bash -s"`
+}
+
+async function db() {
+  const { ip } = await primaryIp.get()
+  const db = `${npm_package_name}.db`
+  $.verbose = true
+
+  if (fs.existsSync(db)) {
+    if (await question(`Database exists under ${db}. Delete? (y/n)`) === 'y') {
+      $`rm -rf ${db}*`
+    } else {
+      console.log(`Skipped.`)
+      return
+    }
+  }
+  const tmp = tmpdir()
+  await $`rsync -v --timeout=5 --recursive devops@${ip}:/mnt/backup/${npm_package_name} ${tmp} && litestream restore -o ${db} file://${tmp}/${npm_package_name}`
+}
+
+async function destroy() {
   await sshKey.delete()
   await server.delete()
   await network.delete()
@@ -26,7 +64,8 @@ if (answer === 'destroy') {
   await backupVolume.delete()
   await primaryIp.delete()
 }
-if (answer === 'create') {
+
+async function create() {
   await firewall.createIfAbsent({
     rules: [
       {
@@ -97,4 +136,3 @@ if (answer === 'create') {
     }
   })
 }
-

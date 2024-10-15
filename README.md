@@ -45,7 +45,7 @@ npm test
 
 #### Provisioning infra
 ```
-HETZNER_API_TOKEN=<secret goes here> npm run infra
+HETZNER_API_TOKEN=<secret goes here> npm run devops
 ```
 
 #### Before deployment
@@ -57,16 +57,10 @@ HETZNER_API_TOKEN=<secret goes here> npm run infra
 #### Deploying to production
 
 ```
-SERVER_IP=<server ip> npm run deploy
+npm run devops
 ```
 
 🎉 Your app should be publicly available via HTTPS on your custom domain or via `<server ip>.nip.io`.
-
-
-#### Pulling production DB locally
-```
-SERVER_IP=<server ip> npm run db
-```
 
 ##### Running REPL
 ```
