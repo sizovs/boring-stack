@@ -87,7 +87,6 @@ export const startApp = async (options = { port: 0 }) => {
       const whitelist = []
       const websiteOrigin = request.protocol + '://' + request.host
       const requestOrigin = request.headers.origin
-      console.log(`Website: ${websiteOrigin} vs. request ${requestOrigin}`)
       const isForeignOrigin = requestOrigin !== websiteOrigin
       if (isForeignOrigin && !whitelist.includes(requestOrigin)) {
         return reply.send(new CrossSiteRequestsForbidden())
