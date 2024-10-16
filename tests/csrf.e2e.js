@@ -24,10 +24,5 @@ test('disallows CSRF attacks', async ({ page }) => {
 `
 
 await page.setContent(maliciousPageContent)
-await expect(page.locator('body')).toHaveText("Missing csrf secret")
-
-// Passes if CSRF disabled:
-// await expect(page.getByTestId('todo-item')).toHaveText([
-//   maliciousTodo
-// ])
+await expect(page.locator('body')).toHaveText("Cross-site requests are forbidden")
 })

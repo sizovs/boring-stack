@@ -6,14 +6,14 @@ import { cookieSecret } from "#modules/secrets"
 import { logger } from "#modules/logger"
 import { Edge } from 'edge.js'
 import fastify from 'fastify'
-import csrf from "@fastify/csrf-protection"
 import formBody from '@fastify/formbody'
 import statics from '@fastify/static'
 import session from '@fastify/secure-session'
 import flash from '@fastify/flash'
+import createError from '@fastify/error'
 import helmet from "@fastify/helmet"
 
-let appVersion = 1.1
+let appVersion = 1.0
 
 export const startApp = async (options = { port: 0 }) => {
 
@@ -45,10 +45,13 @@ export const startApp = async (options = { port: 0 }) => {
   edge.mount('default', viewDirectory)
   edge.global('static', file => file = `${file}?v=${staticVersion}`)
 
-  const app = fastify()
+  const app = fastify({ trustProxy: true })
 
   // Helmet
   app.register(helmet, {
+    referrerPolicy: {
+      policy: 'same-origin'
+    },
     contentSecurityPolicy: {
       directives: {
         // unsafe-eval is for Alpine.js
@@ -82,35 +85,36 @@ export const startApp = async (options = { port: 0 }) => {
     root: process.cwd() + '/static',
   })
 
-  // Csrf
-  await app.register(csrf, {
-    sessionPlugin: '@fastify/secure-session'
-  })
-
   // Protect against CSRF
+  const CrossSiteRequestsForbidden = createError('FST_CROSS_SITE_REQUESTS', 'Cross-site requests are forbidden', 403)
   app.addHook('preHandler', (request, reply, done) => {
     if (['POST', 'PUT', 'PATCH', 'DELETE'].includes(request.method)) {
-      app.csrfProtection(request, reply, done)
-    } else {
-      done()
+      const whitelist = []
+      const websiteOrigin = request.protocol + '://' + request.host
+      const requestOrigin = request.headers.origin
+      console.log(`Website: ${websiteOrigin} vs. request ${requestOrigin}`)
+      const isForeignOrigin = requestOrigin !== websiteOrigin
+      if (isForeignOrigin && !whitelist.includes(requestOrigin)) {
+        return reply.send(new CrossSiteRequestsForbidden())
+      }
     }
+    done()
   })
 
-  // Ask client to reload by sending 205 when client is older than the server
+  const OldClient = createError('FST_OLD_CLIENT', "You're old client. Please refresh", 205)
   app.addHook('preHandler', (request, reply, done) => {
     const clientVersion = request.headers['x-app-version']
     if (clientVersion && clientVersion < appVersion) {
-      reply.status(205).send()
+      return reply.send(new OldClient())
     }
     done()
   })
 
   app.decorateReply('render', async function (view, payload) {
     const currentFlash = this.flash()
-    const csrfToken = this.generateCsrf()
     const flash = { errors: currentFlash?.errors?.[0] ?? {}, old: currentFlash?.old?.[0] ?? {} }
     const edgeRenderer = edge.createRenderer()
-    edgeRenderer.share({ ...payload, flash, appVersion, csrfToken })
+    edgeRenderer.share({ ...payload, flash, appVersion})
     const html = await edgeRenderer.render(view)
     this.type('text/html')
     this.send(html)
@@ -118,8 +122,8 @@ export const startApp = async (options = { port: 0 }) => {
 
   app.setErrorHandler(async (err, request, reply) => {
     logger.error({ err })
-    reply.code(500)
-    return err?.message || 'Oops, something went wrong. Please try again later.'
+    reply.code(err.statusCode || 500)
+    return err.message || 'Oops, something went wrong. Please try again later.'
   })
 
   app.setNotFoundHandler(async (request, reply) => {

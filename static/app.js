@@ -1,6 +1,5 @@
 htmx.on('htmx:configRequest', event => {
-  const { csrftoken, appversion } = document.body.dataset
-  event.detail.headers['x-csrf-token'] = csrftoken
+  const { appversion } = document.body.dataset
   event.detail.headers['x-app-version'] = appversion
 })
 
