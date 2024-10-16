@@ -8,7 +8,7 @@
   <script src="/static/vendored/alpine@3.14.1.js" defer></script>
 
   {{-- Scripts --}}
-  <script src="{{static('/static/app.js')}}" data-csrftoken="{{ csrfToken }}" data-appversion="{{ appVersion }}" defer></script>
+  <script src="{{static('/static/app.js')}}" defer></script>
 
   {{-- Styles --}}
   <link rel="stylesheet" href="{{static('/static/css/app-built.css')}}" >
@@ -22,7 +22,28 @@
   </style>
 </head>
 
-<body hx-boost="true">
+<body hx-boost="true" data-csrftoken="{{ csrfToken }}" data-appversion="{{ appVersion }}">
+    <template x-data="{
+        alert: undefined,
+        show(alert) { this.alert = alert; setTimeout(() => this.hide(), 7500) },
+        hide() { this.alert = undefined }
+      }"
+      x-if="alert"
+      @alert:show.window="show($event.detail)"
+      >
+      <div role="alert" class="fixed top-0 left-0 w-full h-auto py-2 duration-300 ease-out shadow-sm sm:py-0 sm:h-10" :class="alert.classes || 'bg-slate-800'">
+        <div class="flex items-center justify-between w-full h-full px-3 mx-auto max-w-7xl">
+            <a href="#" class="flex flex-col w-full h-full text-xs leading-6 text-neutral-300 hover:text-white duration-150 ease-out sm:flex-row sm:items-center">
+                <strong class="font-semibold" x-text="alert.lead"></strong>
+                <span class="hidden sm:block mx-3"> | </span>
+                <span class="block pt-1 pb-2 leading-none sm:inline sm:pt-0 sm:pb-0" x-text="alert.follow"></span>
+            </a>
+            <button @click="hide" class="flex items-center flex-shrink-0 translate-x-1 ease-out duration-150 justify-center w-6 h-6 p-1.5 text-neutral-100 rounded-full hover:text-white">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-full h-full"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
+            </button>
+        </div>
+      </div>
+    </template>
   {{{ await $slots.main() }}}
   <footer x-data>
     <div class="mx-auto w-full max-w-screen-xl p-4 py-6 lg:py-8">
@@ -35,15 +56,6 @@
       </div>
     </div>
   </footer>
-  <template @htmx:flash.window="flash" x-if="msg" x-data="{ msg: '', flash(e) { this.msg = e.detail; setTimeout(() => this.msg = '', 7500) } }">
-    <div class="absolute bottom-0 right-0 flex items-center p-4 m-4 text-xl text-red-800 border border-red-300 rounded-lg bg-red-50 " role="alert">
-      <svg class="flex-shrink-0 inline w-4 h-4 me-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
-        <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5ZM9.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM12 15H8a1 1 0 0 1 0-2h1v-3H8a1 1 0 0 1 0-2h2a1 1 0 0 1 1 1v4h1a1 1 0 0 1 0 2Z"/>
-      </svg>
-      <div x-text="msg">
-      </div>
-    </div>
-  </template>
 </body>
 
 </html>
