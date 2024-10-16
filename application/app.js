@@ -115,14 +115,8 @@ export const startApp = async (options = { port: 0 }) => {
   })
 
   app.setErrorHandler(async (err, request, reply) => {
-    logger.error({ err })
     reply.code(err.statusCode || 500)
-    return err.message || 'Oops, something went wrong. Please try again later.'
-  })
-
-  app.setNotFoundHandler(async (request, reply) => {
-    reply.code(404)
-    return "Sorry, this page isn't available."
+    return err.message
   })
 
   await initTodos({ app, db })
