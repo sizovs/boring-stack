@@ -19,7 +19,6 @@
     "@fastify/error": "^4.0.0",
     "@fastify/flash": "^6.0.0",
     "@fastify/formbody": "^8.0.1",
-    "@fastify/helmet": "^12.0.1",
     "@fastify/secure-session": "^8.1.0",
     "@fastify/static": "^8.0.1",
     "better-sqlite3": "^11.3.0",

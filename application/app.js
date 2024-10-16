@@ -11,7 +11,6 @@ import statics from '@fastify/static'
 import session from '@fastify/secure-session'
 import flash from '@fastify/flash'
 import createError from '@fastify/error'
-import helmet from "@fastify/helmet"
 
 let appVersion = 1.0
 
@@ -47,20 +46,6 @@ export const startApp = async (options = { port: 0 }) => {
 
   const app = fastify({ trustProxy: true })
 
-  // Helmet
-  app.register(helmet, {
-    referrerPolicy: {
-      policy: 'same-origin'
-    },
-    contentSecurityPolicy: {
-      directives: {
-        // unsafe-eval is for Alpine.js
-        scriptSrc: ["'self'", "'unsafe-eval'"],
-        // Allow non-https requests for local dev (null) disallow for production ([])
-        upgradeInsecureRequests: isDevMode ? null : []
-      }
-    }
-  })
 
   // URL-Encoded forms
   app.register(formBody)
@@ -83,6 +68,16 @@ export const startApp = async (options = { port: 0 }) => {
   app.register(statics, {
     prefix: '/static',
     root: process.cwd() + '/static',
+  })
+
+
+  app.addHook('onSend', async (request, reply, payload) => {
+    reply.header('Content-Security-Policy', `script-src 'self' 'unsafe-eval'; default-src 'self'; base-uri 'self'; font-src 'self' https: data:; form-action 'self'; frame-ancestors 'self'; img-src 'self' data:; object-src 'none'; script-src-attr 'none'; style-src 'self' https: 'unsafe-inline'`)
+    reply.header('Cross-Origin-Opener-Policy', 'same-origin')
+    reply.header('Cross-Origin-Resource-Policy', 'same-origin')
+    reply.header('Referrer-Policy', 'same-origin')
+    reply.header('X-Content-Type-Options', 'nosniff')
+    return payload
   })
 
   // Protect against CSRF
