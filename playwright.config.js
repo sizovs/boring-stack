@@ -5,6 +5,5 @@ export default defineConfig({
   timeout: 5 * 1000, // 5 seconds
   maxFailures: 1,
   testDir: './tests',
-  reporter: 'list'
 })
 
