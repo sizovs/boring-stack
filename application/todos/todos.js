@@ -1,12 +1,17 @@
 export const initTodos = async ({ app, db }) => {
-  app.get('/todos', (request, reply) => {
+
+  const renderTodos = (request, reply) => {
     const todos = db.prepare('select * from todos').all()
     return reply.render('todos', { todos })
+  }
+
+  app.get('/todos', (request, reply) => {
+    return renderTodos(request, reply)
   })
 
-  app.post('/todos/:id/done', (request, reply) => {
+  app.delete('/todos/:id', (request, reply) => {
     db.prepare('delete from todos where id = ?').run(request.params.id)
-    reply.redirect('/todos')
+    return renderTodos(request, reply)
   })
 
   app.post('/todos', async (request, reply) => {
