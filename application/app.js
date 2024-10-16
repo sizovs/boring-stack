@@ -1,7 +1,6 @@
 import { connect } from "#modules/database/database"
 import { Migrator } from "#modules/database/migrator"
 import { initTodos } from "#application/todos/todos"
-import { initHealth } from "#application/health/health"
 import { cookieSecret } from "#modules/secrets"
 import { logger } from "#modules/logger"
 import { Edge } from 'edge.js'
@@ -120,15 +119,22 @@ export const startApp = async (options = { port: 0 }) => {
   })
 
   await initTodos({ app, db })
-  await initHealth({ app, db })
 
   app.get('/', (request, reply) => {
     reply.redirect('/todos')
   })
 
-  const url = await app.listen(options)
+
+  let health = 404
+  app.get('/health', (_, reply) => reply.status(health).send())
+
+  const healthy = () => health = 200
 
   const bumpVersion = () => appVersion++
-  return { url, bumpVersion }
+
+  const url = await app.listen(options)
+  logger.info(`Running @ ${url}`)
+
+  return { url, bumpVersion, healthy }
 }
 

@@ -13,10 +13,10 @@ const wids = new Map()
 const workers = new Map()
 
 // Signal for IPC
-const APP_HEALTHY = 'app-healthy'
+const APP_STARTED = 'started'
 
 // Signal for IPC
-const CLUSTER_HEALTHY = 'cluster-healthy'
+const CLUSTER_HEALTHY = 'healthy'
 
 const broadcast = message => {
   for (const worker of Object.values(cluster.workers)) {
@@ -82,7 +82,7 @@ if (cluster.isPrimary) {
   }
 
   cluster.on('message', (worker, message) => {
-    if (message === APP_HEALTHY) {
+    if (message === APP_STARTED) {
       const wrk = Wrk.find(worker)
       wrk.healthy()
       numWorkersHealthy++
@@ -104,6 +104,10 @@ if (cluster.isPrimary) {
 
 } else {
   const app = await startApp({ port: process.env.PORT })
-  logger.info(`Running @ ${app.url}`)
-  process.send(APP_HEALTHY)
+  process.send(APP_STARTED)
+  process.on('message', message => {
+    if (message === CLUSTER_HEALTHY) {
+      app.healthy()
+    }
+  })
 }

@@ -7,13 +7,13 @@ test.beforeAll(async () => {
   app = await startApp()
 })
 
-test('returns 503 if cluster is unhealthy', async ({page}) => {
+test('unhealthy by default', async ({page}) => {
   const response = await page.goto(app.url + '/health')
-  expect(response.status()).toBe(503)
+  expect(response.status()).toBe(404)
 })
 
-test('returns 200 if cluster is healthy', async ({page}) => {
-  process.emit('message', 'cluster-healthy')
+test('returns 200 when healthy', async ({page}) => {
+  app.healthy()
   const response = await page.goto(app.url + '/health')
   expect(response.status()).toBe(200)
 })

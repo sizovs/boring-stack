@@ -1,5 +1,7 @@
+/**
+* @param {{ app: import("fastify").FastifyInstance, db: import("better-sqlite3").Database app }}
+*/
 export const initTodos = async ({ app, db }) => {
-
   const renderTodos = (request, reply) => {
     const todos = db.prepare('select * from todos').all()
     return reply.render('todos', { todos })
