@@ -73,7 +73,6 @@ export const startApp = async (options = { port: 0 }) => {
   app.addHook('onSend', async (request, reply, payload) => {
     reply.header('Cross-Origin-Opener-Policy', 'same-origin')
     reply.header('Cross-Origin-Resource-Policy', 'same-origin')
-    reply.header('Referrer-Policy', 'same-origin')
     reply.header('X-Content-Type-Options', 'nosniff')
     return payload
   })
