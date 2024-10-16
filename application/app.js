@@ -71,7 +71,6 @@ export const startApp = async (options = { port: 0 }) => {
 
 
   app.addHook('onSend', async (request, reply, payload) => {
-    reply.header('Content-Security-Policy', `script-src 'self' 'unsafe-eval'; default-src 'self'; base-uri 'self'; font-src 'self' https: data:; form-action 'self'; frame-ancestors 'self'; img-src 'self' data:; object-src 'none'; script-src-attr 'none'; style-src 'self'`)
     reply.header('Cross-Origin-Opener-Policy', 'same-origin')
     reply.header('Cross-Origin-Resource-Policy', 'same-origin')
     reply.header('Referrer-Policy', 'same-origin')
