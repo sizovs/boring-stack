@@ -19,12 +19,11 @@ export const initTodos = async ({ app, db }) => {
     if (!description) {
       request.flash('old', request.body)
       request.flash('errors', { 'description': 'Task description is required' })
-      reply.redirect('/todos')
-      return
+      return renderTodos(request, reply)
     }
 
     db.prepare('insert into todos (description) values (?)').run(description)
-    reply.redirect('/todos')
+    return renderTodos(request, reply)
   })
 
 }
