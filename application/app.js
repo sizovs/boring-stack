@@ -95,7 +95,7 @@ export const startApp = async (options = { port: 0 }) => {
     done()
   })
 
-  const OldClient = createError('FST_OLD_CLIENT', "You're old client. Please refresh", 205)
+  const OldClient = createError('FST_OLD_CLIENT', "You're using old client. Please refresh", 205)
   app.addHook('preHandler', (request, reply, done) => {
     const clientVersion = request.headers['x-app-version']
     if (clientVersion && clientVersion < appVersion) {
