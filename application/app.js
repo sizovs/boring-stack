@@ -45,7 +45,6 @@ export const startApp = async (options = { port: 0 }) => {
 
   const app = fastify({ trustProxy: true })
 
-
   // URL-Encoded forms
   app.register(formBody)
 
@@ -71,8 +70,10 @@ export const startApp = async (options = { port: 0 }) => {
 
 
   app.addHook('onSend', async (request, reply, payload) => {
+    reply.header('Content-Security-Policy', `default-src 'self'; img-src 'self' data:; object-src 'none'; script-src-attr 'none'; style-src 'self'`)
     reply.header('Cross-Origin-Opener-Policy', 'same-origin')
     reply.header('Cross-Origin-Resource-Policy', 'same-origin')
+    reply.header('X-Frame-Options', 'SAMEORIGIN')
     reply.header('X-Content-Type-Options', 'nosniff')
     return payload
   })
