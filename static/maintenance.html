@@ -38,10 +38,6 @@
 </head>
 
 <body>
-{{ $statusCode := placeholder "http.error.status_code" }}
-{{ $statusText := placeholder "http.error.status_text" }}
-{{ $errorMessage := placeholder "http.error.message" }}
-{{ $retryAfter := placeholder "http.response.header.retry-after"	}}
     <h1></h1>
     <h2></h2>
     <script>
@@ -58,7 +54,10 @@
 
         function maintenanceText() {
           const texts = [
-            "{{$statusCode}} | {{if $errorMessage}}{{$errorMessage}}{{else}}{{$statusText}}{{end}}",
+            "503 | We're improving things 😌",
+            "We're still under maintenance",
+            "Still working on updates",
+            "We'll be back soon! 😌"
             ]
             return texts[attempt() % texts.length]
         }
@@ -68,7 +67,7 @@
 
         title.textContent = maintenanceText()
         document.title = title.textContent
-        let countdown = {{if $retryAfter}}{{$retryAfter}}{{else}}{{0}}{{end}}
+        let countdown = 60
         if (countdown) {
           const subtitleText = () => `Page will refresh in ${countdown} seconds`
           subtitle.textContent = subtitleText()
