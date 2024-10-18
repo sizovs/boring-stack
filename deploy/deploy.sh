@@ -218,14 +218,8 @@ handle @maintenance {
 	error "We'll be back soon! 😌" 503
 }
 
-handle /static/* {
-	file_server
-	header Cache-Control max-age=31536000
-}
-
 handle_errors 503 {
 	rewrite * /static/maintenance.html
-	templates
 	file_server
 	header Retry-After 60
 }

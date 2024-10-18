@@ -8,7 +8,7 @@ before(() => {
   fs.mkdirSync('/static-files')
   fs.writeFileSync(`/static-files/a.css`, `aaaaaaaaaaaaa`)
   fs.writeFileSync(`/static-files/b.css`, `bbbbbbbbbbbbb`)
-  hasher = new Hasher({ root: '/static-files', prefix: '/static', filesystem: fs })
+  hasher = new Hasher({ root: '/static-files', prefix: '/static/', filesystem: fs })
 })
 
 describe('hasher', async () => {

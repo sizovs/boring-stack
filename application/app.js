@@ -12,9 +12,11 @@ import flash from '@fastify/flash'
 import createError from '@fastify/error'
 import { Hasher } from "#modules/hasher"
 
-let appVersion = 1.0
 
 export const startApp = async (options = { port: 0 }) => {
+
+  let appVersion = 1.0 // bump the version up to force client refresh.
+  let health = 404 // app is unhealthy until cluster signals otherwise.
 
   const isDevMode = process.env.NODE_ENV !== "production"
 
@@ -37,16 +39,16 @@ export const startApp = async (options = { port: 0 }) => {
   }
 
   const staticsConfig = {
-    prefix: '/static',
+    prefix: '/static/',
     root: process.cwd() + '/static',
-    etag: false
+    ...( !isDevMode && { immutable: true, maxAge: '365d' } )
   }
 
   // We use hasher to add a version identifier to our static asset's public URLs
-  // and remove the hash before serving the file from the file system.
+  // and remove the version before serving the file from the file system.
 
-  // The hashes are the MD5 of the contents of the static asset. Thus, every file has it's own unique version identifier.
-  // When a file changes, it's hash changes. This lets us set a far-future expires header on statics w/o worrying about cache invalidation,
+  // The version is the MD5 of the contents of the static asset. Thus, every file has it's own unique version.
+  // When a file changes, it's version changes. This lets us set a far-future expires header for static assets w/o worrying about cache invalidation,
   // while ensuring that the user only downloads the files that have changed since the last deployment.
   const hasher = new Hasher(staticsConfig)
   const app = fastify({ trustProxy: true, rewriteUrl: req => hasher.unhashed(req.url) })
@@ -68,14 +70,16 @@ export const startApp = async (options = { port: 0 }) => {
   })
 
   // Request logging
-  app.addHook('onResponse', (request, reply, done) => {
+  app.addHook('onResponse', async (request, reply) => {
     logger.info(`${request.method} ${request.url} ${reply.statusCode} - ${Math.round(reply.elapsedTime)}ms`)
-    done()
   })
+
 
   // Flash scope
   app.register(flash)
 
+
+  // Security policies
   app.addHook('onSend', async (request, reply, payload) => {
     reply.header('Content-Security-Policy', `default-src 'self'; img-src 'self' data:; object-src 'none'; script-src-attr 'none'; style-src 'self'`)
     reply.header('Cross-Origin-Opener-Policy', 'same-origin')
@@ -85,9 +89,9 @@ export const startApp = async (options = { port: 0 }) => {
     return payload
   })
 
-  // Protect against CSRF
+  // CSRF protection
   const CrossSiteRequestsForbidden = createError('FST_CROSS_SITE_REQUESTS', 'Cross-site requests are forbidden', 403)
-  app.addHook('preHandler', (request, reply, done) => {
+  app.addHook('preHandler', async (request, reply) => {
     if (['POST', 'PUT', 'PATCH', 'DELETE'].includes(request.method)) {
       const whitelist = []
       const websiteOrigin = request.protocol + '://' + request.host
@@ -97,24 +101,22 @@ export const startApp = async (options = { port: 0 }) => {
         return reply.send(new CrossSiteRequestsForbidden())
       }
     }
-    done()
   })
 
   const OldClient = createError('FST_OLD_CLIENT', "You're using old client. Please refresh", 205)
-  app.addHook('preHandler', (request, reply, done) => {
+  app.addHook('preHandler', async (request, reply) => {
     const clientVersion = request.headers['x-app-version']
     if (clientVersion && clientVersion < appVersion) {
       return reply.send(new OldClient())
     }
-    done()
   })
 
   app.decorateReply('render', async function (view, payload) {
     const currentFlash = this.flash()
     const flash = { errors: currentFlash?.errors?.[0] ?? {}, old: currentFlash?.old?.[0] ?? {} }
-    const edgeRenderer = edge.createRenderer()
-    edgeRenderer.share({ ...payload, flash, appVersion})
-    const html = await edgeRenderer.render(view)
+    const renderer = edge.createRenderer()
+    renderer.share({ ...payload, flash, appVersion})
+    const html = await renderer.render(view)
     this.type('text/html')
     this.send(html)
   })
@@ -126,15 +128,10 @@ export const startApp = async (options = { port: 0 }) => {
 
   await initTodos({ app, db })
 
-  app.get('/', (request, reply) => {
-    reply.redirect('/todos')
-  })
-
-  let health = 404
-  app.get('/health', (_, reply) => reply.status(health).send())
+  app.get('/', (request, reply) => reply.redirect('/todos'))
+  app.get('/health', (request, reply) => reply.status(health).send())
 
   const healthy = () => health = 200
-
   const bumpVersion = () => appVersion++
 
   const url = await app.listen(options)

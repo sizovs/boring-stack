@@ -35,7 +35,7 @@ await op()
 
 async function maintain() {
   const { ip } = await primaryIp.get()
-  const maintenanceFlag = `/home/devops/${npm_package_name}/maintenance.on`
+  const maintenanceFlag = `/home/devops/${npm_package_name}.m`
   await $`ssh devops@${ip} '[ -f ${maintenanceFlag} ] && rm ${maintenanceFlag} || touch ${maintenanceFlag}'`
 }
 
