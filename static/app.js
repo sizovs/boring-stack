@@ -3,7 +3,6 @@ htmx.on('htmx:configRequest', event => {
   const { appversion } = document.body.dataset
   event.detail.headers['x-app-version'] = appversion
 })
-
 const triggerAlert = message => {
   const html = String.raw
   const alert = $(html`

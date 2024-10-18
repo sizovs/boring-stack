@@ -10,6 +10,7 @@ import statics from '@fastify/static'
 import session from '@fastify/secure-session'
 import flash from '@fastify/flash'
 import createError from '@fastify/error'
+import { Hasher } from "#modules/hasher"
 
 let appVersion = 1.0
 
@@ -35,15 +36,27 @@ export const startApp = async (options = { port: 0 }) => {
     migrator.migrate()
   }
 
-  // All static assets will have a version number appended at the end.
-  // Increment the version number to invalidate the CDN cache.
-  const staticVersion = 1
+  const staticsConfig = {
+    prefix: '/static',
+    root: process.cwd() + '/static',
+  }
+
+  // We use hasher to add a version identifier to our static asset's public URLs
+  // and remove the hash before serving the file from the file system.
+
+  // The hashes are the MD5 of the contents of the static asset. Thus, every file has it's own unique version identifier.
+  // When a file changes, it's hash changes. This lets us set a far-future expires header on statics w/o worrying about cache invalidation,
+  // while ensuring that the user only downloads the files that have changed since the last deployment.
+  const hasher = new Hasher(staticsConfig)
+  const app = fastify({ trustProxy: true, rewriteUrl: req => hasher.unhashed(req.url) })
+
+  // Static files
+  app.register(statics, staticsConfig)
+
   const edge = new Edge({ cache: !isDevMode })
   const viewDirectory = process.cwd() + '/views'
   edge.mount('default', viewDirectory)
-  edge.global('static', file => file = `${file}?v=${staticVersion}`)
-
-  const app = fastify({ trustProxy: true })
+  edge.global('hashed', file => hasher.hashed(file))
 
   // URL-Encoded forms
   app.register(formBody)
@@ -61,13 +74,6 @@ export const startApp = async (options = { port: 0 }) => {
 
   // Flash scope
   app.register(flash)
-
-  // Static files
-  app.register(statics, {
-    prefix: '/static',
-    root: process.cwd() + '/static',
-  })
-
 
   app.addHook('onSend', async (request, reply, payload) => {
     reply.header('Content-Security-Policy', `default-src 'self'; img-src 'self' data:; object-src 'none'; script-src-attr 'none'; style-src 'self'`)
@@ -122,7 +128,6 @@ export const startApp = async (options = { port: 0 }) => {
   app.get('/', (request, reply) => {
     reply.redirect('/todos')
   })
-
 
   let health = 404
   app.get('/health', (_, reply) => reply.status(health).send())

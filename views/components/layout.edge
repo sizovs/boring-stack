@@ -4,17 +4,17 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <script src="/static/vendored/htmx@2.0.3.js"></script>
-  <script src="/static/vendored/cash@8.1.5.js" defer></script>
+  <script src="{{hashed('/static/vendored/htmx@2.0.3.js')}}"></script>
+  <script src="{{hashed('/static/vendored/cash@8.1.5.js')}}" defer></script>
 
   {{-- Scripts --}}
-  <script src="{{static('/static/app.js')}}" defer></script>
+  <script src="{{hashed('/static/app.js')}}" defer></script>
 
   {{-- Styles --}}
-  <link rel="stylesheet" href="{{static('/static/css/app-built.css')}}" >
+  <link rel="stylesheet" href="{{hashed('/static/css/app-built.css')}}" >
 
-  <link rel="apple-touch-icon" href="/static/favicon.png">
-  <link rel="icon" href="/static/favicon.png">
+  <link rel="apple-touch-icon" href="{{hashed('/static/favicon.png')}}">
+  <link rel="icon" href="{{hashed('/static/favicon.png')}}">
 
   <title>Todos</title>
 </head>
