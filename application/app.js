@@ -39,6 +39,7 @@ export const startApp = async (options = { port: 0 }) => {
   const staticsConfig = {
     prefix: '/static',
     root: process.cwd() + '/static',
+    etag: false
   }
 
   // We use hasher to add a version identifier to our static asset's public URLs
