@@ -20,7 +20,9 @@ const triggerAlert = message => {
       </div>
     </div>`)
 
-  $('#alert').detach()
+  const existingAlert = $('#alert')
+  existingAlert.detach()
+
   alert.prependTo(document.body)
   alert.one('click', '#close',() => alert.detach())
   setTimeout(() => alert.detach(), 7500)
