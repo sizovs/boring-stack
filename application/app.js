@@ -44,13 +44,15 @@ export const startApp = async (options = { port: 0 }) => {
     ...( !isDevMode && { immutable: true, maxAge: '365d' } )
   }
 
-  // We use hasher to add a version identifier to our static asset's public URLs
-  // and remove the version before serving the file from the file system.
+  // We use Hasher to add a version identifier to the public URLs of static assets (script.js -> script.c040ed4.js)
+  // and remove the version when serving files from the file system. (script.c040ed4.js -> script.js)
+  // Hashes are calculated at start-up, ensuring there is no performance penalty during lookups.
 
-  // The version is the MD5 of the contents of the static asset. Thus, every file has it's own unique version.
-  // When a file changes, it's version changes. This lets us set a far-future expires header for static assets w/o worrying about cache invalidation,
-  // while ensuring that the user only downloads the files that have changed since the last deployment.
+  // The version is the MD5 hash of the file's content. Thus, when the content changes, the version also changes.
+  // This lets us set a far-future expires header for static assets w/o worrying about cache invalidation,
+  // while ensuring that the user only downloads static assets that have changed since the last deployment.
   const hasher = new Hasher(staticsConfig)
+
   const app = fastify({ trustProxy: true, rewriteUrl: req => hasher.unhashed(req.url) })
 
   // Static files
@@ -59,7 +61,7 @@ export const startApp = async (options = { port: 0 }) => {
   const edge = new Edge({ cache: !isDevMode })
   const viewDirectory = process.cwd() + '/views'
   edge.mount('default', viewDirectory)
-  edge.global('hashed', file => hasher.hashed(file))
+  edge.global('hashed', path => hasher.hashed(path))
 
   // URL-Encoded forms
   app.register(formBody)
@@ -74,14 +76,12 @@ export const startApp = async (options = { port: 0 }) => {
     logger.info(`${request.method} ${request.url} ${reply.statusCode} - ${Math.round(reply.elapsedTime)}ms`)
   })
 
-
   // Flash scope
   app.register(flash)
 
-
   // Security policies
   app.addHook('onSend', async (request, reply, payload) => {
-    reply.header('Content-Security-Policy', `default-src 'self'; img-src 'self' data:; object-src 'none'; script-src-attr 'none'; style-src 'self'`)
+    reply.header('Content-Security-Policy', "default-src 'self'; img-src 'self' data:; object-src 'none'; script-src-attr 'none'; style-src 'self'")
     reply.header('Cross-Origin-Opener-Policy', 'same-origin')
     reply.header('Cross-Origin-Resource-Policy', 'same-origin')
     reply.header('X-Frame-Options', 'SAMEORIGIN')
@@ -103,11 +103,11 @@ export const startApp = async (options = { port: 0 }) => {
     }
   })
 
-  const OldClient = createError('FST_OLD_CLIENT', "You're using old client. Please refresh", 205)
+  const OutdatedClient = createError('FST_OUTDATED_CLIENT', "You're using an outdated client. Please refresh", 205)
   app.addHook('preHandler', async (request, reply) => {
     const clientVersion = request.headers['x-app-version']
     if (clientVersion && clientVersion < appVersion) {
-      return reply.send(new OldClient())
+      return reply.send(new OutdatedClient())
     }
   })
 
