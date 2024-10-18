@@ -23,7 +23,7 @@ Since stability, simplicity, and fewer abstractions are the guiding principles, 
 * Vanilla JS with [Cash](https://github.com/fabiospampinato/cash) for syntax sugar
 * Tailwind for styling with great DX
 * Playwright for E2E tests
-* SQLite with better-sqlite3 for DB access w/o ORMs and query builders
+* SQLite for DB access w/o ORMs and query builders
 * Litestream for streaming DB replication
 * Caddy for zero-downtime deployments and automatic TLS
 
