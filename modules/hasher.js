@@ -3,13 +3,13 @@ import fs from 'fs'
 import { createHash } from 'crypto'
 
 class File {
-  #fullpath
+  #absolute
   #relative
   #filesystem
-  constructor(fullpath, relative, filesystem) {
-    this.#filesystem = filesystem
+  constructor(absolute, relative, filesystem) {
+    this.#absolute = absolute
     this.#relative = relative
-    this.#fullpath = fullpath
+    this.#filesystem = filesystem
   }
 
   get rel() {
@@ -30,7 +30,7 @@ class File {
   }
 
   get #content() {
-    return this.#filesystem.readFileSync(this.#fullpath)
+    return this.#filesystem.readFileSync(this.#absolute)
   }
 
 }
