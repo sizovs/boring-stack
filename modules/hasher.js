@@ -37,15 +37,15 @@ class File {
 
 export class Hasher {
   #prefix
-  #hashes = new Map() // script.js -> script.<hash>.js
+  #hashes
   constructor({ prefix, root, filesystem = fs }) {
     this.#prefix = prefix
-    files(root, filesystem).forEach(file => {
-      // We prepend /prefix/ for O(1) lookup. Given the /static/ prefix:
+    this.#hashes = files(root, filesystem).reduce((hashes, file) => {
+       // We prepend /prefix/ for O(1) lookup. Given the /static/ prefix:
       // /css/main.css becomes /static/css/main.css,
       // /css/main.<hash>.css becomes /static/css/main.<hash>.css
-      this.#hashes.set(join(prefix, file.rel), join(prefix, file.withHash))
-    })
+      return hashes.set(join(prefix, file.rel), join(prefix, file.withHash))
+    }, new Map())
   }
   hashed(path) {
     return this.#hashes.get(path) ?? path
