@@ -1,8 +1,10 @@
 htmx.config.includeIndicatorStyles = false
-htmx.on('htmx:configRequest', event => {
+
+$(document).on('htmx:configRequest', event => {
   const { appversion } = document.body.dataset
   event.detail.headers['x-app-version'] = appversion
 })
+
 const triggerAlert = message => {
   const html = String.raw
   const alert = $(html`
@@ -23,11 +25,11 @@ const triggerAlert = message => {
   existingAlert.detach()
 
   alert.prependTo(document.body)
-  alert.one('click', '#close',() => alert.detach())
+  alert.on('click', '#close',() => alert.detach())
   setTimeout(() => alert.detach(), 7500)
 }
 
-htmx.on('htmx:beforeSwap', event => {
+$(document).on('htmx:beforeSwap', event => {
   const { status } = event.detail.xhr
   if (status === 205) {
     triggerAlert({ lead: '🎉 New Release', follow: 'Please refresh the page to use the latest version' })
@@ -35,10 +37,10 @@ htmx.on('htmx:beforeSwap', event => {
   }
 })
 
-htmx.on('htmx:responseError', () => {
+$(document).on('htmx:responseError', () => {
   triggerAlert({ lead: 'Action failed', follow: 'Please refresh the page and try again', classes: 'bg-red-700' })
 })
 
-htmx.on('htmx:sendError', () => {
+$(document).on('htmx:sendError', () => {
   triggerAlert({ lead: 'Action failed', follow: 'Are you connected to the internet?', classes: 'bg-red-700'})
 })
