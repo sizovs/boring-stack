@@ -4,18 +4,18 @@ import { createHash } from 'crypto'
 
 export class Hasher {
   #prefix
-  #hashes
+  #cache
   constructor({ prefix, root, filesystem = fs }) {
     this.#prefix = prefix
-    this.#hashes = files(root, filesystem).reduce((hashes, file) => {
+    this.#cache = files(root, filesystem).reduce((cache, file) => {
        // We prepend /prefix/ for O(1) lookup. Given the /static/ prefix:
       // /css/main.css becomes /static/css/main.css,
       // /css/main.<hash>.css becomes /static/css/main.<hash>.css
-      return hashes.set(join(prefix, file.rel), join(prefix, file.withHash))
+      return cache.set(join(prefix, file.rel), join(prefix, file.withHash))
     }, new Map())
   }
   hashed(path) {
-    return this.#hashes.get(path) ?? path
+    return this.#cache.get(path) ?? path
   }
   unhashed(path) {
     return path.startsWith(this.#prefix) ? path.replace(/\.[a-z0-9]{8}\./, '.') : path
