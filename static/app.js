@@ -5,6 +5,22 @@ $(document).on('htmx:configRequest', event => {
   event.detail.headers['x-app-version'] = appversion
 })
 
+$(document).on('htmx:beforeSwap', event => {
+  const { status } = event.detail.xhr
+  if (status === 205) {
+    triggerAlert({ lead: '🎉 New Release', follow: 'Please refresh the page to use the latest version' })
+    event.detail.shouldSwap = false
+  }
+})
+
+$(document).on('htmx:responseError', () => {
+  triggerAlert({ lead: 'Action failed', follow: 'Please refresh the page and try again', classes: 'bg-red-700' })
+})
+
+$(document).on('htmx:sendError', () => {
+  triggerAlert({ lead: 'Action failed', follow: 'Are you connected to the internet?', classes: 'bg-red-700'})
+})
+
 const triggerAlert = message => {
   const html = String.raw
   const alert = $(html`
@@ -28,19 +44,3 @@ const triggerAlert = message => {
   alert.on('click', '#close',() => alert.detach())
   setTimeout(() => alert.detach(), 7500)
 }
-
-$(document).on('htmx:beforeSwap', event => {
-  const { status } = event.detail.xhr
-  if (status === 205) {
-    triggerAlert({ lead: '🎉 New Release', follow: 'Please refresh the page to use the latest version' })
-    event.detail.shouldSwap = false
-  }
-})
-
-$(document).on('htmx:responseError', () => {
-  triggerAlert({ lead: 'Action failed', follow: 'Please refresh the page and try again', classes: 'bg-red-700' })
-})
-
-$(document).on('htmx:sendError', () => {
-  triggerAlert({ lead: 'Action failed', follow: 'Are you connected to the internet?', classes: 'bg-red-700'})
-})
