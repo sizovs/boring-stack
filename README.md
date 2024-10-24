@@ -117,5 +117,13 @@ One of Cloudflare's standout features is [Workers](https://workers.cloudflare.co
 # Analytics
 For web analytics, you can use self-hosted https://plausible.io, but https://goaccess.io is also a great option because it can run on the same server (and it's not subject to ad-blocking).
 
+# For inspiration
+- https://github.com/morris/vanilla-todo
+- https://blog.jim-nielsen.com/2020/switching-from-react-to-js-for-templating
+- https://ricostacruz.com/rscss/
+- https://ricostacruz.com/rsjs/
+- https://lit.dev/
+- https://github.com/11ty/webc
+
 # TODOS
 - Wait until Hetzner releases Object Store and replicate Litestream data to it.

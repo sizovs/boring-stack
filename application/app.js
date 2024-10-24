@@ -4,6 +4,7 @@ import { initTodos } from "#application/todos/todos"
 import { cookieSecret } from "#modules/secrets"
 import { logger } from "#modules/logger"
 import { Edge } from 'edge.js'
+import crypto from "crypto"
 import fastify from 'fastify'
 import formBody from '@fastify/formbody'
 import statics from '@fastify/static'
@@ -79,16 +80,6 @@ export const startApp = async (options = { port: 0 }) => {
   // Flash scope
   app.register(flash)
 
-  // Security policies
-  app.addHook('onSend', async (request, reply, payload) => {
-    reply.header('Content-Security-Policy', "default-src 'self'; img-src 'self' data:; object-src 'none'; script-src-attr 'none'; style-src 'self'")
-    reply.header('Cross-Origin-Opener-Policy', 'same-origin')
-    reply.header('Cross-Origin-Resource-Policy', 'same-origin')
-    reply.header('X-Frame-Options', 'SAMEORIGIN')
-    reply.header('X-Content-Type-Options', 'nosniff')
-    return payload
-  })
-
   // CSRF protection
   const CrossSiteRequestsForbidden = createError('FST_CROSS_SITE_REQUESTS', 'Cross-site requests are forbidden', 403)
   app.addHook('preHandler', async (request, reply) => {
@@ -115,8 +106,14 @@ export const startApp = async (options = { port: 0 }) => {
     const currentFlash = this.flash()
     const flash = { errors: currentFlash?.errors?.[0] ?? {}, old: currentFlash?.old?.[0] ?? {} }
     const renderer = edge.createRenderer()
-    renderer.share({ ...payload, flash, appVersion})
+    const nonce = crypto.randomBytes(16).toString('base64')
+    renderer.share({ ...payload, flash, appVersion, nonce })
     const html = await renderer.render(view)
+    this.header('Content-Security-Policy', `default-src 'self'; script-src 'self' 'nonce-${nonce}'; img-src 'self' data:; object-src 'none'; script-src-attr 'none'; style-src 'self'`)
+    this.header('Cross-Origin-Opener-Policy', 'same-origin')
+    this.header('Cross-Origin-Resource-Policy', 'same-origin')
+    this.header('X-Frame-Options', 'SAMEORIGIN')
+    this.header('X-Content-Type-Options', 'nosniff')
     this.type('text/html')
     this.send(html)
   })

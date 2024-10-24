@@ -7,8 +7,16 @@
   <script src="{{hashed('/static/vendored/htmx@2.0.3.js')}}"></script>
   <script src="{{hashed('/static/vendored/cash@8.1.5.js')}}" defer></script>
 
+  <script type="importmap" nonce="{{ nonce }}">
+    {
+        "imports": {
+            "/static/alert.js": "{{hashed('/static/alert.js')}}"
+        }
+    }
+  </script>
+
   {{-- Scripts --}}
-  <script src="{{hashed('/static/app.js')}}" defer></script>
+  <script type="module" src="{{hashed('/static/app.js')}}" defer></script>
 
   {{-- Styles --}}
   <link rel="stylesheet" href="{{hashed('/static/css/app-built.css')}}" >
