@@ -11,7 +11,7 @@ export class Hasher {
        // We prepend /prefix/ for O(1) lookup. Given the /static/ prefix:
       // /css/main.css becomes /static/css/main.css,
       // /css/main.<hash>.css becomes /static/css/main.<hash>.css
-      return cache.set(join(prefix, file.rel), join(prefix, file.withHash))
+      return cache.set(join(prefix, file.rel(root)), join(prefix, file.withHash(root)))
     }, new Map())
   }
   hashed(path) {
@@ -25,32 +25,29 @@ export class Hasher {
 function files(root, filesystem) {
   return filesystem.readdirSync(root, { withFileTypes: true }).map(dirent => {
     const absolute = path.join(root, dirent.name)
-    const relative = path.relative(root, absolute)
-    return dirent.isDirectory() ? files(absolute, filesystem) : new File(absolute, relative, filesystem)
+    return dirent.isDirectory() ? files(absolute, filesystem) : new File(absolute, filesystem)
   }).flat()
 }
 
 class File {
   #absolute
-  #relative
   #filesystem
-  constructor(absolute, relative, filesystem) {
+  constructor(absolute, filesystem) {
     this.#absolute = absolute
-    this.#relative = relative
     this.#filesystem = filesystem
   }
 
-  get rel() {
-    return this.#relative
+  rel(root) {
+    return path.relative(root, this.#absolute)
   }
 
-  get withHash() {
+  withHash(root) {
     // css/app.css -> css/app.<hash>.css
-    return this.#relative.replace(this.#ext, '.' + this.#hash + this.#ext)
+    return this.rel(root).replace(this.#ext, '.' + this.#hash + this.#ext)
   }
 
   get #ext() {
-    return path.extname(this.#relative)
+    return path.extname(this.#absolute)
   }
 
   get #hash() {
