@@ -4,7 +4,7 @@ logs
 *.sqlite3
 *.db*
 npm-debug.log*
-app-built.css
+app.css
 dist
 lib-cov
 coverage
