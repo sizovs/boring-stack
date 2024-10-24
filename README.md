@@ -114,6 +114,9 @@ It’s a good idea to place your server behind Cloudflare. This way, you get DDo
 
 One of Cloudflare's standout features is [Workers](https://workers.cloudflare.com/). Workers allow you to run code at the edge before requests reach your server. For example, you can create a transparent "booster layer" in front of your app using a custom Worker. The Worker will batch and deduplicate frequent requests before sending to the server. Or it will cache certain data at the edge. This approach unloads your server and lowers latency and without complicating your infrastructure.
 
+# Security
+The project passes the Wapiti security scan with 0 vulnerabilities and has a strict Content-Security Policy (CSP) enabled, thanks to the absence of inline scripting.
+
 # Analytics
 For web analytics, you can use self-hosted https://plausible.io, but https://goaccess.io is also a great option because it can run on the same server (and it's not subject to ad-blocking).
 
