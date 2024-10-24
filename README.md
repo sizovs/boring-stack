@@ -120,10 +120,11 @@ For web analytics, you can use self-hosted https://plausible.io, but https://goa
 # For inspiration
 - https://github.com/morris/vanilla-todo
 - https://blog.jim-nielsen.com/2020/switching-from-react-to-js-for-templating
-- https://ricostacruz.com/rscss/
-- https://ricostacruz.com/rsjs/
-- https://lit.dev/
+- https://ricostacruz.com/rscss
+- https://ricostacruz.com/rsjs
 - https://github.com/11ty/webc
+- https://enhance.dev
+- https://lit.dev
 
 # TODOS
 - Wait until Hetzner releases Object Store and replicate Litestream data to it.
