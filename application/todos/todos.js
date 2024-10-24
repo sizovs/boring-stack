@@ -4,7 +4,7 @@
 export const initTodos = async ({ app, db }) => {
   const renderTodos = (request, reply) => {
     const todos = db.prepare('select * from todos').all()
-    return reply.render('todos', { todos })
+    return reply.render('todos/todos', { todos })
   }
 
   app.get('/todos', (request, reply) => {

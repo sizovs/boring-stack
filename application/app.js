@@ -60,8 +60,8 @@ export const startApp = async (options = { port: 0 }) => {
   app.register(statics, staticsConfig)
 
   const edge = new Edge({ cache: !isDevMode })
-  const viewDirectory = process.cwd() + '/views'
-  edge.mount('default', viewDirectory)
+  const viewDirectory = import.meta.dirname
+  edge.mount(viewDirectory)
   edge.global('hashed', path => hasher.hashed(path))
 
   // URL-Encoded forms

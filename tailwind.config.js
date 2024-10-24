@@ -1,8 +1,10 @@
 /** @type {import('tailwindcss').Config} */
+import typography from "@tailwindcss/typography"
+import forms from "@tailwindcss/forms"
 export default {
-  content: ["./views/**/**.edge", "./static/**/**.js"],
+  content: ["./application/**/**.edge", "./static/**/**.js"],
   theme: {
     extend: {},
   },
-  plugins: [require("@tailwindcss/typography"), require("@tailwindcss/forms")],
+  plugins: [typography, forms],
 };
