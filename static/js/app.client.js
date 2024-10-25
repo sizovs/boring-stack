@@ -1,4 +1,4 @@
-import { showAlert } from "/static/alert.js"
+import { showAlert } from "/static/js/alert.client.js"
 
 htmx.config.includeIndicatorStyles = false
 

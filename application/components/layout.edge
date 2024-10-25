@@ -9,13 +9,15 @@
   <script type="importmap" nonce="{{ nonce }}">
     {
         "imports": {
-            "/static/alert.js": "{{hashed('/static/alert.js')}}"
+            "/static/js/alert.client.js": "{{hashed('/static/js/alert.client.js')}}"
         }
     }
   </script>
-  <script src="{{hashed('/static/vendored/htmx@2.0.3.js')}}" defer></script>
-  <script src="{{hashed('/static/vendored/cash@8.1.5.js')}}" defer></script>
-  <script type="module" src="{{hashed('/static/app.js')}}" defer></script>
+  <script src="{{hashed('/static/js/htmx@2.0.3.client.js')}}" defer></script>
+  <script src="{{hashed('/static/js/cash@8.1.5.client.js')}}" defer></script>
+  <script type="module" src="{{hashed('/static/js/app.client.js')}}" defer></script>
+
+  @stack('js')
 
   {{-- Styles --}}
   <link rel="stylesheet" href="{{hashed('/static/css/app.css')}}" >
