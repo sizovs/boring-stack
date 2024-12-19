@@ -1,7 +1,10 @@
 import { startApp } from '#application/app'
 import { test, expect } from '@playwright/test'
+import { expectHtmxReady } from './htmx'
 
 let app
+
+/** @type {import('playwright').Page} */
 let page
 
 test.beforeAll(async ({ browser }) => {
@@ -42,13 +45,14 @@ test('adds todo items', async () => {
     'Homework',
     'Repairwork'
   ])
+  await expectHtmxReady(page)
 })
 
 test('deletes a todo item', async () => {
-  await page.getByRole('checkbox').first().click()
+  await page.getByRole('checkbox').first().check()
   await expect(page.getByTestId('todo-count')).toHaveText('1 todo')
   await expect(page.getByTestId('todo-item')).toHaveCount(1)
-  await page.getByRole('checkbox').first().click()
+  await page.getByRole('checkbox').first().check()
 })
 
 test('shows warning on network error', async () => {
