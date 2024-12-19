@@ -16,7 +16,7 @@ To simplify ops and alleviate tooling fatigue, this project includes custom scri
 
 Since stability, simplicity, and fewer abstractions are the guiding principles, the following tech choices are made:
 * JS
-* Node (22+)
+* Node (23+)
 * Fastify web server
 * Edge.js for templating
 * Htmx for SPA experience
