@@ -24,10 +24,14 @@ class User  {
   get fullname() {
     return this.firstname + ' ' + this.lastname
   }
+
+  set bye(text) {
+    super.bye = text + text + text
+  }
 }
 
 describe('mapper', () => {
-  const sql = `select *, DATE(creationTs, 'unixepoch') AS creationDate from users`
+  const sql = `select *, DATE(creationTs, 'unixepoch') AS creationDate, 'bye' as bye from users`
 
   it('maps rows like a boss 🎉', () => {
     assertMappings(db.prepare(sql).all().map(as(User)))
@@ -48,5 +52,8 @@ describe('mapper', () => {
 
     // adds dynamic fields
     assert.equal(user.creationDate, new Date().toISOString().substring(0, 10))
+
+    // override fields
+    assert.equal(user.bye, 'byebyebye')
   }
 })
