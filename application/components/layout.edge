@@ -6,22 +6,27 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   {{-- Scripts --}}
-  <script type="importmap" nonce="{{ nonce }}">
-    {
-        "imports": {
-            "/static/js/alert.client.js": "{{hashed('/static/js/alert.client.js')}}"
-        }
+  <script nonce="{{ nonce }}">
+    function afterLoaded(fn) {
+      document.addEventListener('DOMContentLoaded', fn)
+      document.addEventListener('htmx:afterOnLoad', fn)
+    }
+
+    function onEvent(event, fn) {
+      afterLoaded(() => document.addEventListener(event, fn))
+    }
+
+    function onClick(fn) {
+      onEvent('click', fn)
     }
   </script>
   <script src="{{hashed('/static/js/htmx@2.0.3.client.js')}}" defer></script>
-  <script src="{{hashed('/static/js/cash@8.1.5.client.js')}}" defer></script>
   <script type="module" src="{{hashed('/static/js/app.client.js')}}" defer></script>
 
   @stack('js')
 
   {{-- Styles --}}
   <link rel="stylesheet" href="{{hashed('/static/css/app.css')}}" >
-
   <link rel="apple-touch-icon" href="{{hashed('/static/favicon.png')}}">
   <link rel="icon" href="{{hashed('/static/favicon.png')}}">
 
@@ -29,6 +34,9 @@
 </head>
 
 <body hx-boost="true" data-appversion="{{ appVersion }}">
+  <header class="mx-auto w-full max-w-screen-xl p-4 py-6 lg:py-8 font-mono">
+    <a href="/">boring.todos</a>
+  </header>
   {{{ await $slots.main() }}}
   <footer>
     <div class="mx-auto w-full max-w-screen-xl p-4 py-6 lg:py-8">

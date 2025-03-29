@@ -9,7 +9,6 @@ import formBody from '@fastify/formbody'
 import statics from '@fastify/static'
 import session from '@fastify/secure-session'
 import flash from '@fastify/flash'
-import createError from '@fastify/error'
 import { Hasher } from "#modules/hasher"
 
 
@@ -41,7 +40,6 @@ export const startApp = async (options = { port: 0 }) => {
   const staticsConfig = {
     prefix: '/static/',
     root: process.cwd() + '/static',
-    ...( !isDevMode && { immutable: true, maxAge: '365d' } )
   }
 
   // We use Hasher to add a version identifier to the public URLs of static assets (script.js -> script.c040ed4.js)
@@ -56,7 +54,10 @@ export const startApp = async (options = { port: 0 }) => {
   const app = fastify({ trustProxy: true, rewriteUrl: req => hasher.unhashed(req.url) })
 
   // Static files
-  app.register(statics, staticsConfig)
+  app.register(statics, {
+    ...staticsConfig,
+    cacheControl: false,
+  })
 
   const edge = new Edge({ cache: !isDevMode })
   const viewDirectory = import.meta.dirname
@@ -86,11 +87,26 @@ export const startApp = async (options = { port: 0 }) => {
     logger.info(`${request.method} ${request.url} ${reply.statusCode} - ${Math.round(reply.elapsedTime)}ms`)
   })
 
+  // Current time (so that tests can manipulate time)
+  app.decorateRequest('now', function () {
+    if (!isDevMode) {
+      return Date.now()
+    }
+    return +this.headers['x-mock-time'] || +this.query['x-mock-time'] || Date.now()
+  })
+
   // Flash scope
   app.register(flash)
 
+  app.decorateReply('alert', async function ({ lead, follow, classes }) {
+    return this
+      .header('HX-Retarget', 'body')
+      .header('HX-Reselect', '#alert-placeholder')
+      .header('HX-Reswap', 'beforeend show:none')
+      .render('components/alert', { lead, follow, classes: classes || 'bg-slate-800' })
+  })
+
   // CSRF protection
-  const CrossSiteRequestsForbidden = createError('FST_CROSS_SITE_REQUESTS', 'Cross-site requests are forbidden', 403)
   app.addHook('preHandler', async (request, reply) => {
     if (['POST', 'PUT', 'PATCH', 'DELETE'].includes(request.method)) {
       const whitelist = []
@@ -98,38 +114,36 @@ export const startApp = async (options = { port: 0 }) => {
       const requestOrigin = request.headers.origin
       const isForeignOrigin = requestOrigin !== websiteOrigin
       if (isForeignOrigin && !whitelist.includes(requestOrigin)) {
-        return reply.send(new CrossSiteRequestsForbidden())
+        return reply.code(403).send('Cross-site requests are forbidden')
       }
     }
   })
 
-  const OutdatedClient = createError('FST_OUTDATED_CLIENT', "You're using an outdated client. Please refresh", 205)
   app.addHook('preHandler', async (request, reply) => {
     const clientVersion = request.headers['x-app-version']
     if (clientVersion && clientVersion < appVersion) {
-      return reply.send(new OutdatedClient())
+      return reply.alert({ lead: '🎉 New Release', follow: 'Please refresh the page to use the latest version' })
     }
   })
 
-  app.decorateReply('render', async function (view, payload) {
+  app.decorateReply('render', async function (view, payload, mime = 'text/html') {
     const currentFlash = this.flash()
     const flash = { errors: currentFlash?.errors?.[0] ?? {}, old: currentFlash?.old?.[0] ?? {} }
     const renderer = edge.createRenderer()
     const nonce = crypto.randomBytes(16).toString('base64')
     renderer.share({ ...payload, flash, appVersion, nonce })
     const html = await renderer.render(view)
-    this.header('Content-Security-Policy', `default-src 'self'; script-src 'self' 'nonce-${nonce}'; img-src 'self' data:; object-src 'none'; script-src-attr 'none'; style-src 'self'`)
-    this.header('Cross-Origin-Opener-Policy', 'same-origin')
-    this.header('Cross-Origin-Resource-Policy', 'same-origin')
-    this.header('X-Frame-Options', 'SAMEORIGIN')
-    this.header('X-Content-Type-Options', 'nosniff')
-    this.type('text/html')
+    this.type(mime)
     this.send(html)
   })
 
   app.setErrorHandler(async (err, request, reply) => {
-    reply.code(err.statusCode || 500)
-    return err.message
+    logger.error(err)
+    if (request.headers["hx-request"]) {
+      return reply.alert({ lead: 'Action failed', follow: err.message, classes: 'bg-red-700' })
+    } else {
+      return reply.status(err.statusCode || 500).send(err.message)
+    }
   })
 
   await initTodos({ app, db, sql })

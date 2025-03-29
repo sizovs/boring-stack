@@ -20,7 +20,7 @@ Since stability, simplicity, and fewer abstractions are the guiding principles, 
 * Fastify web server
 * Edge.js for templating
 * Htmx for SPA experience
-* Vanilla JS with [Cash](https://github.com/fabiospampinato/cash) for syntactic sugar
+* Vanilla JS
 * Tailwind for styling with great DX
 * Playwright for E2E tests
 * SQLite for DB access w/o ORMs and query builders
@@ -124,11 +124,12 @@ For web analytics, you can use self-hosted https://plausible.io, but https://goa
 - https://kerkour.com/sqlite-for-servers
 - https://github.com/morris/vanilla-todo
 - https://blog.jim-nielsen.com/2020/switching-from-react-to-js-for-templating
+- https://github.com/radically-straightforward/radically-straightforward
 - https://ricostacruz.com/rscss
 - https://ricostacruz.com/rsjs
 - https://github.com/11ty/webc
-- https://enhance.dev
 - https://lit.dev
 
 # TODOS
-- Wait until Hetzner releases Object Store and replicate Litestream data to it.
+- Litestream should replicate to Cloudflare R2. This enables better and faster recovery.
+- [Nano JSX](https://libs.tech/project/274209897/nano) is probably a better choice than Edge because (IDE support + direct `import` support)

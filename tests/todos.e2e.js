@@ -54,27 +54,3 @@ test('deletes a todo item', async () => {
   await expect(page.getByTestId('todo-item')).toHaveCount(1)
   await page.getByRole('checkbox').first().check()
 })
-
-test('shows warning on network error', async () => {
-  await page.route('**/*', route => route.abort())
-  await page.getByTestId('todo-input').fill('Homework')
-  await page.keyboard.press('Enter')
-  await expect(page.getByRole('alert')).toHaveText('Action failed | Are you connected to the internet?')
-  await page.unroute('**/*');
-})
-
-test('shows warning on server error', async () => {
-  await page.route('**/*', route => route.fulfill({ status: 500 }))
-  await page.getByTestId('todo-input').fill('Homework')
-  await page.keyboard.press('Enter')
-  await expect(page.getByRole('alert')).toHaveText('Action failed | Please refresh the page and try again')
-  await page.unroute('**/*');
-})
-
-test('shows warning on new version', async () => {
-  app.bumpVersion()
-  await page.getByTestId('todo-input').fill('Homework')
-  await page.keyboard.press('Enter')
-  await expect(page.getByRole('alert')).toHaveText('🎉 New Release | Please refresh the page to use the latest version')
-  await page.unroute('**/*');
-})

@@ -1,24 +1,40 @@
-import { showAlert } from "/static/js/alert.client.js"
-
 htmx.config.includeIndicatorStyles = false
 
-$(document).on('htmx:configRequest', event => {
+document.addEventListener('htmx:configRequest', event => {
   const { appversion } = document.body.dataset
   event.detail.headers['x-app-version'] = appversion
 })
 
-$(document).on('htmx:beforeSwap', event => {
-  const { status } = event.detail.xhr
-  if (status === 205) {
-    showAlert({ lead: '🎉 New Release', follow: 'Please refresh the page to use the latest version' })
-    event.detail.shouldSwap = false
+// ------------
+// Closeables (E.g. Alerts)
+// ------------
+onClick(({ target }) => {
+  const close = target.closest('[data-js-close]')
+  if (close) {
+    const closeable = close.closest('[data-js-closeable]')
+    closeable.remove()
   }
 })
 
-$(document).on('htmx:responseError', () => {
-  showAlert({ lead: 'Action failed', follow: 'Please refresh the page and try again', classes: 'bg-red-700' })
+
+// ------------
+// No internet
+// ------------
+document.addEventListener('htmx:sendError', () => {
+  htmx.swap("body", "<div role='alert' remove-me='5s' class='fixed bottom-0 w-full bg-red-700 text-white p-2'>Network error. Could not reach the server.</div>", { swapStyle: "beforeend" });
 })
 
-$(document).on('htmx:sendError', () => {
-  showAlert({ lead: 'Action failed', follow: 'Are you connected to the internet?', classes: 'bg-red-700'})
+
+// ------------
+// Auto-remove
+// ------------
+document.addEventListener('htmx:afterProcessNode', event => {
+  const element = event.detail.elt
+  const timing = element.getAttribute('remove-me')
+  if (timing) {
+    setTimeout(function () {
+      if (element.parentElement)
+        element.parentElement.removeChild(element)
+    }, htmx.parseInterval(timing))
+  }
 })
