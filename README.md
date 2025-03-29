@@ -4,7 +4,7 @@ This is my starter template for full-stack web development with Node.js, designe
 
 # Motivation
 
-Web development ecosystem suffers from extreme churn, making migrations between major framework releases extremely challenging, often forcing 'a big rewrite' on developers every 3-5 years. What's trendy today stops compiling tomorrow. If you're planning long-term, it's wiser to build on top of a stable foundation that takes backward compatibility seriously, and is immune to hype waves. Moreover, the SPA ecosystem, and frameworks like Next and SvelteKit, are complex beasts with too much hidden "magic" under the hood. This magic works until it doesn't. For the problem of sending data over HTTP to and from the database, such complexity is hard to justify. By making certain architectural trade-offs, such as embracing [hypermedia systems](https://hypermedia.systems/) and ditching unnecessary abstractions, it's possible to eliminate all that accidental complexity.
+Web development ecosystem suffers from extreme churn, making migrations between major framework releases extremely challenging, often forcing 'a big rewrite' on developers every 3-5 years. What's trendy today stops compiling tomorrow. I literally can't build multiple Vue projects that I created several years ago. If you're planning long-term, it's wiser to build on top of a stable foundation that takes backward compatibility seriously, and is immune to hype waves. Moreover, the SPA ecosystem, and frameworks like Next and SvelteKit, are complex beasts with too much hidden "magic" under the hood. This magic works until it doesn't. For the problem of sending data over HTTP to and from the database, such complexity is hard to justify. By making certain architectural trade-offs, such as embracing [hypermedia systems](https://hypermedia.systems/) and ditching unnecessary abstractions, it's possible to eliminate all that accidental complexity.
 
 I find it unreasonable to split apps prematurely across all axes — 1) vertically into microservices, 2) horizontally into BE and FE, and 3) across 'tiers' with DB running on a separate machine. Instead, start with [self-contained](https://scs-architecture.org), [monolithic](https://signalvnoise.com/svn3/the-majestic-monolith) systems that run on a [single server](https://specbranch.com/posts/one-big-server/). Such systems can handle [10,000s of requests on a beefy VPS](https://blog.wesleyac.com/posts/consider-sqlite) (which is enough for most apps), scale up to the moon, and, if necessary, can be split into multiple self-contained systems for scalability. Navigation between systems can be achieved with simple hyperlinks, and one system can include another using server-side includes or iframes.
 
@@ -121,6 +121,7 @@ The project passes the Wapiti security scan with 0 vulnerabilities and has a str
 For web analytics, you can use self-hosted https://plausible.io, but https://goaccess.io is also a great option because it can run on the same server (and it's not subject to ad-blocking).
 
 # For inspiration
+- https://kerkour.com/sqlite-for-servers
 - https://github.com/morris/vanilla-todo
 - https://blog.jim-nielsen.com/2020/switching-from-react-to-js-for-templating
 - https://ricostacruz.com/rscss
