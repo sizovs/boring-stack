@@ -1,18 +1,9 @@
 import { logger } from '#modules/logger'
+import { alwaysArray } from '#modules/arrays'
+import { retry } from '#modules/retries'
 import Database from 'better-sqlite3'
 
-async function retry(fn, attempts = 5, delay = 1000) {
-  for (let attempt = 1; attempt <= attempts; attempt++) {
-    try {
-      return await fn()
-    } catch (error) {
-      if (attempt === attempts) throw new Error(`Failed after ${attempts} attempts: ${error.message}`)
-      await new Promise(resolve => setTimeout(resolve, delay))
-    }
-  }
-}
-
-const connect = async (location) => {
+const connect = async (location, debugLogger = (msg, args) => logger.debug(msg, args)) => {
   if (!location) {
     throw new Error('Cannot create database. Please provide the DB location')
   }
@@ -21,7 +12,8 @@ const connect = async (location) => {
   // So if another db connection tries to query during recovery it will get an SQLITE_BUSY error.
   // We retry connection a few times, because an exclusive lock is held during recovery.
   return retry(() => {
-    const db = new Database(location, { verbose: logger.verbose })
+    const db = new Database(location, { verbose: debugLogger })
+
     db.pragma('journal_mode = WAL')
     db.pragma('foreign_keys = true')
     db.pragma('busy_timeout = 5000')
@@ -40,9 +32,63 @@ const connect = async (location) => {
     // Increase cache size to 64mb, the default is 2mb (or slightly higher depending on the SQLite version)
     db.pragma(`cache_size = ${64 * 1024 * -1}`)
 
-    return db
-  })
 
+    const sql = sqlize(db)
+    return { db, sql }
+  })
+}
+
+// better-sqlite3 use of prepared statements in clunky and doesn't support type conversation (booleans, objects, etc):
+// db.prepare('SELECT * FROM users WHERE id = ? and logged = ?').get(id, Number(logged))
+
+// Therefore we combine template literals (for convenience) + prepared statements (for speed and anti-SQL injection):
+// sql`SELECT * FROM users WHERE id = ${id} and logged = ${logged}`.get()
+const sqlize = db => (strings, ...values) => {
+  let query = strings[0]
+  let params = []
+
+  for (let i = 0; i < values.length; ++i) {
+    const value = values[i]
+    if (value?.__raw) {
+      query += value.value + strings[i + 1]
+    } else if (value?.__oneOf) {
+      query += value.value.map(() => '?').join(',') + strings[i + 1]
+      params.push(...value.value.map(convert))
+    } else {
+      query += '?' + strings[i + 1]
+      params.push(convert(value))
+    }
+  }
+
+  const stmt = db.prepare(query)
+
+  return {
+    get: () => stmt.get(...params),
+    all: () => stmt.all(...params),
+    run: () => stmt.run(...params),
+    pluck: () => ({
+      get: () => stmt.pluck().get(...params),
+      all: () => stmt.pluck().all(...params),
+    }),
+  }
+}
+
+function convert(value) {
+  if (typeof value === 'boolean') {
+    return value ? 1 : 0
+  }
+  if (value !== null && typeof value === 'object') {
+    return JSON.stringify(value)
+  }
+  return value
+}
+
+export function raw(value) {
+  return { __raw: true, value }
+}
+
+export function oneOf(oneOrMany) {
+  return { __oneOf: true, value: alwaysArray(oneOrMany) }
 }
 
 export { connect }

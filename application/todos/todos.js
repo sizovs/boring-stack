@@ -1,9 +1,9 @@
 /**
 * @param {{ app: import("fastify").FastifyInstance, db: import("better-sqlite3").Database app }}
 */
-export const initTodos = async ({ app, db }) => {
+export const initTodos = async ({ app, db, sql }) => {
   const renderTodos = (request, reply) => {
-    const todos = db.prepare('select * from todos').all()
+    const todos = sql`select * from todos`.all()
     return reply.render('todos/todos', { todos })
   }
 
@@ -12,7 +12,7 @@ export const initTodos = async ({ app, db }) => {
   })
 
   app.delete('/todos/:id', (request, reply) => {
-    db.prepare('delete from todos where id = ?').run(request.params.id)
+    sql`delete from todos where id = ${request.params.id}`.run()
     return renderTodos(request, reply)
   })
 
@@ -24,7 +24,7 @@ export const initTodos = async ({ app, db }) => {
       return renderTodos(request, reply)
     }
 
-    db.prepare('insert into todos (description) values (?)').run(description)
+    sql`insert into todos (description) values (${description})`.run()
     return renderTodos(request, reply)
   })
 

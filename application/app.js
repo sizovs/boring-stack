@@ -1,7 +1,6 @@
 import { connect } from "#modules/database/database"
 import { Migrator } from "#modules/database/migrator"
 import { initTodos } from "#application/todos/todos"
-import { cookieSecret } from "#modules/secrets"
 import { logger } from "#modules/logger"
 import { Edge } from 'edge.js'
 import crypto from "crypto"
@@ -30,7 +29,7 @@ export const startApp = async (options = { port: 0 }) => {
     throw new Error(`NODE_ENV environment variable must be one of ${envs}.`)
   }
 
-  const db = await connect(process.env.DB_LOCATION)
+  const { db, sql } = await connect(process.env.DB_LOCATION)
 
   // In dev mode, we run migrations upon startup.
   // In production, migrations are run by the deployment script.
@@ -67,9 +66,19 @@ export const startApp = async (options = { port: 0 }) => {
   // URL-Encoded forms
   app.register(formBody)
 
+  const insecure = "0000000000000000000000000000000000000000000000000000000000000000"
+  const secret = process.env.COOKIE_SECRET ?? insecure
+  if (!isDevMode && secret === insecure) {
+    throw new Error('Cannot use insecure cookie secret in production')
+  }
   // Sessions
   app.register(session, {
-    key: cookieSecret(db)
+    key: Buffer.from(secret, "hex"),
+    expiry: 15552000, // 180 days in seconds
+    cookie: {
+      maxAge: 34560000,
+      path: '/'
+    }
   })
 
   // Request logging
@@ -123,7 +132,7 @@ export const startApp = async (options = { port: 0 }) => {
     return err.message
   })
 
-  await initTodos({ app, db })
+  await initTodos({ app, db, sql })
 
   app.get('/', (request, reply) => reply.redirect('/todos'))
   app.get('/health', (request, reply) => reply.status(health).send())
