@@ -48,7 +48,7 @@ npm test
 Make sure your public key is available under  ~/.ssh/hetzner.pub.
 
 ```
-HETZNER_API_TOKEN=<secret goes here> npm run devops
+HETZNER_API_TOKEN=<secret goes here> npm run devops create
 ```
 
 #### Before deployment
@@ -58,7 +58,7 @@ If you have a custom domain, set it in the package.json, and point your DNS reco
 #### Deploying to production
 
 ```
-HETZNER_API_TOKEN=<secret goes here> npm run devops
+HETZNER_API_TOKEN=<secret goes here> npm run devops deploy
 ```
 
 🎉 Your app should be publicly available via HTTPS on your custom domain or via `<server ip>.nip.io`.
