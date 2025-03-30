@@ -8,14 +8,14 @@ document.addEventListener('htmx:configRequest', event => {
 // ------------
 // Closeables (E.g. Alerts)
 // ------------
-onClick(({ target }) => {
-  const close = target.closest('[data-js-close]')
+document.addEventListener('click', event => {
+  const close = event.target.closest('[data-js-close]')
   if (close) {
     const closeable = close.closest('[data-js-closeable]')
     closeable.remove()
   }
-})
 
+})
 
 // ------------
 // No internet
@@ -23,7 +23,6 @@ onClick(({ target }) => {
 document.addEventListener('htmx:sendError', () => {
   htmx.swap("body", "<div role='alert' remove-me='5s' class='fixed bottom-0 w-full bg-red-700 text-white p-2'>Network error. Could not reach the server.</div>", { swapStyle: "beforeend" });
 })
-
 
 // ------------
 // Auto-remove
