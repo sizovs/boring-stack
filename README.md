@@ -132,4 +132,3 @@ For web analytics, you can use self-hosted https://plausible.io, but https://goa
 
 # TODOS
 - Litestream should replicate to Cloudflare R2. This enables better and faster recovery.
-- [Nano JSX](https://libs.tech/project/274209897/nano) is probably a better choice than Edge because (IDE support + direct `import` support)
