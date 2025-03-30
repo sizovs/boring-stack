@@ -71,8 +71,6 @@ DB_LOCATION=<db location> npm run repl
 # JS
 Modern JS is not the same JS many developers disliked a decade ago. It offers one of the best developer experiences (DX), a vibrant ecosystem, and is a highly agile language that doesn't require re-compilation. It is well-suited for I/O-heavy applications, like most web apps.
 
-You might squeeze more performance from your server with Rust, but who cares? Unless you're very CPU/RAM limited, the bottleneck for web apps will be I/O, not CPU or RAM, so Rust won’t necessarily help you handle more users on a single box (it might reduce latency, though, since it doesn't have garbage collection). The cool thing about JS runtimes is that they are built using "fast" runtimes—C++ or Rust—so you get speed without sacrificing DX.
-
 Regarding TypeScript: I've worked with many strongly typed languages, and I find the TS type system a bit too intricate for my taste. While it’s sophisticated and feature-rich, it often produces more boilerplate than I would prefer. Moreover, while types in general can be beneficial when integrated into the language, I view TypeScript as a hacky abstraction over a nice and simple dynamic language. TS compiles into an unwieldy JS, making troubleshooting and debugging a nightmare. I hope one day JS adopts optional types, or that TS evolves into a separate language with its own runtime that doesn’t compile into JS. Then it might be worth considering a switch. Meanwhile, JS evolves rapidly and remains my preferred choice—especially with plenty of tests, which you should be writing with TS anyway. The great thing about JS is that most libraries come with types, so you can take advantage of code assistance without needing to write TS yourself.
 
 #### Node > Bun
@@ -95,10 +93,10 @@ Postgres has an advantage over SQLite due to its extensive features—live migra
 P.S. there's a lot of innovation happening in the SQLite space, with initiatives like Turso, LiteFS, and rqlite.
 
 #### ⚡ Postgres vs. SQLite benchmark
-On my laptop, a single SQLite database file achieves ~7.5-8.5K writes/sec. Using 2 shards increases this to 11.5-15K writes/sec, and 4 shards to 19-25K writes/sec, with no further improvement beyond that due to disk I/O limits. Postgres delivers throughput similar to 2 files. Therefore, well-sharded SQLite outperformed Postgres on a single machine (Postgres 17 with Postgres.js driver). On Hetzner, for SQLite to roughly match Postgres write throughput, I needed to create from 4 to 12 shards, with throughput increasing linearly from 5-10K writes/second to 120K writes/second on a dedicated cloud AMD machine (CCX33). As the number of shards increases, the administrative overhead also rises since each shard requires backup, diminishing SQLite's advantages and making Postgres a more sensible choice. **It's worth mentioning that AMD machines scored better than ARM in SQLite and Postgres tests.**
+On my laptop, a single SQLite database file achieves ~7.5-8.5K writes/sec. Using 2 shards increases this to 11.5-15K writes/sec, and 4 shards to 19-25K writes/sec, with no further improvement beyond that due to disk I/O limits. Postgres delivers throughput similar to 2 files. Therefore, well-sharded SQLite outperformed Postgres on a single machine (Postgres 17 with Postgres.js driver). On Hetzner, for SQLite to roughly match Postgres write throughput, I needed to create from 4 to 12 shards, with throughput increasing linearly from 5-10K writes/second to 120K writes/second on a dedicated cloud AMD machine (CCX33). As the number of shards increases, the administrative overhead also rises since each shard requires backup, diminishing SQLite's advantages and making Postgres a more sensible choice. But damn, that's a huge number of writes. And many can be batched into a single transaction, giving even more IOPS.
 
 #### SQLite as NoSQL store
-You can use SQLite as a KV store, JSON store and it even has [built-in full-text search capability](https://www.sqlite.org/fts5.html). Moreover, there are a lot of [SQLite extensions](https://github.com/nalgeon/sqlean) out there. So, if you choose SQLite, very unlikely you'll need an additional database. Nevertheless, nothing stops you from adding another specialized database, such as Redis (e.g. for [queues](https://bullmq.io/)) or DuckDB to the mix.
+You can use SQLite as a KV store, JSON store and it even has [built-in full-text search capability](https://www.sqlite.org/fts5.html). Moreover, there are a lot of [SQLite extensions](https://github.com/nalgeon/sqlean) out there. So, if you choose SQLite, very unlikely you'll need an additional database. Nevertheless, nothing stops you from adding another specialized database, such as [DuckDB](https://libs.tech/project/138754790/duckdb) or [LMDB](https://libs.tech/project/181949472/lmdb-js) to the mix.
 
 #### SQLite and parallel writers
 It's well-known that SQLite doesn't support parallel writes – while one process is writing, others are waiting. Even though you can still get thousands of iops on a single DB file, you may need higher throughput. You can achieve that by splitting the database into multiple files. For example, `app.db` can become `users.db` and `comments.db`. Or, learning from Rails, you can use SQLite as a cache and queue, extracting `cache.db` and `queue.db`
@@ -127,8 +125,6 @@ For web analytics, you can use self-hosted https://plausible.io, but https://goa
 - https://github.com/radically-straightforward/radically-straightforward
 - https://ricostacruz.com/rscss
 - https://ricostacruz.com/rsjs
-- https://github.com/11ty/webc
-- https://lit.dev
 
 # TODOS
 - Litestream should replicate to Cloudflare R2. This enables better and faster recovery.
