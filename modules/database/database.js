@@ -43,20 +43,24 @@ const connect = async (location, debugLogger = (msg, args) => logger.debug(msg, 
 
 // Therefore we combine template literals (for convenience) + prepared statements (for speed and anti-SQL injection):
 // sql`SELECT * FROM users WHERE id = ${id} and logged = ${logged}`.get()
-const sqlize = db => (strings, ...values) => {
-  let query = strings[0]
+const sqlize = db => (fragments, ...bindings) => {
+  let query = fragments[0]
   let params = []
 
-  for (let i = 0; i < values.length; ++i) {
-    const value = values[i]
-    if (value?.__raw) {
-      query += value.value + strings[i + 1]
-    } else if (value?.__oneOf) {
-      query += value.value.map(() => '?').join(',') + strings[i + 1]
-      params.push(...value.value.map(convert))
+  for (let i = 0; i < bindings.length; ++i) {
+    const bind = bindings[i]
+    const fragment = fragments[i + 1]
+
+    if (bind?.__raw) {
+      query += bind.value + fragment
+
+    } else if (bind?.__oneOf) {
+      query += bind.value.map(() => '?') + fragment
+      params.push(...bind.value.map(convert))
+
     } else {
-      query += '?' + strings[i + 1]
-      params.push(convert(value))
+      query += '?' + fragment
+      params.push(convert(bind))
     }
   }
 
