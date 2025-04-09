@@ -18,10 +18,9 @@ Since stability, simplicity, and fewer abstractions are the guiding principles, 
 * JS
 * Node (23+)
 * Fastify web server
-* Edge.js for templating
 * Htmx for SPA experience
-* Vanilla JS (Alpine.js is a great alternative, if you like [locality of behaviour](https://htmx.org/essays/locality-of-behaviour/))
-* Tailwind for styling with great DX.
+* Vanilla JS
+* Tailwind for styling with great DX
 * Playwright for E2E tests
 * SQLite for DB access w/o ORMs and query builders
 * Litestream for streaming DB replication

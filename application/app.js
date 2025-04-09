@@ -1,20 +1,17 @@
 import { connect } from "#modules/database/database"
 import { Migrator } from "#modules/database/migrator"
-import { initTodos } from "#application/todos/todos"
+import { initTodos } from "#application/controllers/todos"
 import { logger } from "#modules/logger"
-import { Edge } from 'edge.js'
-import crypto from "crypto"
 import fastify from 'fastify'
 import formBody from '@fastify/formbody'
 import statics from '@fastify/static'
 import session from '@fastify/secure-session'
-import flash from '@fastify/flash'
 import { Hasher } from "#modules/hasher"
-
+import { bumpVersion, version } from "#application/version"
+import { Alert } from "#application/views/Alert"
 
 export const startApp = async (options = { port: 0 }) => {
 
-  let appVersion = 1.0 // bump the version up to force client refresh.
   let health = 404 // app is unhealthy until cluster signals otherwise.
 
   const isDevMode = process.env.NODE_ENV !== "production"
@@ -59,28 +56,35 @@ export const startApp = async (options = { port: 0 }) => {
     cacheControl: false,
   })
 
-  const edge = new Edge({ cache: !isDevMode })
-  const viewDirectory = import.meta.dirname
-  edge.mount(viewDirectory)
-  edge.global('hashed', path => hasher.hashed(path))
-
   // URL-Encoded forms
   app.register(formBody)
 
   const insecure = "0000000000000000000000000000000000000000000000000000000000000000"
-  const secret = process.env.COOKIE_SECRET ?? insecure
-  if (!isDevMode && secret === insecure) {
-    throw new Error('Cannot use insecure cookie secret in production')
+  const sessionSecret = process.env.COOKIE_SECRET ?? insecure
+  if (!isDevMode && sessionSecret === insecure) {
+    throw new Error('Cannot use insecure session secret in production')
   }
-  // Sessions
-  app.register(session, {
-    key: Buffer.from(secret, "hex"),
-    expiry: 15552000, // 180 days in seconds
-    cookie: {
-      maxAge: 34560000,
-      path: '/'
-    }
-  })
+
+
+  app.register(session, [
+    // User session
+    {
+      sessionName: 'session',
+      key: Buffer.from(sessionSecret, "hex"),
+      expiry: 15552000, // 180 days in seconds
+      cookie: {
+        maxAge: 34560000,
+        path: '/'
+      }
+    },
+    // Flash scope, no need for encryption.
+    {
+      sessionName: 'flashy',
+      key: Buffer.from(insecure, "hex"),
+      cookie: {
+        path: '/',
+      }
+    }])
 
   // Request logging
   app.addHook('onResponse', async (request, reply) => {
@@ -95,15 +99,25 @@ export const startApp = async (options = { port: 0 }) => {
     return +this.headers['x-mock-time'] || +this.query['x-mock-time'] || Date.now()
   })
 
-  // Flash scope
-  app.register(flash)
+  // Flash read
+  app.decorateRequest('flash', function (key, value) {
+    const currentFlash = this.flashy || {}
+    this.flashy.delete()
+    return currentFlash
+  })
+
+  // Flash write
+  app.decorateReply('flash', function (key, value) {
+    this.request.flashy = this.request.flashy || {}
+    this.request.flashy[key] = value
+  })
 
   app.decorateReply('alert', async function ({ lead, follow, classes }) {
     return this
       .header('HX-Retarget', 'body')
       .header('HX-Reselect', '#alert-placeholder')
       .header('HX-Reswap', 'beforeend show:none')
-      .render('components/alert', { lead, follow, classes: classes || 'bg-slate-800' })
+      .render(Alert({ lead, follow, classes: classes || 'bg-slate-800' }))
   })
 
   // CSRF protection
@@ -121,18 +135,16 @@ export const startApp = async (options = { port: 0 }) => {
 
   app.addHook('preHandler', async (request, reply) => {
     const clientVersion = request.headers['x-app-version']
-    if (clientVersion && clientVersion < appVersion) {
+    if (clientVersion && clientVersion < version()) {
       return reply.alert({ lead: '🎉 New Release', follow: 'Please refresh the page to use the latest version' })
     }
   })
 
-  app.decorateReply('render', async function (view, payload, mime = 'text/html') {
-    const currentFlash = this.flash()
-    const flash = { errors: currentFlash?.errors?.[0] ?? {}, old: currentFlash?.old?.[0] ?? {} }
-    const renderer = edge.createRenderer()
-    const nonce = crypto.randomBytes(16).toString('base64')
-    renderer.share({ ...payload, flash, appVersion, nonce })
-    const html = await renderer.render(view)
+  app.addHook('onSend', async (request, reply, payload) => {
+    return typeof payload !== 'string' ? payload : hasher.hashLinks(payload)
+  })
+
+  app.decorateReply('render', async function (html, mime = 'text/html') {
     this.type(mime)
     this.send(html)
   })
@@ -152,7 +164,6 @@ export const startApp = async (options = { port: 0 }) => {
   app.get('/health', (request, reply) => reply.status(health).send())
 
   const healthy = () => health = 200
-  const bumpVersion = () => appVersion++
 
   const url = await app.listen(options)
   logger.info(`Running @ ${url}`)

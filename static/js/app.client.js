@@ -14,14 +14,13 @@ document.addEventListener('click', event => {
     const closeable = close.closest('[data-js-closeable]')
     closeable.remove()
   }
-
 })
 
 // ------------
 // No internet
 // ------------
 document.addEventListener('htmx:sendError', () => {
-  htmx.swap("body", "<div role='alert' remove-me='5s' class='fixed bottom-0 w-full bg-red-700 text-white p-2'>Network error. Could not reach the server.</div>", { swapStyle: "beforeend" });
+  htmx.swap("body", "<div role='alert' remove-me='5s' class='fixed bottom-0 w-full bg-red-700 text-white p-2'>Network error. Could not reach the server.</div>", { swapStyle: "beforeend" })
 })
 
 // ------------

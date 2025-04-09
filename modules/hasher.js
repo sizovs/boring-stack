@@ -17,8 +17,17 @@ export class Hasher {
   hashed(path) {
     return this.#cache.get(path) ?? path
   }
+
   unhashed(path) {
     return path.startsWith(this.#prefix) ? path.replace(/\.[a-z0-9]{8}\./, '.') : path
+  }
+
+  hashLinks(body) {
+    let modified = body
+    this.#cache.forEach((value, key) => {
+      modified = modified.replaceAll(key, value)
+    });
+    return modified
   }
 }
 

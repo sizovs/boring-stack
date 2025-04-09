@@ -21,6 +21,17 @@ describe('hasher', async () => {
     assert.strictEqual(hasher.hashed('/static/missing.css'), '/static/missing.css')
   })
 
+  it('replaces links in a string', () => {
+    const withHashes = hasher.hashLinks(`
+        <script type="module" src="/static/b.css" defer></script>
+        <link rel="stylesheet" href="/static/nest/n.css" />
+        <link rel="stylesheet" href="/keep/me.css" />`.trim())
+    assert.strictEqual(withHashes, `
+        <script type="module" src="/static/b.1efc98f0.css" defer></script>
+        <link rel="stylesheet" href="/static/nest/n.83a8818d.css" />
+        <link rel="stylesheet" href="/keep/me.css" />`.trim())
+  })
+
   it('unhashes static assets', () => {
     assert.strictEqual(hasher.unhashed('/static/a.c162de19.css'), '/static/a.css')
     assert.strictEqual(hasher.unhashed('/static/a.xxxxxxxx.css'), '/static/a.css')
@@ -28,4 +39,6 @@ describe('hasher', async () => {
     assert.strictEqual(hasher.unhashed('a.css'), 'a.css')
     assert.strictEqual(hasher.unhashed('x.css'), 'x.css')
   })
+
+
 })
