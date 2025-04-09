@@ -1,7 +1,7 @@
 import { html } from "#modules/html"
 import { version } from "#application/version"
 
-export const Layout = ({ app, main }) => html`
+export const Layout = ({ main }) => html`
   <!DOCTYPE html>
   <html lang="en">
     <head>
@@ -9,7 +9,6 @@ export const Layout = ({ app, main }) => html`
       <meta name="viewport" content="width=device-width, initial-scale=1" />
 
       <!-- Scripts -->
-      <script></script>
       <script src="/static/js/htmx@2.0.3.client.js" defer></script>
       <script type="module" src="/static/js/app.client.js" defer></script>
 

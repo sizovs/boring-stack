@@ -144,7 +144,7 @@ export const startApp = async (options = { port: 0 }) => {
     return typeof payload !== 'string' ? payload : hasher.hashLinks(payload)
   })
 
-  app.decorateReply('render', async function (html, mime = 'text/html') {
+  app.decorateReply('render', function (html, mime = 'text/html') {
     this.type(mime)
     this.send(html)
   })
