@@ -4,13 +4,11 @@ import { Todos } from "#application/views/Todos"
 /**
  * @param {{ app: import("fastify").FastifyInstance, db: import("better-sqlite3").Database app }}
  */
-export const initTodos = async ({ app, db, sql }) => {
+export const initTodos = async ({ app, sql }) => {
 
   const renderTodos = (request, reply) => {
     const todos = sql`select * from todos`.all()
-    const flash = request.flash()
-    const main = Todos({ todos, flash })
-    reply.render(Layout({ app, main }))
+    reply.render(Layout(Todos), { todos })
   }
 
   app.get("/todos", (request, reply) => {

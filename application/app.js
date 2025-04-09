@@ -7,11 +7,11 @@ import formBody from '@fastify/formbody'
 import statics from '@fastify/static'
 import session from '@fastify/secure-session'
 import { Hasher } from "#modules/hasher"
-import { bumpVersion, version } from "#application/version"
 import { Alert } from "#application/views/Alert"
 
 export const startApp = async (options = { port: 0 }) => {
 
+  let appVersion = 1 // bump the version up to force client refresh.
   let health = 404 // app is unhealthy until cluster signals otherwise.
 
   const isDevMode = process.env.NODE_ENV !== "production"
@@ -117,7 +117,7 @@ export const startApp = async (options = { port: 0 }) => {
       .header('HX-Retarget', 'body')
       .header('HX-Reselect', '#alert-placeholder')
       .header('HX-Reswap', 'beforeend show:none')
-      .render(Alert({ lead, follow, classes: classes || 'bg-slate-800' }))
+      .render(Alert, { lead, follow, classes: classes || 'bg-slate-800' })
   })
 
   // CSRF protection
@@ -135,7 +135,7 @@ export const startApp = async (options = { port: 0 }) => {
 
   app.addHook('preHandler', async (request, reply) => {
     const clientVersion = request.headers['x-app-version']
-    if (clientVersion && clientVersion < version()) {
+    if (clientVersion && clientVersion < appVersion) {
       return reply.alert({ lead: '🎉 New Release', follow: 'Please refresh the page to use the latest version' })
     }
   })
@@ -144,9 +144,10 @@ export const startApp = async (options = { port: 0 }) => {
     return typeof payload !== 'string' ? payload : hasher.hashLinks(payload)
   })
 
-  app.decorateReply('render', function (html, mime = 'text/html') {
+  app.decorateReply('render', function (view, params, mime = 'text/html') {
+    const flash = this.request.flash()
     this.type(mime)
-    this.send(html)
+    this.send(view({ ...params, flash, appVersion }))
   })
 
   app.setErrorHandler(async (err, request, reply) => {
@@ -164,6 +165,7 @@ export const startApp = async (options = { port: 0 }) => {
   app.get('/health', (request, reply) => reply.status(health).send())
 
   const healthy = () => health = 200
+  const bumpVersion = () => appVersion++
 
   const url = await app.listen(options)
   logger.info(`Running @ ${url}`)

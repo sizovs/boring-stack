@@ -1,7 +1,6 @@
 import { html } from "#modules/html"
-import { version } from "#application/version"
 
-export const Layout = ({ main }) => html`
+export const Layout = Main => params => html`
   <!DOCTYPE html>
   <html lang="en">
     <head>
@@ -20,11 +19,11 @@ export const Layout = ({ main }) => html`
       <title>Todos</title>
     </head>
 
-    <body hx-boost="true" data-appversion="${version()}">
+    <body hx-boost="true" data-appversion="${params.appVersion}">
       <header class="mx-auto w-full max-w-screen-xl p-4 py-6 lg:py-8 font-mono">
         <a href="/">boring.todos</a>
       </header>
-      $${main}
+      $${Main(params)}
       <footer>
         <div class="mx-auto w-full max-w-screen-xl p-4 py-6 lg:py-8">
           <hr class="my-6 border-gray-200 sm:mx-auto  lg:my-8" />
