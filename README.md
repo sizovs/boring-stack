@@ -112,7 +112,7 @@ For web analytics, you can use self-hosted https://plausible.io, but https://goa
 
 # For inspiration
 
-- https://unplannedobsolescence.com/blog
+- https://unplannedobsolescence.com/blog/building-the-hundred-year-web-service/
 - https://dev.tube/video/3GObi93tjZI
 - https://triskweline.de/unpoly-rugb
 - https://boringtechnology.club
