@@ -111,8 +111,8 @@ The project passes the Wapiti security scan with 0 vulnerabilities and has a str
 For web analytics, you can use self-hosted https://plausible.io, but https://goaccess.io is also a great option because it can run on the same server (and it's not subject to ad-blocking).
 
 # For inspiration
-- https://unplannedobsolescence.com/blog
 
+- https://unplannedobsolescence.com/blog
 - https://dev.tube/video/3GObi93tjZI
 - https://triskweline.de/unpoly-rugb
 - https://boringtechnology.club
