@@ -1,4 +1,4 @@
-import { load } from "#modules/views"
+import { load } from "#modules/views.js"
 
 
 /**

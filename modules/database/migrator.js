@@ -1,6 +1,6 @@
 import { basename } from 'path'
 import fs from "fs"
-import { logger } from '#modules/logger'
+import { logger } from '#modules/logger.js'
 
 export class Migrator {
   #db

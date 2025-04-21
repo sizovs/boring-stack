@@ -1,6 +1,6 @@
-import { logger } from '#modules/logger'
-import { alwaysArray } from '#modules/arrays'
-import { retry } from '#modules/retries'
+import { logger } from '#modules/logger.js'
+import { alwaysArray } from '#modules/arrays.js'
+import { retry } from '#modules/retries.js'
 import Database from 'better-sqlite3'
 
 const connect = async (location, debugLogger = (msg, args) => logger.debug(msg, args)) => {

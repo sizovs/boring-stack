@@ -3,16 +3,10 @@
     "paths": {
       "/static/*": ["./static/*"],
       "#modules/*": [
-        "./modules/*.js",
+        "./modules/*",
       ],
       "#application/*": [
-        "./application/*.js",
-      ],
-      "#tests/*": [
-        "./tests/*.js"
-      ],
-      "#root/*": [
-        "./*.js",
+        "./application/*",
       ]
     }
   },
