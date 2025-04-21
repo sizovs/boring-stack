@@ -37,6 +37,11 @@ test('adds todo items', async () => {
   await page.getByTestId('todo-input').fill('Homework')
   await page.keyboard.press('Enter')
 
+  await expect(page.getByTestId('todo-count')).toHaveText('1 todo')
+  await expect(page.getByTestId('todo-item')).toHaveText([
+    'Homework',
+  ])
+
   await page.getByTestId('todo-input').fill('Repairwork')
   await page.keyboard.press('Enter')
 

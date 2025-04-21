@@ -1,21 +1,23 @@
-import { Layout } from "#application/views/Layout"
-import { Todos } from "#application/views/Todos"
+import { load } from "#modules/views"
+
 
 /**
  * @param {{ app: import("fastify").FastifyInstance, db: import("better-sqlite3").Database app }}
  */
 export const initTodos = async ({ app, sql }) => {
 
-  const renderTodos = (request, reply) => {
+  const renderTodos = async (request, reply) => {
+    const { Todos } = await load('Todos.js')
+    const { Layout } = await load('Layout.js')
     const todos = sql`select * from todos`.all()
-    reply.render(Layout(Todos), { todos })
+    return reply.render(Layout(Todos), { todos })
   }
 
-  app.get("/todos", (request, reply) => {
+  app.get("/todos", async (request, reply) => {
     return renderTodos(request, reply)
   })
 
-  app.delete("/todos/:id", (request, reply) => {
+  app.delete("/todos/:id", async (request, reply) => {
     sql`delete from todos where id = ${request.params.id}`.run()
     return renderTodos(request, reply)
   })
