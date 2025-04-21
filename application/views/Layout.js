@@ -1,4 +1,4 @@
-import { html } from "#modules/html"
+import { html } from "#modules/html.js"
 
 export const Layout = Main => params => html`
   <!DOCTYPE html>
