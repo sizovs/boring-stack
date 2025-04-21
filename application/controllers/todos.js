@@ -1,8 +1,7 @@
 import { load } from "#modules/views.js"
 
-
 /**
- * @param {{ app: import("fastify").FastifyInstance, db: import("better-sqlite3").Database app }}
+ * @param {{ app: import("fastify").FastifyInstance }}
  */
 export const initTodos = async ({ app, sql }) => {
 
