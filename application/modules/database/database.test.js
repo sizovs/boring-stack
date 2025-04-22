@@ -1,6 +1,6 @@
 import { describe, it } from 'node:test'
 import assert from 'node:assert'
-import { connect, oneOf, raw } from '#modules/database/database.js'
+import { connect, oneOf, raw } from '#application/modules/database/database.js'
 
 describe('database', async () => {
 

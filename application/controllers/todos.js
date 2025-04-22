@@ -1,4 +1,4 @@
-import { load } from "#modules/views.js"
+import { load } from "#application/modules/views.js"
 
 /**
  * @param {{ app: import("fastify").FastifyInstance }}

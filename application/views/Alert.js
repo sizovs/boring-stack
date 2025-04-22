@@ -1,4 +1,4 @@
-import { html } from "#modules/html.js"
+import { html } from "#application/modules/html.js"
 
 export const Alert = ({ link, lead, follow, classes }) => html`
 <div id="alert-placeholder" data-js-closeable remove-me="5s" hx-swap-oob role="alert" class="z-20 fixed top-0 left-0 w-full h-auto py-2 duration-300 ease-out shadow-sm sm:py-0 sm:h-10 ${classes}">

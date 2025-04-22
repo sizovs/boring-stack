@@ -1,12 +1,12 @@
-import { connect } from "#modules/database/database.js"
-import { Migrator } from "#modules/database/migrator.js"
+import { connect } from "#application/modules/database/database.js"
+import { Migrator } from "#application/modules/database/migrator.js"
 import { initTodos } from "#application/controllers/todos.js"
-import { logger } from "#modules/logger.js"
+import { logger } from "#application/modules/logger.js"
 import fastify from 'fastify'
 import formBody from '@fastify/formbody'
 import statics from '@fastify/static'
 import session from '@fastify/secure-session'
-import { Hasher } from "#modules/hasher.js"
+import { Hasher } from "#application/modules/hasher.js"
 import { Alert } from "#application/views/Alert.js"
 
 export const startApp = async (options = { port: 0 }) => {

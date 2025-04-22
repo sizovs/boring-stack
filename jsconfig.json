@@ -2,9 +2,6 @@
   "compilerOptions": {
     "paths": {
       "/static/*": ["./static/*"],
-      "#modules/*": [
-        "./modules/*",
-      ],
       "#application/*": [
         "./application/*",
       ]

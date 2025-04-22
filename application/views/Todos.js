@@ -1,4 +1,4 @@
-import { html } from "#modules/html.js"
+import { html } from "#application/modules/html.js"
 
 export const Todos = ({ todos, flash }) => html`
   <main class="max-w-md mx-auto mt-16" hx-target="main" hx-select="main">

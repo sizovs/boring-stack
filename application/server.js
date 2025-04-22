@@ -1,7 +1,7 @@
 import cluster from 'node:cluster'
 import process from 'node:process'
 
-import { logger } from "#modules/logger.js"
+import { logger } from "#application/modules/logger.js"
 import { startApp } from "./app.js"
 
 const numForks = Number(process.env.FORKS) || 2

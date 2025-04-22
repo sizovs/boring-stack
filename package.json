@@ -26,8 +26,7 @@
     "pino": "^9.5.0"
   },
   "imports": {
-    "#application/*": "./application/*",
-    "#modules/*": "./modules/*"
+    "#application/*": "./application/*"
   },
   "devDependencies": {
     "@faker-js/faker": "^8.4.1",
