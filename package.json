@@ -10,8 +10,8 @@
     "pretest": "npm run build",
     "test": "NODE_ENV=development DB_LOCATION=:memory: conc --kill-others-on-fail 'node --test' 'npx playwright test'",
     "build": "npx @tailwindcss/cli -i ./static/css/app.css -o ./static/css/app-build.css --minify",
-    "repl": "node ./modules/repl.js",
-    "migrate": "node ./modules/database/migrate.js",
+    "repl": "node ./application/modules/repl.js",
+    "migrate": "node ./application/modules/database/migrate.js",
     "predevops": "npm run build",
     "devops": "node ./deploy/devops.js",
     "prepare": "[ -d '.git' ] && husky || echo 'skipping husky'"
