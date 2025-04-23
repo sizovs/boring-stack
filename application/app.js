@@ -1,6 +1,6 @@
 import { connect } from "#application/modules/database/database.js"
 import { Migrator } from "#application/modules/database/migrator.js"
-import { initTodos } from "#application/controllers/todos.js"
+import { initTodos } from "#application/routes/todos.js"
 import { logger } from "#application/modules/logger.js"
 import fastify from 'fastify'
 import formBody from '@fastify/formbody'
