@@ -128,6 +128,7 @@ For web analytics, you can use self-hosted https://plausible.io, but https://goa
 - https://github.com/radically-straightforward/radically-straightforward
 - https://ricostacruz.com/rscss
 - https://ricostacruz.com/rsjs
+- https://github.com/infogulch/todos
 
 # TODOS
 - Litestream should replicate to Cloudflare R2. This enables better and faster recovery.
