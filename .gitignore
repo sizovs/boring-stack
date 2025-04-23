@@ -13,7 +13,6 @@ node_modules
 .node_repl_history
 .DS_Store
 .idea
-.vscode
 .env*
 /test-results/
 /playwright-report/

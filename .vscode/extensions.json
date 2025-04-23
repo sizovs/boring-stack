@@ -1,0 +1,8 @@
+{
+  "recommendations": [
+    "bierner.lit-html",
+    "connor4312.nodejs-testing",
+    "ms-playwright.playwright",
+    "EditorConfig.EditorConfig"
+  ]
+}
