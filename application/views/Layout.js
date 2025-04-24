@@ -21,7 +21,7 @@ export const Layout = Main => params => html`
 
     <body data-appversion="${params.appVersion}">
       <header class="mx-auto w-full max-w-screen-xl p-4 py-6 lg:py-8 font-mono">
-        <a href="/" hx-boost="true" >boring.todos</a>
+        <a href="/" hx-boost="true">boring.todos</a>
       </header>
       $${Main(params)}
       <footer>

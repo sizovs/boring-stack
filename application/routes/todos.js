@@ -1,5 +1,5 @@
-import { load } from "#application/modules/views.js"
-import { ErrorMsg } from "#application/views/Todos.js"
+import { Layout } from "#application/views/Layout.js"
+import { ErrorMsg, Todos } from "#application/views/Todos.js"
 
 /**
  * @param {{ app: import("fastify").FastifyInstance }}
@@ -26,8 +26,6 @@ export const initTodos = async ({ app, sql }) => {
   })
 
   const render = async (request, reply) => {
-    const { Todos } = await load('Todos.js')
-    const { Layout } = await load('Layout.js')
     const todos = sql`select * from todos`.all()
     return reply.render(Layout(Todos), { todos })
   }

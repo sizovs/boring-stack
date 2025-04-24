@@ -11,6 +11,7 @@ test.beforeAll(async ({ browser }) => {
   app = await startApp()
   page = await browser.newPage()
   await page.goto(app.url)
+
 })
 
 test('starts with zero todos', async () => {
@@ -28,15 +29,17 @@ test('does not allow empty todo', async () => {
 
 test('adds todo items', async () => {
   await page.getByTestId('todo-input').fill('Homework')
-  await page.keyboard.press('Enter')
+  await page.getByTestId('todo-input').press('Enter')
 
   await expect(page.getByTestId('todo-count')).toHaveText('1 todo')
   await expect(page.getByTestId('todo-item')).toHaveText([
     'Homework',
   ])
 
+  await expectHtmxReady(page)
+
   await page.getByTestId('todo-input').fill('Repairwork')
-  await page.keyboard.press('Enter')
+  await page.getByTestId('todo-input').press('Enter')
 
   await expect(page.getByTestId('todo-count')).toHaveText('2 todos')
   await expect(page.getByTestId('todo-item')).toHaveText([
