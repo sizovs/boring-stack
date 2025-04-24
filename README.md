@@ -10,8 +10,6 @@ I find it unreasonable to split apps prematurely across all axes — 1) vertical
 
 Loosely coupled, distributed architectures are challenging to operate, making them better suited for the cloud. This is one reason cloud providers advocate for such architectures. In contrast, monolithic, self-contained architectures reduce the benefits of PaaS and serverless solutions, which are opaque and costly abstractions over servers.
 
-Thanks to deliberate architectural simplification, we can run our app on a single Hetzner VPS, which is one of, if not the most cost-efficient and robust cloud provider on the market. 20TB transfer on Vercel is $2850, on Hetzner it's free. Do your own math, and you'll be mind-blown by how much you're being ripped off by AWS and alikes.
-
 To simplify ops and alleviate tooling fatigue, this project includes custom scripts for database migrations, zero-downtime deployments, and infrastructure provisioning (Terraform state management is a hassle and HCL syntax is too restrictive for my taste).
 
 Since stability, simplicity, and fewer abstractions are the guiding principles, the following tech choices are made:
@@ -70,65 +68,32 @@ DB_LOCATION=<db location> npm run repl
 #### Production configuration
 Create a `.env.production` file in the project directory and the script will copy it to the server.
 
-# JS
-Modern JS is not the same JS many developers disliked a decade ago. It offers one of the best developer experiences (DX), a vibrant ecosystem, and is a highly agile language that doesn't require re-compilation. It is well-suited for I/O-heavy applications, like most web apps.
-
-Regarding TypeScript: I've worked with many strongly typed languages, and I find the TS type system a bit too intricate for my taste. While it’s sophisticated and feature-rich, it often produces more boilerplate than I would prefer. Moreover, while types in general can be beneficial when integrated into the language, I view TypeScript as a hacky abstraction over a nice and simple dynamic language. TS compiles into an unwieldy JS, making troubleshooting and debugging a nightmare. I hope one day JS adopts optional types, or that TS evolves into a separate language with its own runtime that doesn’t compile into JS. Then it might be worth considering a switch. Meanwhile, JS evolves rapidly and remains my preferred choice—especially with plenty of tests, which you should be writing with TS anyway. The great thing about JS is that most libraries come with types, so you can take advantage of code assistance without needing to write TS yourself.
-
-#### Node > Bun
-Bun is great, but it's still in its early days and it doesn't support many features Node does. Node powers millions of production deployments and has significantly more eyeballs on it, resulting in many more corner cases being covered. Node works and is stable. Slowly but surely, Node adopts the best parts from other runtimes. It may not be the first to implement new features, which is the approach I prefer—allowing Bun and other ecosystems to innovate first, then adopting only what matter and what works.
-
-#### Workers
-CPU intensive and synchronous tasks should be offloaded from the main event loop onto dedicated worker. To achieve that, you should set up a worker pool. Note that workers are useful for performing CPU-intensive operations. [They do not help](https://nodejs.org/api/worker_threads.html#:~:text=Workers%20(threads)%20are%20useful%20for%20performing%20CPU%2Dintensive%20JavaScript%20operations.%20They%20do%20not%20help%20much%20with%20I/O%2Dintensive%20work.%20The%20Node.js%20built%2Din%20asynchronous%20I/O%20operations%20are%20more%20efficient%20than%20Workers%20can%20be) much with I/O-intensive work.
-
-#### Stateless
-Since the app runs in cluster mode meaning data won’t be shared across cluster nodes, make sure your app is stateless. Use database to share the state between processes. In some cases, instead of sharing data between nodes, consider moving the “shared logic” up to the reverse proxy (e.g. rate limiting is a good use case). You can also move data to the client (JWT) or use sticky sessions (less preferred) if you need consecutive requests from the same client to share data.
-
 # Testing
 A traditional front-end/back-end separation via APIs requires developing and maintaining two distinct test suites—one for testing the back-end through the API and another for testing the front-end against a mock API, which can easily fall out of sync with the actual back-end.  This is cumbersome and clunky. By forgoing JSON APIs and instead sending HTML over the wire, we streamline the process, allowing us to test-drive a single app at the user level using Playwright.
 
-#### SQLite as NoSQL store
-You can use SQLite as a KV store, JSON store and it even has [built-in full-text search capability](https://www.sqlite.org/fts5.html). Moreover, there are a lot of [SQLite extensions](https://github.com/nalgeon/sqlean) out there. So, if you choose SQLite, very unlikely you'll need an additional database. Nevertheless, nothing stops you from adding another specialized database, such as [DuckDB](https://libs.tech/project/138754790/duckdb) or [LMDB](https://libs.tech/project/181949472/lmdb-js) to the mix.
-
-#### SQLite and parallel writers
-It's well-known that SQLite doesn't support parallel writes – while one process is writing, others are waiting. Even though you can still get thousands of iops on a single DB file, you may need higher throughput. You can achieve that by splitting the database into multiple files. For example, `app.db` can become `users.db` and `comments.db`. Or, learning from Rails, you can use SQLite as a cache and queue, extracting `cache.db` and `queue.db`
-There are many ways how database can be partitioned, but the point is – if write throughput was a bottleneck, splitting the database into two nearly doubles your write performance. On my laptop, a single SQLite database file achieves ~7.5-8.5K writes/sec. Using 2 shards increases this to 11.5-15K writes/sec, and 4 shards to 19-25K writes/sec, with no further improvement beyond that due to disk I/O limits. ⚡
-
-#### SQLite in a multi-process environment
-There can be multiple database connections open at the same time, and all of those database connections can write to the database file, but they have to take turns. SQLite uses locks to serialize the writes automatically; this is not something that the applications using SQLite need to worry about.
-
-Note on performance: in theory, SQLite *could* perform better when a single process handles writes because you can compile SQLite with SQLITE_THREADSAFE=0 and omit all mutexing logic from the binary. Unfortunately, this is impossible to achieve with Node.js running in a cluster. However, for most apps, the throughput should be sufficient with mutexes enabled since SQLite uses file system locks (flocks). Flocking occurs in-memory, requiring no disk I/O apart from the initial lock setup. I benchmarked a multi-process Node app that relies on SQLite locking against a Go app that coordinates writes using a Mutex, and Node showed approximately 30% better performance. So, unless SQLite is recompiled, an additional layer of app-level locking only adds overhead.
+# SQLite
+SQLite is blazing fast, takes backward compatibility seriously, and enables amazing DX. [Just use SQLite](https://blog.wesleyac.com/posts/consider-sqlite). This project comes with SQLite preconfigured properly (WAL mode enabled, etc.).
 
 # Cloudflare
 It’s a good idea to place your server behind Cloudflare. This way, you get DDoS protection and CDN for free, but there is much more. For example, CF can take care of Brotli compression or TLS encryption, so our Caddy server doesn't have to.
 
 One of Cloudflare's standout features is [Workers](https://workers.cloudflare.com/). Workers allow you to run code at the edge before requests reach your server. For example, you can create a transparent "booster layer" in front of your app using a custom Worker. The Worker will batch and deduplicate frequent requests before sending to the server. Or it will cache certain data at the edge. This approach unloads your server and lowers latency and without complicating your infrastructure.
 
-# Security
-The project passes the Wapiti security scan with 0 vulnerabilities and has a strict Content-Security Policy (CSP) enabled, thanks to the absence of inline scripting.
-
-# Analytics
-For web analytics, you can use self-hosted https://plausible.io, but https://goaccess.io is also a great option because it can run on the same server (and it's not subject to ad-blocking).
-
 # For inspiration
 
-- https://unplannedobsolescence.com/blog/building-the-hundred-year-web-service/
-- https://dev.tube/video/3GObi93tjZI
-- https://triskweline.de/unpoly-rugb
-- https://boringtechnology.club
-- https://grugbrain.dev
-- https://html-first.com
-- https://youmightnotneedjs.com
-- https://leanrada.com/htmz
-- https://webnative.tech
-- https://kerkour.com/sqlite-for-servers
-- https://github.com/morris/vanilla-todo
-- https://unplannedobsolescence.com/blog/building-the-hundred-year-web-service/
-- https://blog.jim-nielsen.com/2020/switching-from-react-to-js-for-templating
-- https://github.com/radically-straightforward/radically-straightforward
-- https://ricostacruz.com/rscss
-- https://ricostacruz.com/rsjs
-- https://github.com/infogulch/todos
+- [Building the Hundred-Year Web Service](https://unplannedobsolescence.com/blog/building-the-hundred-year-web-service/)
+- [Choose Boring Technology](https://boringtechnology.club)
+- [From React to htmx on a real-world SaaS product](https://dev.tube/video/3GObi93tjZI)
+- [HTML First](https://html-first.com)
+- [Optimizing SQLite for servers](https://kerkour.com/sqlite-for-servers)
+- [Radically Straightforward](https://github.com/radically-straightforward/radically-straightforward)
+- [Reasonable System for JavaScript Structure](https://ricostacruz.com/rsjs)
+- [Styling CSS without losing your sanity](https://ricostacruz.com/rscss)
+- [Switching from React & JSX to Template Literals](https://blog.jim-nielsen.com/2020/switching-from-react-to-js-for-templating)
+- [The Grug Brained Developer](https://grugbrain.dev)
+- [We're breaking up with JavaScript frontends](https://triskweline.de/unpoly-rugb)
+- [Web Native Apps](https://webnative.tech)
+- [You Might Not Need JS](https://youmightnotneedjs.com)
 
 # TODOS
 - Litestream should replicate to Cloudflare R2. This enables better and faster recovery.
