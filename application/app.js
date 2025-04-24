@@ -25,7 +25,7 @@ export const startApp = async (options = { port: 0 }) => {
     throw new Error(`NODE_ENV environment variable must be one of ${envs}.`)
   }
 
-  const { db, sql } = await connect(process.env.DB_LOCATION)
+  const { db } = await connect(process.env.DB_LOCATION)
 
   // In dev mode, we run migrations upon startup.
   // In production, migrations are run by the deployment script.
@@ -159,7 +159,7 @@ export const startApp = async (options = { port: 0 }) => {
     }
   })
 
-  await initTodos({ app, db, sql })
+  await initTodos({ app, db })
 
   app.get('/', (request, reply) => reply.redirect('/todos'))
   app.get('/health', (request, reply) => reply.status(health).send())
