@@ -66,25 +66,15 @@ export const startApp = async (options = { port: 0 }) => {
   }
 
 
-  app.register(session, [
-    // User session
-    {
-      sessionName: 'session',
-      key: Buffer.from(sessionSecret, "hex"),
-      expiry: 15552000, // 180 days in seconds
-      cookie: {
-        maxAge: 34560000,
-        path: '/'
-      }
-    },
-    // Flash scope, no need for encryption.
-    {
-      sessionName: 'flashy',
-      key: Buffer.from(insecure, "hex"),
-      cookie: {
-        path: '/',
-      }
-    }])
+  app.register(session, {
+    sessionName: 'session',
+    key: Buffer.from(sessionSecret, "hex"),
+    expiry: 15552000, // 180 days in seconds
+    cookie: {
+      maxAge: 34560000,
+      path: '/'
+    }
+  })
 
   // Request logging
   app.addHook('onResponse', async (request, reply) => {
@@ -99,18 +89,6 @@ export const startApp = async (options = { port: 0 }) => {
     return +this.headers['x-mock-time'] || +this.query['x-mock-time'] || Date.now()
   })
 
-  // Flash read
-  app.decorateRequest('flash', function (key, value) {
-    const currentFlash = this.flashy || {}
-    this.flashy.delete()
-    return currentFlash
-  })
-
-  // Flash write
-  app.decorateReply('flash', function (key, value) {
-    this.request.flashy = this.request.flashy || {}
-    this.request.flashy[key] = value
-  })
 
   app.decorateReply('alert', async function ({ lead, follow, classes }) {
     return this
@@ -145,9 +123,8 @@ export const startApp = async (options = { port: 0 }) => {
   })
 
   app.decorateReply('render', function (view, params, mime = 'text/html') {
-    const flash = this.request.flash()
     this.type(mime)
-    this.send(view({ ...params, flash, appVersion }))
+    this.send(view({ ...params, appVersion }))
   })
 
   app.setErrorHandler(async (err, request, reply) => {
