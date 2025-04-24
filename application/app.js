@@ -115,9 +115,9 @@ export const startApp = async (options = { port: 0 }) => {
   app.decorateReply('alert', async function ({ lead, follow, classes }) {
     return this
       .header('HX-Retarget', 'body')
-      .header('HX-Reselect', '#alert-placeholder')
+      .header('HX-Reselect', '#alert')
       .header('HX-Reswap', 'beforeend show:none')
-      .render(Alert, { lead, follow, classes: classes || 'bg-slate-800' })
+      .render(Alert, { lead, follow, classes })
   })
 
   // CSRF protection

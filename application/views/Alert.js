@@ -1,7 +1,7 @@
 import { html } from "#application/modules/html.js"
 
 export const Alert = ({ link, lead, follow, classes }) => html`
-<div id="alert-placeholder" data-js-closeable remove-me="5s" hx-swap-oob role="alert" class="z-20 fixed top-0 left-0 w-full h-auto py-2 duration-300 ease-out shadow-sm sm:py-0 sm:h-10 ${classes}">
+<div id="alert" data-js-closeable remove-me="5s" role="alert" class="z-20 fixed top-0 left-0 w-full h-auto py-2 duration-300 ease-out shadow-sm sm:py-0 sm:h-10 ${classes || 'bg-slate-800'}">
   <div class="flex items-center justify-between w-full h-full px-3 mx-auto max-w-7xl">
       <a href="${link ?? ''}" class="flex flex-col w-full h-full leading-6 text-neutral-100 hover:text-white duration-150 ease-out sm:flex-row sm:items-center">
           <strong class="font-semibold">${lead}</strong>

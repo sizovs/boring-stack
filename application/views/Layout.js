@@ -8,7 +8,7 @@ export const Layout = Main => params => html`
       <meta name="viewport" content="width=device-width, initial-scale=1" />
 
       <!-- Scripts -->
-      <script src="/static/js/htmx@2.0.3.client.js" defer></script>
+      <script src="/static/js/htmx@2.0.4.client.js" defer></script>
       <script type="module" src="/static/js/app.client.js" defer></script>
 
       <!-- Styles -->
@@ -19,9 +19,9 @@ export const Layout = Main => params => html`
       <title>Todos</title>
     </head>
 
-    <body hx-boost="true" data-appversion="${params.appVersion}">
+    <body data-appversion="${params.appVersion}">
       <header class="mx-auto w-full max-w-screen-xl p-4 py-6 lg:py-8 font-mono">
-        <a href="/">boring.todos</a>
+        <a href="/" hx-boost="true" >boring.todos</a>
       </header>
       $${Main(params)}
       <footer>

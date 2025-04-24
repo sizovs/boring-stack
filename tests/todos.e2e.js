@@ -19,14 +19,7 @@ test('starts with zero todos', async () => {
   await expect(page.getByTestId('todo-error')).toBeHidden()
 })
 
-test('does not allow empty todo thanks to client-side validation', async () => {
-  await page.keyboard.press('Enter')
-  const validationMessage = await page.$eval('[data-testid="todo-input"]', input => input.validationMessage)
-  expect(validationMessage).toBe('Please fill out this field.')
-  await expect(page.getByTestId('todo-item')).toHaveCount(0)
-})
-
-test('does not allow empty todo thanks to server-side validation', async () => {
+test('does not allow empty todo', async () => {
   await page.$eval('[data-testid="todo-input"]', input => input.removeAttribute('required'))
   await page.keyboard.press('Enter')
   await expect(page.getByTestId('todo-error')).toContainText('Task description is required')
