@@ -18,6 +18,7 @@ Since stability, simplicity, and fewer abstractions are the guiding principles, 
 * Fastify web server
 * Htmx for SPA experience
 * Vanilla JS
+* [Template literals for server-side templating](https://blog.jim-nielsen.com/2020/switching-from-react-to-js-for-templating)
 * Tailwind for styling with great DX
 * Playwright for E2E tests
 * SQLite for DB access w/o ORMs and query builders
@@ -88,7 +89,6 @@ One of Cloudflare's standout features is [Workers](https://workers.cloudflare.co
 - [Radically Straightforward](https://github.com/radically-straightforward/radically-straightforward)
 - [Reasonable System for JavaScript Structure](https://ricostacruz.com/rsjs)
 - [Styling CSS without losing your sanity](https://ricostacruz.com/rscss)
-- [Switching from React & JSX to Template Literals](https://blog.jim-nielsen.com/2020/switching-from-react-to-js-for-templating)
 - [The Grug Brained Developer](https://grugbrain.dev)
 - [We're breaking up with JavaScript frontends](https://triskweline.de/unpoly-rugb)
 - [Web Native Apps](https://webnative.tech)
