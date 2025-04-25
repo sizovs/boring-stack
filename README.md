@@ -17,7 +17,6 @@ Since stability, simplicity, and fewer abstractions are the guiding principles, 
 * Node (23+)
 * Fastify web server
 * Htmx for SPA experience
-* Vanilla JS
 * [Template literals for server-side templating](https://blog.jim-nielsen.com/2020/switching-from-react-to-js-for-templating)
 * Tailwind for styling with great DX
 * Playwright for E2E tests
