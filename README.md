@@ -72,12 +72,12 @@ Create a `.env.production` file in the project directory and the script will cop
 A traditional front-end/back-end separation via APIs requires developing and maintaining two distinct test suites—one for testing the back-end through the API and another for testing the front-end against a mock API, which can easily fall out of sync with the actual back-end.  This is cumbersome and clunky. By forgoing JSON APIs and instead sending HTML over the wire, we streamline the process, allowing us to test-drive a single app at the user level using Playwright.
 
 # SQLite
-SQLite is blazing fast, takes backward compatibility seriously, and enables amazing DX. [Just use SQLite](https://blog.wesleyac.com/posts/consider-sqlite). This project comes with SQLite preconfigured properly (WAL mode enabled, etc.).
+SQLite is blazing fast, takes backward compatibility seriously, and enables amazing DX. [Just use SQLite](https://blog.wesleyac.com/posts/consider-sqlite). This project comes with SQLite [preconfigured for production](https://kerkour.com/sqlite-for-servers).
 
 # Cloudflare
 It’s a good idea to place your server behind Cloudflare. This way, you get DDoS protection and CDN for free, but there is much more. For example, CF can take care of Brotli compression or TLS encryption, so our Caddy server doesn't have to.
 
-One of Cloudflare's standout features is [Workers](https://workers.cloudflare.com/). Workers allow you to run code at the edge before requests reach your server. For example, you can create a transparent "booster layer" in front of your app using a custom Worker. The Worker will batch and deduplicate frequent requests before sending to the server. Or it will cache certain data at the edge. This approach unloads your server and lowers latency and without complicating your infrastructure.
+One of Cloudflare's standout features is [Workers](https://workers.cloudflare.com/). Workers allow you to run code at the edge before requests reach your server. For example, using Workers, you can create a transparent "booster layer" in front of your app, that will batch and deduplicate requests before sending to the server; or cache certain data at the edge. This approach unloads your server and lowers latency without complicating your infrastructure.
 
 # For inspiration
 
@@ -85,7 +85,6 @@ One of Cloudflare's standout features is [Workers](https://workers.cloudflare.co
 - [Choose Boring Technology](https://boringtechnology.club)
 - [From React to htmx on a real-world SaaS product](https://dev.tube/video/3GObi93tjZI)
 - [HTML First](https://html-first.com)
-- [Optimizing SQLite for servers](https://kerkour.com/sqlite-for-servers)
 - [Radically Straightforward](https://github.com/radically-straightforward/radically-straightforward)
 - [Reasonable System for JavaScript Structure](https://ricostacruz.com/rsjs)
 - [Styling CSS without losing your sanity](https://ricostacruz.com/rscss)
