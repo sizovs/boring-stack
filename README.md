@@ -16,7 +16,7 @@ Since stability, simplicity, and fewer abstractions are the guiding principles, 
 * JS
 * Node (23+)
 * Fastify web server
-* Htmx for SPA experience
+* [Htmx](https://dev.tube/video/3GObi93tjZI) for SPA experience
 * [Template literals for server-side templating](https://blog.jim-nielsen.com/2020/switching-from-react-to-js-for-templating)
 * Tailwind for styling with great DX
 * Playwright for E2E tests
@@ -83,7 +83,6 @@ One of Cloudflare's standout features is [Workers](https://workers.cloudflare.co
 
 - [Building the Hundred-Year Web Service](https://unplannedobsolescence.com/blog/building-the-hundred-year-web-service/)
 - [Choose Boring Technology](https://boringtechnology.club)
-- [From React to htmx on a real-world SaaS product](https://dev.tube/video/3GObi93tjZI)
 - [HTML First](https://html-first.com)
 - [Radically Straightforward](https://github.com/radically-straightforward/radically-straightforward)
 - [Reasonable System for JavaScript Structure](https://ricostacruz.com/rsjs)
