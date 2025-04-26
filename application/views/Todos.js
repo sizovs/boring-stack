@@ -9,14 +9,9 @@ export const Todos = ({ todos }) => html`
       margin-top: var(--size-8);
     }
     me h1 {
-      font-size: var(--size-12);
+      font-size: var(--scale-6);
       margin-bottom: var(--size-4);
       letter-spacing: var(--letter-xs);
-    }
-    me input[type="text"] {
-      font-size: var(--size-4);
-      padding: var(--size-2);
-      width: var(--size-full);
     }
   </style>
   <h1 data-testid="todo-count">${todos.length} todo${todos.length === 1 ? "" : "s"}</h1>
@@ -38,14 +33,7 @@ export const Todo = todo => html`
   <label data-testid="todo-item">
     <style>
       me {
-        display: flex;
-        align-items: center;
-        gap: var(--size-1);
         margin-bottom: var(--size-2);
-      }
-      me input[type="checkbox"] {
-        width: var(--size-4);
-        height: var(--size-4);
       }
     </style>
     <input
