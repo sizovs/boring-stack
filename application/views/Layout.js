@@ -6,7 +6,7 @@ export const Layout = Main => params => html`
     <head>
       <meta charset="utf-8" />
       <meta name="viewport" content="width=device-width, initial-scale=1" />
-
+      <meta name="description" content="A boring todo app" />
       <!-- Scripts -->
       <script src="/static/js/htmx@2.0.4.client.js"></script>
       <script>
@@ -65,7 +65,7 @@ export const Layout = Main => params => html`
                 text-align: center;
                 max-width: var(--width-lg);
                 margin: 0 auto;
-                color: var(--color-grey-400);
+                color: var(--color-grey-600);
               }
               me hr {
                 margin: var(--size-8) 0;
