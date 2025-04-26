@@ -1,36 +1,68 @@
 import { html } from "#application/modules/html.js"
 
 export const Todos = ({ todos }) => html`
-  <main id="main" class="max-w-md mx-auto mt-16" hx-select-oob="#main, #todo-error">
-  <h1
-      class="text-4xl mb-4 font-bold tracking-tighter"
-      data-testid="todo-count">${todos.length} todo${todos.length === 1 ? "" : "s"}
-    </h1>
+  <main id="main" hx-select-oob="#main, #todo-error">
+  <style>
+    me {
+      margin: 0 auto;
+      max-width: var(--width-xs);
+      margin-top: var(--size-8);
+    }
+    me h1 {
+      font-size: var(--size-12);
+      margin-bottom: var(--size-4);
+      letter-spacing: var(--letter-xs);
+    }
+    me input[type="text"] {
+      font-size: var(--size-4);
+      padding: var(--size-2);
+      width: var(--size-full);
+    }
+  </style>
+  <h1 data-testid="todo-count">${todos.length} todo${todos.length === 1 ? "" : "s"}</h1>
     ${todos.map(todo => Todo(todo))}
       <input
+        type="text"
         hx-post="/todos"
         hx-trigger="keyup[key === 'Enter']"
         data-testid="todo-input"
         placeholder="Type description and hit enter..."
         autofocus
         name="description"
-        class="px-0 w-full border-0 border-b border-gray-300 focus:outline-none focus:ring-0 focus:border-black"
       />
       <div id="todo-error"></div>
   </main>
 `;
 
 export const Todo = todo => html`
-  <label data-testid="todo-item" class="ms-2 font-medium text-gray-900 flex gap-2 items-center mb-4">
+  <label data-testid="todo-item">
+    <style>
+      me {
+        display: flex;
+        align-items: center;
+        gap: var(--size-1);
+        margin-bottom: var(--size-2);
+      }
+      me input[type="checkbox"] {
+        width: var(--size-4);
+        height: var(--size-4);
+      }
+    </style>
     <input
       type="checkbox"
       hx-delete="/todos/${todo.id}"
       hx-swap="swap:0.1s"
-      class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 focus:ring-2"
     />${todo.description}
   </label>
 `
 
 export const ErrorMsg = ({ message }) => html`
-  <small id="todo-error" data-testid="todo-error" class="text-xs text-red-600">${message}</small>
+  <small id="todo-error" data-testid="todo-error">
+    <style>
+      me {
+        color: var(--color-red-600);
+      }
+    </style>
+    ${message}
+  </small>
 `

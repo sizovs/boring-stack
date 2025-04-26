@@ -18,7 +18,7 @@ Since stability, simplicity, and fewer abstractions are the guiding principles, 
 * Fastify web server
 * [Htmx](https://dev.tube/video/3GObi93tjZI) for SPA experience
 * [Template literals for server-side templating](https://blog.jim-nielsen.com/2020/switching-from-react-to-js-for-templating)
-* Tailwind for styling with great DX
+* Plain CSS (with atomic tokens for consistency)
 * Playwright for E2E tests
 * SQLite for DB access w/o ORMs and query builders
 * Litestream for streaming DB replication
