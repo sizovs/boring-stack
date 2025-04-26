@@ -4,7 +4,7 @@ export const Alert = ({ link, lead, follow }) => html`
 <div id="alert" data-js-closeable remove-me="5s" role="alert">
   <style>
     me {
-    padding: var(--size-2);
+      padding: var(--size-2);
       margin: 0 auto;
       position: fixed;
       top: 0;
