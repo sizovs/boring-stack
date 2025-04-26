@@ -65,14 +65,10 @@ export const Layout = Main => params => html`
                 text-align: center;
                 max-width: var(--width-lg);
                 margin: 0 auto;
+                padding: var(--size-8) 0;
                 color: var(--color-grey-600);
               }
-              me hr {
-                margin: var(--size-8) 0;
-                border-color: var(--color-grey-200);
-              }
           </style>
-          <hr/>
           © ${new Date().getFullYear()}
           <a href="https://sizovs.net">Eduards Sizovs</a>. All Rights Reserved.
       </footer>
