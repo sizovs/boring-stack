@@ -8,16 +8,16 @@ input[type="checkbox"] {
   display: grid;
   place-content: center;
   appearance: none;
-  width: var(--size-4);
-  height: var(--size-4);
+  width: var(--size-5);
+  height: var(--size-5);
   border: 2px solid var(--color-grey-200);
   background-color: var(--color-grey-50);
   border-radius: var(--radius-xs);
 
   &::before {
     content: "";
-    width: var(--size-2);
-    height: var(--size-2);
+    width: var(--size-3);
+    height: var(--size-3);
     clip-path: polygon(14% 44%, 0 65%, 50% 100%, 100% 16%, 80% 0%, 43% 62%);
     transform: scale(0);
     transform-origin: bottom left;
@@ -30,8 +30,8 @@ input[type="checkbox"] {
   }
 
   &:focus {
-    outline: max(2px, 0.15em) solid var(--color-blue);
-    outline-offset: max(2px, 0.15em);
+    outline: 2px solid var(--color-blue);
+    outline-offset: 2px;
   }
 }
 
@@ -43,7 +43,8 @@ input[type="text"] {
   width: var(--size-full);
 
   &:focus {
-    outline: max(2px, 0.15em) solid var(--color-blue);
+    outline: 2px solid var(--color-blue);
+    outline-offset: 2px;
   }
 
 }

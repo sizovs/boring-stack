@@ -33,7 +33,7 @@ export const Todo = todo => html`
   <label data-testid="todo-item">
     <style>
       me {
-        margin-bottom: var(--size-2);
+        margin-bottom: var(--size-3);
       }
     </style>
     <input
