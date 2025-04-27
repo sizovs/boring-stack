@@ -21,7 +21,6 @@ test('starts with zero todos', async () => {
 })
 
 test('does not allow empty todo', async () => {
-  await page.$eval('[data-testid="todo-input"]', input => input.removeAttribute('required'))
   await page.keyboard.press('Enter')
   await expect(page.getByTestId('todo-error')).toContainText('Task description is required')
   await expect(page.getByTestId('todo-item')).toHaveCount(0)
