@@ -1,38 +1,27 @@
-function escape(str) {
-  const chars = {
-    "&": "&amp;",
-    ">": "&gt;",
-    "<": "&lt;",
-    '"': "&quot;",
-    "'": "&#39;",
-    "`": "&#96;",
-  }
-
-  let result = String(str)
-  for (const char in chars) {
-    result = result.split(char).join(chars[char])
-  }
-  return result
-}
-
 export const html = (fragments, ...values) => {
-  return fragments.raw.reduce((acc, fragment, i) => {
-    let value = values[i - 1]
-    if (Array.isArray(value)) {
-      // If value is array, then just concatenate the values.
-      // Useful for HTML lists: <ul>${names.map((name) => html`<li>${name}</li>`)}</ul>
-      value = value.join("")
-    } else if (fragments.raw[i - 1].endsWith("$")) {
-      // If the interpolation is preceded by a dollar sign,
-      // substitution is considered safe and will not be escaped
-      acc = acc.slice(0, -1)
-    } else {
-      // For everything else, escape the value
-      // to prevent XSS attacks
-      value = escape(value)
-    }
+  let out = ""
+  fragments.forEach((string, i) => {
+    const value = values[i]
 
-    return acc + value + fragment
+    // Array - Join to string and output with value
+    if (Array.isArray(value)) {
+      out += string + value.join("")
+    }
+    // String - Output with value
+    else if (typeof value === "string") {
+      out += string + value
+    }
+    // Number - Coerce to string and output with value
+    // This would happen anyway, but for clarity's sake on what's happening here
+    else if (typeof value === "number") {
+      out += string + String(value)
+    }
+    // object, undefined, null, boolean - Don't output a value.
+    else {
+      out += string
+    }
   })
 
+  return out
 }
+

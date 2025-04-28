@@ -20,28 +20,6 @@ describe("html", () => {
     expect(html`<html version="${123}"></html>`).eq(`<html version="123"></html>`)
   })
 
-  it("should escape HTML special characters", () => {
-    const chars = {
-      "&": "&amp;",
-      ">": "&gt;",
-      "<": "&lt;",
-      '"': "&quot;",
-      "'": "&#39;",
-      "`": "&#96;",
-    }
-
-    Object.keys(chars).forEach((key) => {
-      expect(html`${key}`).eq(chars[key])
-    })
-  })
-
-  it("should skip escaping HTML special characters for substituitions with double $", () => {
-    const safeString = "<strong>it's safe here</strong>"
-    expect(html`Hello, $${safeString}!`).eq(
-      "Hello, <strong>it's safe here</strong>!"
-    )
-  })
-
   it("should generate valid HTML with an array of values", () => {
     const names = ["Megan", "Tiphaine", "Florent", "Hoan"]
     expect(

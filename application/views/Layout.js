@@ -58,7 +58,7 @@ export const Layout = Main => params => html`
         </style>
         <a href="/" hx-boost="true">boring.todos</a>
       </header>
-      $${Main(params)}
+      ${Main(params)}
       <footer>
           <style>
               me {
