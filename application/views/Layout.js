@@ -33,7 +33,6 @@ export const Layout = Main => params => html`
       </script>
 
       <!-- Styles -->
-      <link rel="stylesheet" href="/static/css/pollen@5.0.2.css" />
       <link rel="stylesheet" href="/static/css/reset.css" />
       <link rel="stylesheet" href="/static/css/app.css" />
       <link rel="apple-touch-icon" href="/static/favicon.png" />
