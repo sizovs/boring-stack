@@ -1,6 +1,6 @@
 import { defineConfig } from '@playwright/test'
 
-// We need if we run e2e tests from IDE. Otherwise, configuration in package.json is enough.
+// We need these variables when running e2e tests from IDE. Otherwise, configuration in package.json is enough.
 process.env.NODE_ENV = 'development'
 process.env.DB_LOCATION = ':memory:'
 

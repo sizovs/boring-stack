@@ -20,7 +20,7 @@ Since stability, simplicity, and fewer abstractions are the guiding principles, 
 * [Template literals for server-side templating](https://blog.jim-nielsen.com/2020/switching-from-react-to-js-for-templating)
 * Plain CSS (with atomic tokens for consistency)
 * Playwright for E2E tests
-* SQLite for DB access w/o ORMs and query builders
+* SQLite w/o ORMs and query builders
 * Litestream for streaming DB replication
 * Caddy for zero-downtime deployments and automatic TLS
 
@@ -93,4 +93,4 @@ One of Cloudflare's standout features is [Workers](https://workers.cloudflare.co
 - [You Might Not Need JS](https://youmightnotneedjs.com)
 
 # TODOS
-- Litestream should replicate to Cloudflare R2. This enables better and faster recovery.
+- Current setup replicates data to the mounted Hetzner volume. For faster recovery, Litestream should replicate to S3-like storage, such as Cloudflare R2.
