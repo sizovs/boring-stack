@@ -79,6 +79,7 @@ Since everything runs on a single server, users farther away may experience late
 - [Optimistic UI](https://uxplanet.org/optimistic-1000-34d9eefe4c05)
 - [Preloading](https://htmx.org/extensions/preload/)
 - [CRDT](https://github.com/automerge/automerge)
+- [Baked Data](https://simonwillison.net/2021/Jul/28/baked-data/)
 - Cloudflare for CDN and caching at the edge with [Workers](https://workers.cloudflare.com/).
 
 # For inspiration
