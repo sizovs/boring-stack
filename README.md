@@ -82,8 +82,13 @@ Since everything runs on a single server, users farther away may experience late
 - [Baked Data](https://simonwillison.net/2021/Jul/28/baked-data/)
 - Cloudflare for CDN and caching at the edge with [Workers](https://workers.cloudflare.com/).
 
-# For inspiration
+# More tools
+Not everything should be built in the application, so I use the following tools that can easily be self-hosted:
+- For web analytics, I use [Plausible](https://libs.tech/project/160427405/analytics)
+- For error reporting, I use [GlitchTip](https://glitchtip.com/)
+- For data science, I use [Metabase](https://libs.tech/project/30203935/metabase)
 
+# For inspiration
 - [Building the Hundred-Year Web Service](https://unplannedobsolescence.com/blog/building-the-hundred-year-web-service/)
 - [Choose Boring Technology](https://boringtechnology.club)
 - [HTML First](https://html-first.com)
