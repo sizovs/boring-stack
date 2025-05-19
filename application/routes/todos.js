@@ -1,5 +1,4 @@
 import { sql } from "#application/modules/database/database.js"
-import { Layout } from "#application/views/Layout.js"
 import { ErrorMsg, Todos } from "#application/views/Todos.js"
 
 /**
@@ -28,6 +27,6 @@ export const initTodos = async ({ app, db }) => {
 
   const render = async (request, reply) => {
     const todos = db.prepare(sql`select * from todos`).all()
-    return reply.render(Layout(Todos), { todos })
+    return reply.render(Todos, { todos })
   }
 }

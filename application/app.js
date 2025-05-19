@@ -8,6 +8,7 @@ import statics from '@fastify/static'
 import session from '@fastify/secure-session'
 import { Hasher } from "#application/modules/hasher.js"
 import { Alert } from "#application/views/Alert.js"
+import { Layout } from "#application/views/Layout.js"
 
 export const startApp = async (options = { port: 0 }) => {
 
@@ -89,7 +90,6 @@ export const startApp = async (options = { port: 0 }) => {
     return +this.headers['x-mock-time'] || +this.query['x-mock-time'] || Date.now()
   })
 
-
   app.decorateReply('alert', async function ({ lead, follow, classes }) {
     return this
       .header('HX-Retarget', 'body')
@@ -122,9 +122,11 @@ export const startApp = async (options = { port: 0 }) => {
     return typeof payload !== 'string' ? payload : hasher.hashLinks(payload)
   })
 
-  app.decorateReply('render', function (view, params, mime = 'text/html') {
+  app.decorateReply('render', function (partial, params, mime = 'text/html') {
+    const isHx = this.request.headers['hx-request'] === 'true'
+    const template = isHx ? partial : Layout(partial)
     this.type(mime)
-    this.send(view({ ...params, appVersion }))
+    this.send(template({ ...params, appVersion }))
   })
 
   app.setErrorHandler(async (err, request, reply) => {
