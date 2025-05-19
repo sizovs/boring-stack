@@ -21,7 +21,7 @@ document.addEventListener('click', event => {
 // ------------
 document.addEventListener('htmx:afterProcessNode', event => {
   const element = event.detail.elt
-  const timing = element.getAttribute('remove-me')
+  const timing = element.getAttribute('data-js-remove-me')
   if (timing) {
     setTimeout(function () {
       if (element.parentElement)
