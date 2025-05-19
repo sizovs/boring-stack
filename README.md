@@ -19,6 +19,7 @@ Since stability, simplicity, and fewer abstractions are the guiding principles, 
 * [Htmx](https://dev.tube/video/3GObi93tjZI) for SPA experience
 * [Template literals for server-side templating](https://blog.jim-nielsen.com/2020/switching-from-react-to-js-for-templating)
 * Plain CSS (with scoped css and style tokens)
+* Vanilla JS (can use [Surreal](https://github.com/gnat/surreal) for Locality of Behavior)
 * Playwright for E2E tests
 * SQLite w/o ORMs and query builders
 * Litestream for streaming DB replication
