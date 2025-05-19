@@ -18,7 +18,9 @@ export const initTodos = async ({ app, db }) => {
   app.post("/todos", async (request, reply) => {
     const description = request.body.description?.trim()
     if (!description) {
-      return reply.status(422).render(TodoError, { error: "Task description is required" })
+      return reply
+        .header('HX-Retarget', '#todo-error')
+        .render(TodoError, { error: "Task description is required" })
     }
 
     db.prepare(sql`insert into todos (description) values (?)`).run(description)

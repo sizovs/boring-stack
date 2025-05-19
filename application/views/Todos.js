@@ -1,7 +1,7 @@
 import { html } from "#application/modules/html.js"
 
 export const Todos = ({ todos }) => html`
-  <main hx-target="this" hx-target-422="#todo-error" hx-swap="outerHTML">
+  <main hx-target="this" hx-swap="outerHTML">
   <style>
     me {
       margin: 0 auto;
