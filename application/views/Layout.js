@@ -9,6 +9,7 @@ export const Layout = Main => params => html`
       <meta name="description" content="A boring todo app" />
       <!-- Scripts -->
       <script src="/static/js/htmx@2.0.4.client.js"></script>
+      <script src="/static/js/htmx-ext-response-targets@2.0.2.js"></script>
       <script src="/static/js/css-scope-inline.js"></script>
       <script>
         // The default value includes 'class' as well.
@@ -27,7 +28,7 @@ export const Layout = Main => params => html`
       <title>Todos</title>
     </head>
 
-    <body data-appversion="${params.appVersion}">
+    <body data-appversion="${params.appVersion}" hx-ext="response-targets">
       <style>
         me {
           font-family: var(--font-sans);

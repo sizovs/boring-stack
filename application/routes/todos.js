@@ -1,5 +1,5 @@
 import { sql } from "#application/modules/database/database.js"
-import { ErrorMsg, Todos } from "#application/views/Todos.js"
+import { TodoError, Todos } from "#application/views/Todos.js"
 
 /**
  * @param {{ app: import("fastify").FastifyInstance, db: import("better-sqlite3").Database }}
@@ -18,7 +18,7 @@ export const initTodos = async ({ app, db }) => {
   app.post("/todos", async (request, reply) => {
     const description = request.body.description?.trim()
     if (!description) {
-      return reply.render(ErrorMsg, { message: "Task description is required" })
+      return reply.status(422).render(TodoError, { error: "Task description is required" })
     }
 
     db.prepare(sql`insert into todos (description) values (?)`).run(description)

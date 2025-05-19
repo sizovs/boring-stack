@@ -1,7 +1,7 @@
 import { html } from "#application/modules/html.js"
 
 export const Todos = ({ todos }) => html`
-  <main id="main" hx-select-oob="#main, #todo-error">
+  <main hx-target="this" hx-target-422="#todo-error" hx-swap="outerHTML">
   <style>
     me {
       margin: 0 auto;
@@ -16,16 +16,16 @@ export const Todos = ({ todos }) => html`
   </style>
   <h1 data-testid="todo-count">${todos.length} todo${todos.length === 1 ? "" : "s"}</h1>
     ${todos.map(todo => Todo(todo))}
-      <input
-        type="text"
-        hx-post="/todos"
-        hx-trigger="keyup[key === 'Enter']"
-        data-testid="todo-input"
-        placeholder="Type description and hit enter..."
-        autofocus
-        name="description"
-      />
-      <div id="todo-error"></div>
+    <input
+      type="text"
+      hx-post="/todos"
+      hx-trigger="keyup[key === 'Enter']"
+      data-testid="todo-input"
+      placeholder="Type description and hit enter..."
+      autofocus
+      name="description"
+    />
+    ${TodoError()}
   </main>
 `;
 
@@ -44,13 +44,13 @@ export const Todo = todo => html`
   </label>
 `
 
-export const ErrorMsg = ({ message }) => html`
-  <small id="todo-error" data-testid="todo-error">
-    <style>
-      me {
-        color: var(--color-red-600);
-      }
-    </style>
-    ${message}
-  </small>
+export const TodoError = ({ error = '' } = {}) => html`
+    <small data-testid="todo-error" id="todo-error">
+      <style>
+        me {
+          color: var(--color-red-600);
+        }
+      </style>
+      ${error}
+    </small>
 `
