@@ -72,8 +72,11 @@ Create a `.env.production` file in the project directory and the script will cop
 # Testing
 A traditional front-end/back-end separation via APIs requires developing and maintaining two distinct test suites—one for testing the back-end through the API and another for testing the front-end against a mock API, which can easily fall out of sync with the actual back-end.  This is cumbersome and clunky. By forgoing JSON APIs and instead sending HTML over the wire, we streamline the process, allowing us to test-drive a single app at the user level using Playwright.
 
+# Htmx
+If you're not afraid of some coding, [you may not even need htmx](https://dev.to/zkat/i-replaced-htmx-with-a-simple-web-component-4bnh) and have zero front-end dependencies.
+
 # SQLite
-SQLite is blazing fast, takes backward compatibility seriously, and enables amazing DX. [Just use SQLite](https://blog.wesleyac.com/posts/consider-sqlite). This project comes with SQLite [preconfigured for production](https://kerkour.com/sqlite-for-servers).
+SQLite is blazing fast, takes backward compatibility seriously, and enables amazing DX. [Just use SQLite](https://blog.wesleyac.com/posts/consider-sqlite). This project comes with SQLite [preconfigured for production](https://kerkour.com/sqlite-for-servers). SQLite may get concurrent writes soon thanks to [Turso](https://turso.tech/).
 
 # Latency
 Since everything runs on a single server, users farther away may experience latency. There are several things you can do:
@@ -88,6 +91,8 @@ Not everything should be built in the application, so I use the following tools 
 - For web analytics, I use [Plausible](https://libs.tech/project/160427405/analytics)
 - For error reporting, I use [GlitchTip](https://glitchtip.com/)
 - For data science, I use [Metabase](https://libs.tech/project/30203935/metabase)
+- For non-trivial web components, I use [Vanilla Tailwind Components](https://tailwindcss.com/blog/vanilla-js-support-for-tailwind-plus) or [Web Awesome](https://webawesome.com/).
+
 
 # For inspiration
 - [Building the Hundred-Year Web Service](https://unplannedobsolescence.com/blog/building-the-hundred-year-web-service/)
