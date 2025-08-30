@@ -39,7 +39,7 @@ export const Todo = todo => html`
     <input
       type="checkbox"
       hx-delete="/todos/${todo.id}"
-      hx-swap="swap:0.1s"
+      hx-swap="outerHTML swap:0.1s"
     />${todo.description}
   </label>
 `
