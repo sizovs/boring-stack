@@ -1,5 +1,11 @@
 htmx.config.includeIndicatorStyles = false
 
+// htmx defers “post-swap effects” (focus, autoscroll, adding settled classes) to give the browser one frame to catch up.
+// That delay exists to avoid flakiness in real browsers. In headless test environments though, it introduces a race.
+// In our specific test case, we rely on autofocus, which is a post-swap effect.
+// So we disable the delay entirely to make tests more reliable.
+htmx.config.defaultSettleDelay = 0
+
 document.addEventListener('htmx:configRequest', event => {
   const { appversion } = document.body.dataset
   event.detail.headers['x-app-version'] = appversion

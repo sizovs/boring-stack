@@ -35,8 +35,6 @@ test('adds todo items', async () => {
     'Homework',
   ])
 
-  await expectHtmxReady(page)
-
   await page.getByTestId('todo-input').fill('Repairwork')
   await page.getByTestId('todo-input').press('Enter')
 
@@ -45,7 +43,6 @@ test('adds todo items', async () => {
     'Homework',
     'Repairwork'
   ])
-  await expectHtmxReady(page)
 })
 
 test('deletes a todo item', async () => {
