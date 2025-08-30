@@ -8,7 +8,7 @@ export const Layout = Main => params => html`
       <meta name="viewport" content="width=device-width, initial-scale=1" />
       <meta name="description" content="A boring todo app" />
       <!-- Scripts -->
-      <script src="/static/js/htmx@2.0.4.client.js"></script>
+      <script src="/static/js/htmx@2.0.6.client.js"></script>
       <script src="/static/js/css-scope-inline.js"></script>
       <script>
         // The default value includes 'class' as well.
