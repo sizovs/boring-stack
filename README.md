@@ -90,9 +90,9 @@ Since everything runs on a single server, users farther away may experience late
 Not everything should be built in the application, so I use the following tools that can easily be self-hosted:
 - For web analytics, I use [Plausible](https://libs.tech/project/160427405/analytics)
 - For error reporting, I use [GlitchTip](https://glitchtip.com/)
-- For data science, I use [Metabase](https://libs.tech/project/30203935/metabase)
+- For data science, I use [Metabase](https://libs.tech/project/30203935/metabase) or [DuckDB](https://duckdb.org/) with [Evidence](https://github.com/evidence-dev/evidence)
 - For non-trivial web components, I use [Vanilla Tailwind Components](https://tailwindcss.com/blog/vanilla-js-support-for-tailwind-plus) or [Web Awesome](https://webawesome.com/).
-
+- If you like Docker, you can deploy via [unregistry](https://github.com/psviderski/unregistry)
 
 # For inspiration
 - [Building the Hundred-Year Web Service](https://unplannedobsolescence.com/blog/building-the-hundred-year-web-service/)
