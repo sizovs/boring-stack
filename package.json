@@ -19,7 +19,8 @@
     "better-sqlite3": "^11.7.0",
     "fastify": "^5.0.0",
     "ky": "^1.7.2",
-    "pino": "^9.5.0"
+    "pino": "^9.5.0",
+    "postgres": "^3.4.7"
   },
   "imports": {
     "#application/*": "./application/*"
@@ -31,6 +32,7 @@
     "@types/node": "^22.7.5",
     "chai": "^5.2.0",
     "concurrently": "^9.1.2",
+    "embedded-postgres": "^17.6.0-beta.15",
     "husky": "^9.1.6",
     "memfs": "^4.9.2",
     "playwright": "^1.44.1",

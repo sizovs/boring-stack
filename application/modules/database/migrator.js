@@ -3,44 +3,50 @@ import fs from "fs"
 import { logger } from '#application/modules/logger.js'
 
 export class Migrator {
-  #db
+
+  /** @type {import('postgres').Sql} */
+  sql
+
   #migrations
-  constructor(db, migrations = new Migrations()) {
-    this.#db = db
+  constructor(sql, migrations = new Migrations()) {
+    this.sql = sql
     this.#migrations = migrations
   }
-  migrate() {
 
+  async migrate() {
     if (this.#migrations.empty()) {
+      logger.info('No migrations found, skipping.')
       return
     }
 
-    const tx = this.#db.transaction(() => {
-      const latestVersion = this.#migrations.latest().version
-      const databaseVersion = this.databaseVersion()
-      const outOfDate = databaseVersion < latestVersion
-      if (outOfDate) {
-        const targetVersion = databaseVersion + 1
-        const migration = this.#migrations.version(targetVersion)
-        migration.execute(this.#db)
-      }
-      return outOfDate
-    })
+    const currentVersion = await this.databaseVersion()
+    const latestVersion = this.#migrations.latest().version
+    const outOfDate = currentVersion < latestVersion
+    if (outOfDate) {
+      const migration = this.#migrations.version(currentVersion + 1)
+      await this.sql.begin(async sql => {
+        await migration.execute(sql)
+      })
 
-    // Keep running migration transactions while DB is out of date
-    while (tx.immediate()) {
+      await this.migrate()
+    } else {
+      logger.info('Database is up-to-date.')
     }
-
-    logger.info(`Database ${this.#db.name} is up-to-date.`)
   }
 
-  databaseVersion() {
-    const userVersion = this.#db.prepare('PRAGMA user_version').get()?.user_version
-    if (typeof userVersion !== 'number') {
-      throw new Error(`Unexpected result when getting user_version: "${userVersion}".`)
-    }
-    return userVersion
+  async databaseVersion() {
+    const [{ comment }] = await this.sql`
+      SELECT obj_description(oid) AS comment
+      FROM pg_namespace
+      WHERE nspname = 'public'
+    `.simple()
+
+    if (!comment) return 0
+
+    const match = comment.match(/version:(?<v>\d+)/)
+    return match?.groups?.v ? parseInt(match.groups.v, 10) : 0
   }
+
 }
 
 export class Migrations {
@@ -84,11 +90,12 @@ class Migration {
     this.#fs = fs
   }
 
-  execute(db) {
+  /** @param {import('postgres').Sql} sql */
+  async execute(sql) {
     try {
       logger.info(`Migrating to v${this.version} using ${this.name}`)
-      db.exec(this.statements)
-      db.exec(`PRAGMA user_version = ${this.version}`)
+      await sql.unsafe(this.statements)
+      await sql.unsafe(`COMMENT ON SCHEMA public IS 'version:${this.version}'`)
     } catch (error) {
       const message = `Unable to execute migration ${this.name}: ${error}`
       logger.error(message)

@@ -1,41 +1,55 @@
 import { logger } from '#application/modules/logger.js'
-import { retry } from '#application/modules/retries.js'
-import Database from 'better-sqlite3'
+import postgres from 'postgres'
+import EmbeddedPostgres from 'embedded-postgres'
+import { mkdtempSync } from 'node:fs'
+import { tmpdir } from 'node:os'
+import path from 'node:path'
+import net from "net"
 
-const connect = async (location, verbose = (msg, args) => logger.debug(msg, args)) => {
+function randomPort() {
+  return new Promise((resolve, reject) => {
+    const server = net.createServer()
+    server.listen(0, () => {
+      const { port } = server.address()
+      server.close((err) => err ? reject(err) : resolve(port))
+    })
+  })
+}
+
+const embeddedPostgres = async (db) => {
+  const databaseDir = mkdtempSync(path.join(tmpdir(), 'pg-'))
+  const pg = new EmbeddedPostgres({
+    databaseDir,
+    port: await randomPort(),
+    persistent: false,
+    onLog: msg => logger.info(msg)
+  })
+  await pg.initialise()
+  await pg.start()
+  return pg
+}
+
+const connect = async (location) => {
   if (!location) {
     throw new Error('Cannot create database. Please provide the DB location')
   }
 
-  // If the last connection to a db crashed, then the first new connection to open the database will start a recovery process.
-  // So if another db connection tries to query during recovery it will get an SQLITE_BUSY error.
-  // We retry connection a few times, because an exclusive lock is held during recovery.
-  return retry(() => {
-    const db = new Database(location, { verbose })
 
-    db.pragma('journal_mode = WAL')
-    db.pragma('foreign_keys = true')
-    db.pragma('busy_timeout = 5000')
-    db.pragma('synchronous = normal')
+  const pg = await embeddedPostgres(location)
 
-    // Litestream takes over checkpointing and recommends running the app with checkpointing disabled:
-    // https://litestream.io/tips/#disable-autocheckpoints-for-high-write-load-servers
-    db.pragma('wal_autocheckpoint = 0')
+  // if (location === ':memory:') {
 
-    // Enable memory mapped files for speed and smaller memory footprint in multi-process environments.
-    // https://oldmoe.blog/2024/02/03/turn-on-mmap-support-for-your-sqlite-connections/#benchmark-results
-    // We set 1gb as a reasonable default, but for larger databases, if memory allows, it can go higher.
-    // If it goes too high, the value will be capped at the higher bound enforced by the SQLite at the compile-time.
-    db.pragma(`mmap_size = ${1024 * 1024 * 1024}`)
-
-    // Increase cache size to 64mb, the default is 2mb (or slightly higher depending on the SQLite version)
-    db.pragma(`cache_size = ${64 * 1024 * -1}`)
+  // 1. connection string
+  // 2. embedded inmemory
+  // 3. embedded persistent
 
 
-    return { db }
-  })
+
+  const sql = postgres(`postgres://postgres:password@localhost:${pg.options.port}`)
+  const stop = async () => pg.stop()
+
+  return { sql, stop }
 }
 
-const sql = String.raw
-export { connect, sql }
+export { connect }
 

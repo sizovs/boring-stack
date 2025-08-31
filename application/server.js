@@ -4,7 +4,7 @@ import process from 'node:process'
 import { logger } from "#application/modules/logger.js"
 import { startApp } from "./app.js"
 
-const numForks = Number(process.env.FORKS) || 1
+const numForks = Number(process.env.FORKS) || 2
 
 // Mapping between pids and wids (wid = worked id that doesn't change between restarts)
 const wids = new Map()
