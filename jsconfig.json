@@ -5,7 +5,8 @@
       "#application/*": [
         "./application/*",
       ]
-    }
+    },
+    "module": "nodenext"
   },
   "exclude": [
     "node_modules"

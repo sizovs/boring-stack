@@ -1,14 +1,16 @@
-import { connect } from "#application/modules/database/database.js"
-import { Migrator } from "#application/modules/database/migrator.js"
-import { initTodos } from "#application/routes/todos.js"
-import { logger } from "#application/modules/logger.js"
 import fastify from 'fastify'
 import formBody from '@fastify/formbody'
 import statics from '@fastify/static'
 import session from '@fastify/secure-session'
-import { Hasher } from "#application/modules/hasher.js"
-import { Alert } from "#application/views/Alert.js"
-import { Layout } from "#application/views/Layout.js"
+import { initAdmin } from "./routes/admin.js"
+import { initTodos } from "./routes/todos.js"
+import { logger } from "./modules/logger.js"
+import { Migrator } from "./modules/database/migrator.js"
+import { connect } from './modules/database/database.js'
+import { errors } from './modules/errors.js'
+import { Layout } from './views/Layout.js'
+import { Alert } from './views/Alert.js'
+import { Hasher } from './modules/hasher.js'
 
 export const startApp = async (options = { port: 0 }) => {
 
@@ -129,19 +131,34 @@ export const startApp = async (options = { port: 0 }) => {
     this.send(template({ ...params, appVersion }))
   })
 
-  app.setErrorHandler(async (err, request, reply) => {
-    logger.error(err)
+
+  const captureClientError = errors(db, { appVersion, source: 'client' })
+  const captureServerError = errors(db, { appVersion, source: 'server' })
+
+  app.setErrorHandler((e, request, reply) => {
+    captureServerError(e)
+
     if (request.headers["hx-request"]) {
-      return reply.alert({ lead: 'Action failed', follow: err.message, classes: 'bg-red-700' })
+      return reply.alert({ lead: 'Action failed', follow: e.message, classes: 'bg-red-700' })
     } else {
-      return reply.status(err.statusCode || 500).send(err.message)
+      return reply.status(e.statusCode || 500).send(e.message)
     }
   })
 
   await initTodos({ app, db })
+  await initAdmin({ app, db })
 
   app.get('/', (request, reply) => reply.redirect('/todos'))
   app.get('/health', (request, reply) => reply.status(health).send())
+
+  app.post('/js-error', (request, reply) => {
+    const { context, errors: [error] } = JSON.parse(request.body)
+    captureClientError(error, context)
+    return reply.status(204).send()
+  })
+
+  // this one will be used for testing.
+  app.get('/boom', (request, reply) => { throw new Error('Boom!') })
 
   const healthy = () => health = 200
   const bumpVersion = () => appVersion++

@@ -5,7 +5,7 @@ This is my starter template for full-stack web development with Node.js, designe
 # Motivation
 
 ### Low churn
-Web development ecosystem suffers from extreme churn, making migrations between major framework releases extremely challenging, often forcing 'a big rewrite' on developers every 3-5 years. What's trendy today stops compiling tomorrow. I literally can't build multiple Vue projects that I created several years ago. If you're planning long-term, it's wiser to build on top of a stable foundation that takes backward compatibility seriously, and is immune to hype waves. Software should be built to last. 
+Web development ecosystem suffers from extreme churn, making migrations between major framework releases extremely challenging, often forcing 'a big rewrite' on developers every 3-5 years. What's trendy today stops compiling tomorrow. I literally can't build multiple Vue projects that I created several years ago. If you're planning long-term, it's wiser to build on top of a stable foundation that takes backward compatibility seriously, and is immune to hype waves. Software should be built to last.
 
 ### Simplicity
 Moreover, the SPA ecosystem, and frameworks like Next and SvelteKit, are complex beasts with too much hidden "magic" under the hood. This magic works until it doesn't. For the problem of sending data over HTTP to and from the database, such complexity is hard to justify. By making certain architectural trade-offs, such as embracing [hypermedia systems](https://hypermedia.systems/) and ditching unnecessary abstractions, it's possible to eliminate all that accidental complexity.
@@ -82,6 +82,10 @@ If you're not afraid of some coding, [you may not even need htmx](https://dev.to
 # SQLite
 SQLite is blazing fast, takes backward compatibility seriously, and enables amazing DX. [Just use SQLite](https://blog.wesleyac.com/posts/consider-sqlite). This project comes with SQLite [preconfigured for production](https://kerkour.com/sqlite-for-servers). SQLite may get concurrent writes soon thanks to [Turso](https://turso.tech/).
 
+# Error reporting
+The project has built-in error tracking that captures errors on both client and server, and stores them in SQLite. So you pretty much have a free and lightweight version of Sentry. You can view errors under /admin.
+
+
 # Latency
 Since everything runs on a single server, users farther away may experience latency. There are several things you can do:
 - [Optimistic UI](https://uxplanet.org/optimistic-1000-34d9eefe4c05)
@@ -92,11 +96,10 @@ Since everything runs on a single server, users farther away may experience late
 
 # More tools
 - For web analytics, check out [Plausible](https://libs.tech/project/160427405/analytics)
-- For error reporting, check out [GlitchTip](https://glitchtip.com/)
-- For data science, check out [Metabase](https://libs.tech/project/30203935/metabase), [DuckDB](https://duckdb.org/), and [Evidence](https://github.com/evidence-dev/evidence).
+- For data crunching, check out [Metabase](https://libs.tech/project/30203935/metabase), [DuckDB](https://duckdb.org/), and [Evidence](https://github.com/evidence-dev/evidence).
 - For non-trivial web components, check out [Vanilla Tailwind Components](https://tailwindcss.com/blog/vanilla-js-support-for-tailwind-plus) and [Web Awesome](https://webawesome.com/).
 - For sharing data across cluster nodes w/o Redis, check out [lmdb](https://github.com/kriszyp/lmdb-js)
-- For backoffice / data admin, checkout [sqlite-web](https://github.com/coleifer/sqlite-web)
+- For backoffice / data admin, check out [sqlite-web](https://github.com/coleifer/sqlite-web)
 - For Docker fanboys, you can deploy directly from the dev machine w/o a registry thanks to [unregistry](https://github.com/psviderski/unregistry)
 
 # For inspiration
@@ -126,4 +129,20 @@ replicas:
 
 ### Cloudflare
 It’s a good idea to place the app behind Cloudflare’s proxy. This provides static asset caching (CDN) and free DDoS protection.
+
+
+### Protect /admin endpoint
+Protect /admin endpoint from unauthorized access in Caddy. For example:
+```
+@admin {
+  path /admin /admin/*
+  not header X-I-Am-Admin-Babe *
+}
+
+handle @admin {
+	error "Forbidden" 403
+}
+```
+
+Alternatively, if you're using Cloudflare, you can define security rules in Cloudflare Zero Access.
 
