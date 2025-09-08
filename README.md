@@ -18,7 +18,7 @@ To simplify ops and alleviate tooling fatigue, this project includes custom scri
 
 Since low churn, simplicity, and fewer abstractions are the guiding principles, the following tech choices are made:
 * JS
-* Node (23+)
+* Node (24+)
 * Fastify web server
 * [Htmx](https://dev.tube/video/3GObi93tjZI) for SPA experience
 * [Template literals for server-side templating](https://blog.jim-nielsen.com/2020/switching-from-react-to-js-for-templating)
