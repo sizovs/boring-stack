@@ -14,7 +14,7 @@ I find it unreasonable to split apps prematurely across all axes — 1) vertical
 
 Loosely coupled, distributed architectures are challenging to operate, making them better suited for the cloud. This is one reason cloud providers advocate for such architectures. In contrast, monolithic, self-contained architectures reduce the benefits of PaaS and serverless solutions, which are opaque and costly abstractions over servers.
 
-To simplify ops and alleviate tooling fatigue, this project includes custom scripts for database migrations, zero-downtime deployments, and infrastructure provisioning (Terraform state management is a hassle and HCL syntax is too restrictive for my taste).
+To simplify ops and alleviate tooling fatigue, this project includes custom scripts for database migrations, zero-downtime deployments, and infrastructure provisioning (Terraform state management is a hassle and HCL syntax is too restrictive for my taste). Moreover, the project has built-in error tracking that captures errors on both client and server, and stores them in SQLite. Think of it as a free and lightweight version of Sentry. You can view errors under /admin.
 
 Since low churn, simplicity, and fewer abstractions are the guiding principles, the following tech choices are made:
 * JS
@@ -81,9 +81,6 @@ If you're not afraid of some coding, [you may not even need htmx](https://dev.to
 
 # SQLite
 SQLite is blazing fast, takes backward compatibility seriously, and enables amazing DX. [Just use SQLite](https://blog.wesleyac.com/posts/consider-sqlite). This project comes with SQLite [preconfigured for production](https://kerkour.com/sqlite-for-servers). SQLite may get concurrent writes soon thanks to [Turso](https://turso.tech/).
-
-# Error reporting
-The project has built-in error tracking that captures errors on both client and server, and stores them in SQLite. So you pretty much have a free and lightweight version of Sentry. You can view errors under /admin.
 
 
 # Latency
