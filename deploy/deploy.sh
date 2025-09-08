@@ -214,6 +214,15 @@ encode zstd gzip
 	not header X-Bypass-Maintenance *
 }
 
+@admin {
+  path /admin /admin/*
+  not header X-I-Am-Admin-Babe *
+}
+
+handle @admin {
+	error "Forbidden" 403
+}
+
 handle @maintenance {
 	error "We'll be back soon! 😌" 503
 }

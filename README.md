@@ -132,17 +132,11 @@ It’s a good idea to place the app behind Cloudflare’s proxy. This provides s
 
 
 ### Protect /admin endpoint
-Protect /admin endpoint from unauthorized access in Caddy. For example:
+Caddy ensures that only visitors with a HTTP header 'X-I-Am-Admin-Babe' can access /admin. You can override the default value in deploy.sh:
 ```
 @admin {
   path /admin /admin/*
   not header X-I-Am-Admin-Babe *
 }
-
-handle @admin {
-	error "Forbidden" 403
-}
 ```
-
-Alternatively, if you're using Cloudflare, you can define security rules in Cloudflare Zero Access.
 
