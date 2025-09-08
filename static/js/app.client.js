@@ -5,9 +5,6 @@
 // Queue to store pending errors
 const queue = []
 
-// Keep track of errors we already sent
-const sent = new Set()
-
 const FLUSH_INTERVAL = 1500 // Flush every 1.5s
 const MAX_ERRORS = 1        // Max number of errors to send (e.g. to avoid sending gazillions in case of an infinite loop)
 
