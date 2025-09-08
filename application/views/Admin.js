@@ -54,7 +54,7 @@ export const Admin = ({ errors }) => html`
     <script>
       document.querySelectorAll('tr.clickable').forEach(row => {
         row.addEventListener('click', () => {
-          const next = row.nextElementSibling.classList.toggle('hidden')
+          row.nextElementSibling.classList.toggle('hidden')
         })
       })
     </script>
