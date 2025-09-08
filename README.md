@@ -47,7 +47,7 @@ npm test
 
 #### Provisioning infra
 
-Make sure your public key is available under  ~/.ssh/hetzner.pub.
+Make sure your [public key](https://git-scm.com/book/en/v2/Git-on-the-Server-Generating-Your-SSH-Public-Key) is available under  ~/.ssh/hetzner.pub.
 
 ```
 HETZNER_API_TOKEN=<secret goes here> npm run devops create
