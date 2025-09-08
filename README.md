@@ -132,7 +132,7 @@ It’s a good idea to place the app behind Cloudflare’s proxy. This provides s
 
 
 ### Protect /admin endpoint
-Caddy ensures that only visitors with a HTTP header 'X-I-Am-Admin-Babe' can access /admin. You can override the default value in deploy.sh:
+Caddy ensures that only visitors with a HTTP header `X-I-Am-Admin-Babe` can access /admin. You can override the default value in `deploy.sh`:
 ```
 @admin {
   path /admin /admin/*
