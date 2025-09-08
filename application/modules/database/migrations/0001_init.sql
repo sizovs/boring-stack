@@ -7,8 +7,8 @@ create table errors (
     stack text not null,
     context text not null default '{}',
     occurrences integer not null default 1,
-    first_seen text not null default (strftime('%Y-%m-%dT%H:%M:%fZ','now')),
-    last_seen text not null default (strftime('%Y-%m-%dT%H:%M:%fZ','now'))
+    first_seen integer not null default ((strftime('%s','now') * 1000)),
+    last_seen integer not null default ((strftime('%s','now') * 1000))
 ) strict;
 
 create index idx_errors_last_seen on errors (last_seen);
