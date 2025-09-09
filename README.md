@@ -95,7 +95,6 @@ Since everything runs on a single server, users farther away may experience late
 - For web analytics, check out [Plausible](https://libs.tech/project/160427405/analytics)
 - For data crunching, check out [Metabase](https://libs.tech/project/30203935/metabase), [DuckDB](https://duckdb.org/), and [Evidence](https://github.com/evidence-dev/evidence).
 - For non-trivial web components, check out [Vanilla Tailwind Components](https://tailwindcss.com/blog/vanilla-js-support-for-tailwind-plus) and [Web Awesome](https://webawesome.com/).
-- For sharing data across cluster nodes w/o Redis, check out [lmdb](https://github.com/kriszyp/lmdb-js)
 - For backoffice / data admin, check out [sqlite-web](https://github.com/coleifer/sqlite-web)
 - For Docker fanboys, you can deploy directly from the dev machine w/o a registry thanks to [unregistry](https://github.com/psviderski/unregistry)
 
