@@ -80,7 +80,7 @@ A traditional front-end/back-end separation via APIs requires developing and mai
 If you're not afraid of some coding, [you may not even need htmx](https://dev.to/zkat/i-replaced-htmx-with-a-simple-web-component-4bnh) and have zero front-end dependencies.
 
 # SQLite
-SQLite is blazing fast, takes backward compatibility seriously, and enables amazing DX. [Just use SQLite](https://blog.wesleyac.com/posts/consider-sqlite). This project comes with SQLite [preconfigured for production](https://kerkour.com/sqlite-for-servers). SQLite may get concurrent writes soon thanks to [Turso](https://turso.tech/).
+SQLite is blazing fast, takes backward compatibility seriously, enables amazing DX, and has full-text search extension built-in. [Just use SQLite](https://blog.wesleyac.com/posts/consider-sqlite). This project comes with SQLite [preconfigured for production](https://kerkour.com/sqlite-for-servers). This setup enables tens of thousands of concurrent writes, even though SQLite doesn’t support parallel writes. It’s so fast because locking occurs in memory, and WAL is synced to disk only periodically—delivering performance comparable to Redis.
 
 
 # Latency
