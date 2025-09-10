@@ -10,14 +10,7 @@ export const Layout = Main => params => html`
       <!-- Scripts -->
       <script src="/static/js/htmx@2.0.6.client.js"></script>
       <script src="/static/js/css-scope-inline.js"></script>
-      <script>
-        // The default value includes 'class' as well.
-        // We exclude it, otherwise classes added by MutationObserver are being removed during settling
-        htmx.config.attributesToSettle = ["style", "width", "height"]
-      </script>
-
       <script type="module" src="/static/js/app.client.js" defer></script>
-
       <!-- Styles -->
       <link rel="stylesheet" href="/static/css/reset.css" />
       <link rel="stylesheet" href="/static/css/app.css" />

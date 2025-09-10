@@ -77,6 +77,9 @@ htmx.config.includeIndicatorStyles = false
 // So we disable the delay entirely to make tests more reliable.
 htmx.config.defaultSettleDelay = 0
 
+// The default value includes 'class' as well.
+// We exclude it, otherwise classes added by MutationObserver are being removed during settling
+htmx.config.attributesToSettle = ["style", "width", "height"]
 
 document.addEventListener('htmx:configRequest', event => {
   const { appversion } = document.body.dataset

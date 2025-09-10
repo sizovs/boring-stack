@@ -49,7 +49,7 @@ export const Admin = ({ errors }) => html`
           <th>Seen (last / first / times)</th>
         </tr>
       </thead>
-      ${errors.map(error => Error(error))}
+      ${errors.map(Error)}
     </table>
     <script>
       document.querySelectorAll('tr.clickable').forEach(row => {
@@ -59,15 +59,15 @@ export const Admin = ({ errors }) => html`
       })
     </script>
   </main>
-`;
+`
 
-const shortTime = (ms) => {
+const ms = ms => {
   const diff = (Date.now() - ms) / 1000
   if (diff < 60) return `${Math.floor(diff)}s`
   if (diff < 3600) return `${Math.floor(diff / 60)}m`
   if (diff < 86400) return `${Math.floor(diff / 3600)}h`
   return `${Math.floor(diff / 86400)}d`
-};
+}
 
 const Error = error => html`
   <tr class="clickable">
@@ -75,14 +75,14 @@ const Error = error => html`
       (${error.source}) ${error.name}: ${error.message}
     </td>
     <td>
-      ${shortTime(error.last_seen)} / ${shortTime(error.first_seen)} / ${error.occurrences}×
+      ${ms(error.last_seen)} / ${ms(error.first_seen)} / ${error.occurrences}×
     </td>
   </tr>
   <tr class="expandable hidden">
     <td colspan="2">
       <pre>${error.stack}</pre>
       <br>
-      ${Object.entries(JSON.parse(error.context)).map(ctx => Context(ctx))}
+      ${Object.entries(JSON.parse(error.context)).map(Context)}
     </td>
   </tr>
 `
