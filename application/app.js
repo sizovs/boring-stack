@@ -11,6 +11,7 @@ import { errors } from './modules/errors.js'
 import { Layout } from './views/Layout.js'
 import { Alert } from './views/Alert.js'
 import { Hasher } from './modules/hasher.js'
+import { performance } from 'node:perf_hooks'
 
 export const startApp = async (options = { port: 0 }) => {
 
@@ -164,7 +165,9 @@ export const startApp = async (options = { port: 0 }) => {
   const bumpVersion = () => appVersion++
 
   const url = await app.listen(options)
-  logger.info(`Running @ ${url}`)
+
+  const loadTime = performance.nodeTiming.bootstrapComplete.toFixed(2)
+  logger.info(`Running @ ${url} (${loadTime}ms)`)
 
   return { url, bumpVersion, healthy }
 }
