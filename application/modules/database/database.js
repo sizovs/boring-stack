@@ -91,6 +91,5 @@ export function oneOf(any) {
   return { __oneOf: true, value }
 }
 
-const sql = String.raw
-export { connect, sql }
+export { connect }
 
