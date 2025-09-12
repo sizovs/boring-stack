@@ -67,7 +67,7 @@ describe('migrator', async () => {
 
     assert.throws(() =>
       migrator.migrate(),
-      new Error('Unable to execute migration 00002_boo.sql: SqliteError: near "tabl": syntax error')
+      new Error('Unable to run migration 00002_boo.sql: SqliteError: near "tabl": syntax error')
     )
 
     assert.equal(migrator.databaseVersion(), 1)

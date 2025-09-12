@@ -1,6 +1,7 @@
 import { logger } from '#application/modules/logger.js'
 import { retry } from '#application/modules/retries.js'
 import Database from 'better-sqlite3'
+import { alwaysArray } from '../arrays.js'
 
 const connect = async (location, verbose = (msg, args) => logger.debug(msg, args)) => {
   if (!location) {
@@ -12,6 +13,7 @@ const connect = async (location, verbose = (msg, args) => logger.debug(msg, args
   // We retry connection a few times, because an exclusive lock is held during recovery.
   return retry(() => {
     const db = new Database(location, { verbose })
+    const cache = new Map()
 
     db.pragma('journal_mode = WAL')
     db.pragma('foreign_keys = true')
@@ -32,8 +34,61 @@ const connect = async (location, verbose = (msg, args) => logger.debug(msg, args
     db.pragma(`cache_size = ${64 * 1024 * -1}`)
 
 
+    const sql = (fragments, ...bindings) => {
+      let query = fragments[0]
+      const params = []
+
+      for (let i = 0; i < bindings.length; ++i) {
+        const bind = bindings[i]
+        const fragment = fragments[i + 1]
+
+        if (bind?.__raw) {
+          query += bind.value + fragment
+        } else if (bind?.__oneOf) {
+          query += bind.value.map(() => '?') + fragment
+          params.push(...bind.value.map(convert))
+        } else {
+          query += '?' + fragment
+          params.push(convert(bind))
+        }
+      }
+
+      let stmt = cache.get(query)
+      if (!stmt) {
+        stmt = db.prepare(query)
+        cache.set(query, stmt)
+      }
+
+      return {
+        run: () => stmt.run(...params),
+        get: () => stmt.get(...params),
+        all: () => stmt.all(...params),
+      }
+    }
+
+    db.sql = sql
+
     return { db }
   })
+}
+
+function convert(value) {
+  if (typeof value === 'boolean') {
+    return value ? 1 : 0
+  }
+  if (value !== null && typeof value === 'object') {
+    return JSON.stringify(value)
+  }
+  return value
+}
+
+export function raw(value) {
+  return { __raw: true, value }
+}
+
+export function oneOf(any) {
+  const value = alwaysArray(any)
+  return { __oneOf: true, value }
 }
 
 const sql = String.raw

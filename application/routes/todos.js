@@ -1,8 +1,7 @@
-import { sql } from "#application/modules/database/database.js"
 import { TodoError, Todos } from "#application/views/Todos.js"
 
 /**
- * @param {{ app: import("fastify").FastifyInstance, db: import("better-sqlite3").Database }}
+ * @param {{ app: import("fastify").FastifyInstance }}
  */
 export const initTodos = async ({ app, db }) => {
 
@@ -11,7 +10,7 @@ export const initTodos = async ({ app, db }) => {
   })
 
   app.delete("/todos/:id", async (request, reply) => {
-    db.prepare(sql`delete from todos where id = ?`).run(request.params.id)
+    db.sql`delete from todos where id = ${request.params.id}`.run()
     return render(request, reply)
   })
 
@@ -23,12 +22,12 @@ export const initTodos = async ({ app, db }) => {
         .render(TodoError, { error: "Task description is required" })
     }
 
-    db.prepare(sql`insert into todos (description) values (?)`).run(description)
+    db.sql`insert into todos (description) values (${description})`.run()
     return render(request, reply)
   })
 
   const render = async (request, reply) => {
-    const todos = db.prepare(sql`select * from todos`).all()
+    const todos = db.sql`select * from todos`.all()
     return reply.render(Todos, { todos })
   }
 }

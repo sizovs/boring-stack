@@ -22,7 +22,7 @@ export class Migrator {
       if (outOfDate) {
         const targetVersion = databaseVersion + 1
         const migration = this.#migrations.version(targetVersion)
-        migration.execute(this.#db)
+        migration.run(this.#db)
       }
       return outOfDate
     })
@@ -84,13 +84,13 @@ class Migration {
     this.#fs = fs
   }
 
-  execute(db) {
+  run(db) {
     try {
       logger.info(`Migrating to v${this.version} using ${this.name}`)
       db.exec(this.statements)
       db.exec(`PRAGMA user_version = ${this.version}`)
     } catch (error) {
-      const message = `Unable to execute migration ${this.name}: ${error}`
+      const message = `Unable to run migration ${this.name}: ${error}`
       logger.error(message)
       throw new Error(message, { cause: error })
     }
