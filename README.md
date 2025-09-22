@@ -77,7 +77,7 @@ Create a `.env.production` file in the project directory and the script will cop
 A traditional front-end/back-end separation via APIs requires developing and maintaining two distinct test suites—one for testing the back-end through the API and another for testing the front-end against a mock API, which can easily fall out of sync with the actual back-end.  This is cumbersome and clunky. By forgoing JSON APIs and instead sending HTML over the wire, we streamline the process, allowing us to test-drive a single app at the user level using Playwright.
 
 # SQLite
-SQLite is blazing fast, takes backward compatibility seriously, and enables amazing DX. [Just use SQLite](https://blog.wesleyac.com/posts/consider-sqlite). This project comes with SQLite [preconfigured for production](https://kerkour.com/sqlite-for-servers), enabling tens of thousands of concurrent writes, despite SQLite not supporting parallel writes. It’s so fast because locking occurs in memory, and WAL is synced to disk only periodically—delivering performance comparable to Redis.
+SQLite is blazing fast, takes backward compatibility seriously, and enables amazing DX. [Just use SQLite](https://blog.wesleyac.com/posts/consider-sqlite). This project comes with SQLite [preconfigured for production](https://kerkour.com/sqlite-for-servers), enabling tens of thousands of concurrent writes, despite SQLite not supporting parallel writes. It’s so fast because locking occurs in memory, and WAL is synced to disk only periodically. For rate limiting, counters, queues, you can combine SQLite with uber-fast, in-memory [LMDB](https://github.com/kriszyp/lmdb-js).
 
 # Latency
 Since everything runs on a single server, users farther away may experience latency. There are several things you can do:
