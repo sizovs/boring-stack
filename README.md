@@ -92,7 +92,7 @@ Since everything runs on a single server, users farther away may experience late
 - For data crunching, check out [Metabase](https://libs.tech/project/30203935/metabase), [DuckDB](https://duckdb.org/), and [Evidence](https://github.com/evidence-dev/evidence).
 - For non-trivial web components, check out [Vanilla Tailwind Components](https://tailwindcss.com/blog/vanilla-js-support-for-tailwind-plus) and [Web Awesome](https://webawesome.com/).
 - For backoffice / data admin, check out [sqlite-web](https://github.com/coleifer/sqlite-web)
-- For Docker fanboys, you can deploy directly from the dev machine w/o a registry thanks to [unregistry](https://github.com/psviderski/unregistry)
+- For mobile, check out [Hyperview](https://hyperview.org/) or just build a PWA.
 
 # For inspiration
 - [Building the Hundred-Year Web Service](https://unplannedobsolescence.com/blog/building-the-hundred-year-web-service/)
