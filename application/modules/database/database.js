@@ -63,6 +63,10 @@ const connect = async (location, verbose = (msg, args) => logger.debug(msg, args
         run: () => stmt.run(...params),
         get: () => stmt.get(...params),
         all: () => stmt.all(...params),
+        pluck: () => ({
+          get: () => stmt.pluck().get(...params),
+          all: () => stmt.pluck().all(...params),
+        })        
       }
     }
 
