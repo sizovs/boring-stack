@@ -148,7 +148,7 @@ Type=simple
 User=devops
 Environment=NODE_ENV=production PORT=%i DB_LOCATION=$DB_LOCATION FORKS=$FORKS
 WorkingDirectory=$HOME/$APP_NAME@%i
-ExecStart=$NODE_DIR/bin/node --env-file-if-exists $HOME/$APP_NAME@%i/.env $HOME/$APP_NAME@%i/application/server.js
+ExecStart=$NODE_DIR/bin/node --env-file-if-exists $HOME/$APP_NAME@%i/.env.production $HOME/$APP_NAME@%i/application/server.js
 Restart=on-failure
 StandardOutput=append:/var/log/$APP_NAME-out.log
 StandardError=append:/var/log/$APP_NAME-err.log
