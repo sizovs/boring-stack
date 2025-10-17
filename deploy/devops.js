@@ -24,7 +24,7 @@ Object.entries(ops).forEach(([description, op]) => {
   console.log(chalk.green(op.name) + ` — ${description}`)
 })
 
-const answer = await question(`What you'd like to do? `)
+const answer = process.argv[2] || await question(`What you'd like to do? `)
 const op = Object.values(ops).find(it => it.name === answer)
 if (!op) {
   console.log(`Wrong operation.`)
