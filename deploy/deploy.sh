@@ -20,7 +20,7 @@ DB_BACKUP="/mnt/backup/$APP_NAME"
 NVM_VERSION="0.39.7"
 NODE_VERSION="24.7.0"
 LITESTREAM_VERSION="0.3.13"
-CADDY_VERSION="2.8.4"
+CADDY_VERSION="2.10.2"
 
 # Install Litestream
 if ! command -v litestream &>/dev/null || [ "$(litestream version)" != "v$LITESTREAM_VERSION" ]; then
@@ -68,9 +68,11 @@ installed_caddy_version() {
   command -v caddy &>/dev/null && caddy version | awk '{print $1}' || echo ""
 }
 if [ "$(installed_caddy_version)" != "v$CADDY_VERSION" ]; then
-  sudo apt-get -y install debian-keyring debian-archive-keyring apt-transport-https
+  sudo apt install -y debian-keyring debian-archive-keyring apt-transport-https curl
   curl -1sLf 'https://dl.cloudsmith.io/public/caddy/stable/gpg.key' | sudo gpg --dearmor -o /usr/share/keyrings/caddy-stable-archive-keyring.gpg
   curl -1sLf 'https://dl.cloudsmith.io/public/caddy/stable/debian.deb.txt' | sudo tee /etc/apt/sources.list.d/caddy-stable.list
+  sudo chmod o+r /usr/share/keyrings/caddy-stable-archive-keyring.gpg
+  sudo chmod o+r /etc/apt/sources.list.d/caddy-stable.list
   sudo apt-get update
   sudo apt-get -y install caddy
   INSTALLED_VERSION=$(installed_caddy_version)
