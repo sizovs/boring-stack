@@ -19,13 +19,13 @@ DB_BACKUP="/mnt/backup/$APP_NAME"
 
 NVM_VERSION="0.39.7"
 NODE_VERSION="24.7.0"
-LITESTREAM_VERSION="0.3.13"
+LITESTREAM_VERSION="0.5.2"
 CADDY_VERSION="2.10.2"
 
 # Install Litestream
 if ! command -v litestream &>/dev/null || [ "$(litestream version)" != "v$LITESTREAM_VERSION" ]; then
   arch=$(dpkg --print-architecture)
-  url=https://github.com/benbjohnson/litestream/releases/download/v$LITESTREAM_VERSION/litestream-v$LITESTREAM_VERSION-linux-$arch.deb
+  url=https://github.com/benbjohnson/litestream/releases/download/v$LITESTREAM_VERSION/litestream-$LITESTREAM_VERSION-linux-$arch.deb
   if ! curl -fLo litestream.deb "$url"; then
     echo "Error: Failed to download $url"
     exit 1
