@@ -23,7 +23,7 @@ LITESTREAM_VERSION="0.5.2"
 CADDY_VERSION="2.10.2"
 
 # Install Litestream
-if ! command -v litestream &>/dev/null || [ "$(litestream version)" != "v$LITESTREAM_VERSION" ]; then
+if ! command -v litestream &>/dev/null || [ "$(litestream version)" != "$LITESTREAM_VERSION" ]; then
   arch=$(dpkg --print-architecture)
   url=https://github.com/benbjohnson/litestream/releases/download/v$LITESTREAM_VERSION/litestream-$LITESTREAM_VERSION-linux-$arch.deb
   if ! curl -fLo litestream.deb "$url"; then
