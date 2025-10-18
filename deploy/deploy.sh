@@ -44,7 +44,7 @@ if [[ $? -ne 0 ]]; then
 fi
 
 # Make "devops" owner of the backup directory.
-sudo chown devops:devops "$DB_BACKUP"
+sudo chown -R devops:devops "$DB_BACKUP"
 
 # Create litestream.yml config file for continuous replication
 LITESTREAM_CONFIG=$(
