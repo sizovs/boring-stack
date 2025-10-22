@@ -254,7 +254,6 @@ if [ "$HEALTHY" = false ]; then
 else
   echo "$DEPLOY_NODE is healthy! 🎉"
   point_caddy_to "$DEPLOY_NODE"
-  sleep 5 # Give old node some time to finish requests
   sudo systemctl stop "$APP_NAME@$OLD_NODE" &>/dev/null
   sudo systemctl disable "$APP_NAME@$OLD_NODE" &>/dev/null
   sudo systemctl enable "$APP_NAME@$DEPLOY_NODE" &>/dev/null

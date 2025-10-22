@@ -38,7 +38,6 @@ export const startApp = async (options = { port: 0 }) => {
     migrator.migrate()
   }
 
-
   const app = fastify({ trustProxy: true })
 
   const STATICS_PREFIX = '/static'
@@ -168,6 +167,14 @@ export const startApp = async (options = { port: 0 }) => {
 
   const loadTime = performance.nodeTiming.bootstrapComplete.toFixed(2)
   logger.info(`Running @ ${url} (${loadTime}ms)`)
+
+  process.on('SIGTERM', async () => {
+    logger.info('SIGTERM received, closing gracefully...')
+    logger.flush()
+    await app.close()
+    await db.close()
+    process.exit(0)
+  })
 
   return { url, bumpVersion, healthy }
 }
