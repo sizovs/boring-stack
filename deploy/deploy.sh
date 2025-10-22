@@ -214,18 +214,17 @@ encode zstd gzip
 }
 
 handle @static {
-  header Cache-Control "public, max-age=31536000"
+  file_server
+  header Cache-Control "public, max-age=31536000, immutable"
 }
 
 @maintenance {
-	file $APP_NAME.m {
-		root $HOME
-	}
+	file $HOME/$APP_NAME.m
 	not header X-Bypass-Maintenance *
 }
 
 @admin {
-  path /admin /admin/*
+  path /admin /admin/* /cron /cron/*
   not header X-I-Am-Admin-Babe *
 }
 

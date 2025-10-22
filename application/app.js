@@ -38,27 +38,27 @@ export const startApp = async (options = { port: 0 }) => {
     migrator.migrate()
   }
 
-  const staticsConfig = {
-    prefix: '/static/',
-    root: process.cwd() + '/static',
-  }
 
-  // We use Hasher to add a version identifier to the public URLs of static assets (script.js -> script.c040ed4.js)
-  // and remove the version when serving files from the file system. (script.c040ed4.js -> script.js)
+  const app = fastify({ trustProxy: true })
+
+  const STATICS_PREFIX = '/static'
+  const STATICS_ROOT = process.cwd() + STATICS_PREFIX
+
+  // Static files
+  app.register(statics, {
+    prefix: STATICS_PREFIX,
+    root: STATICS_ROOT,
+    decorateReply: false,
+    cacheControl: false,
+  })
+
+  // We use Hasher to add a version identifier to the public URLs of static assets (script.js -> script.js?v=c040ed4)
   // Hashes are calculated at start-up, ensuring there is no performance penalty during lookups.
 
   // The version is the MD5 hash of the file's content. Thus, when the content changes, the version also changes.
   // This lets us set a far-future expires header for static assets w/o worrying about cache invalidation,
   // while ensuring that the user only downloads static assets that have changed since the last deployment.
-  const hasher = new Hasher(staticsConfig)
-
-  const app = fastify({ trustProxy: true, rewriteUrl: req => hasher.unhashed(req.url) })
-
-  // Static files
-  app.register(statics, {
-    ...staticsConfig,
-    cacheControl: false,
-  })
+  const hasher = new Hasher({ root: STATICS_ROOT, prefix: STATICS_PREFIX })
 
   // URL-Encoded forms
   app.register(formBody)
