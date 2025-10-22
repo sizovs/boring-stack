@@ -3,7 +3,11 @@
 # Exit if using undefined variable.
 set -u
 
-DOMAIN=best.tools
+IP_ADDRESS=$(hostname -I | awk '{print $1}')
+
+# Change this to your custom domain if you have one
+DOMAIN="${IP_ADDRESS}.nip.io"
+
 DB_LOCATION="$HOME/$APP_NAME.db"
 DEPLOY_DIR="$HOME/$APP_NAME.new"
 source "$DEPLOY_DIR/.env.production"
