@@ -18,7 +18,7 @@ export const startApp = async (options = { port: 0 }) => {
   let appVersion = 1 // bump the version up to force client refresh.
   let health = 404 // app is unhealthy until cluster signals otherwise.
 
-  const isDevMode = process.env.NODE_ENV !== "production"
+  const isDevMode = process.env.NODE_ENV === "development"
 
   if (!process.env.DB_LOCATION) {
     throw new Error('DB_LOCATION environment variable is missing.')
@@ -130,7 +130,7 @@ export const startApp = async (options = { port: 0 }) => {
     captureServerError(e)
 
     if (request.headers["hx-request"]) {
-      return reply.alert({ lead: 'Action failed', follow: e.message, classes: 'bg-red-700' })
+      return reply.alert({ lead: 'Action failed', follow: e.message })
     } else {
       return reply.status(e.statusCode || 500).send(e.message)
     }
