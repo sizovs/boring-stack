@@ -1,15 +1,12 @@
 import fs from "fs"
-import { $, question, tmpdir, chalk } from 'zx'
+import { $, question, chalk } from 'zx'
 import { Resource } from "./hetzner-api.js"
-const { npm_package_name, npm_package_config_domain } = process.env
 
 const firewall = new Resource('firewall', 'web')
-const backupVolume = new Resource('volume', 'backup')
 const network = new Resource('network', 'vpn')
 const sshKey = new Resource('ssh_key', 'devops')
 const server = new Resource('server', 'web')
 const primaryIp = new Resource("primary_ip", "public")
-
 
 const ops = {
   "Create infrastructure": create,
@@ -35,32 +32,21 @@ await op()
 
 async function maintain() {
   const { ip } = await primaryIp.get()
-  const maintenanceFlag = `/home/devops/${npm_package_name}.m`
+  const maintenanceFlag = `/home/devops/${process.env.APP_NAME}.m`
   await $`ssh devops@${ip} '[ -f ${maintenanceFlag} ] && rm ${maintenanceFlag} || touch ${maintenanceFlag}'`
 }
 
 async function deploy() {
   const { ip } = await primaryIp.get()
   $.verbose = true
-  await $`rsync -v --timeout=5 --recursive --include-from=./deploy/.includes --exclude='*' ./ devops@${ip}:/home/devops/latest`
-  await $`cat deploy/deploy.sh | ssh devops@${ip} "DOMAIN=${npm_package_config_domain} APP_NAME=${npm_package_name} bash -s"`
+  await $`rsync -v --timeout=5 --recursive --include-from=./deploy/.includes --exclude='*' ./ devops@${ip}:/home/devops/${process.env.APP_NAME}.new`
+  await $`cat deploy/deploy.sh | ssh devops@${ip} "APP_NAME=${process.env.APP_NAME} bash -s"`
 }
 
 async function db() {
-  const { ip } = await primaryIp.get()
-  const db = `${npm_package_name}.db`
-  $.verbose = true
-
-  if (fs.existsSync(db)) {
-    if (await question(`Database exists under ${db}. Delete? (y/n)`) === 'y') {
-      $`rm -rf ${db}*`
-    } else {
-      console.log(`Skipped.`)
-      return
-    }
-  }
-  const tmp = tmpdir()
-  await $`rsync -v --timeout=5 --recursive devops@${ip}:/mnt/backup/${npm_package_name} ${tmp} && litestream restore -o ${db} file://${tmp}/${npm_package_name}`
+  const db = `${process.env.APP_NAME}.db`
+  if (fs.existsSync(db)) fs.unlinkSync(db)
+  await $`DB_LOCATION=${db} litestream restore -if-db-not-exists -config ./deploy/litestream.yml ${db}`
 }
 
 async function destroy() {
@@ -68,7 +54,6 @@ async function destroy() {
   await server.delete()
   await network.delete()
   await firewall.delete()
-  await backupVolume.delete()
   await primaryIp.delete()
 }
 
@@ -96,12 +81,6 @@ async function create() {
     ]
   })
 
-  await backupVolume.createIfAbsent({
-    size: 40,
-    location: 'nbg1',
-    format: 'ext4',
-  })
-
   await network.createIfAbsent({
     ip_range: '10.0.1.0/24',
     subnets: [
@@ -112,11 +91,10 @@ async function create() {
       }]
   })
 
-  const publicKeyLocation = (process.env.PUBLIC_KEY ?? '~/.ssh/hetzner.pub')?.replace("~", process.env.HOME)
+  const publicKeyLocation = '~/.ssh/hetzner.pub'.replace("~", process.env.HOME)
   const publicKey = fs.readFileSync(publicKeyLocation, 'utf-8')
   const cloudInit = fs.readFileSync(import.meta.dirname + '/cloud-config.yml', 'utf-8')
     .replace('${publicKey}', publicKey)
-    .replace('${backupVolumeId}', await backupVolume.id())
 
   await sshKey.createIfAbsent({
     public_key: publicKey
@@ -134,7 +112,7 @@ async function create() {
     location: 'nbg1',
     ssh_keys: [sshKey.name],
     user_data: cloudInit,
-    volumes: [await backupVolume.id()],
+    volumes: [],
     automount: true,
     networks: [await network.id()],
     firewalls: [{ firewall: await firewall.id() }],

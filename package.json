@@ -6,10 +6,10 @@
   },
   "scripts": {
     "start": "NODE_ENV=development DB_LOCATION=$npm_package_name.db PORT=3000 node --watch ./application/server.js | npx pino-pretty -S",
-    "test": "NODE_ENV=development DB_LOCATION=:memory: conc --kill-others-on-fail 'node --test' 'npx playwright test'",
+    "test": "conc --kill-others-on-fail 'node --test' 'npx playwright test'",
     "repl": "node ./application/modules/repl.js",
     "migrate": "node ./application/modules/database/migrate.js",
-    "devops": "node ./deploy/devops.js",
+    "devops": "APP_NAME=$npm_package_name node ./deploy/devops.js",
     "prepare": "[ -d '.git' ] && husky || echo 'skipping husky'"
   },
   "dependencies": {
@@ -37,6 +37,6 @@
     "zx": "^8.1.9"
   },
   "volta": {
-    "node": "24.7.0"
+    "node": "22.21.0"
   }
 }

@@ -10,16 +10,12 @@ packages:
   - htop
   - jq
   - fail2ban
-  - build-essential
 package_update: true
 package_upgrade: true
 package_reboot_if_required: true
 runcmd:
   # Bug, see https://github.com/hetznercloud/terraform-provider-hcloud/issues/473
   - udevadm trigger -c add -s block -p ID_VENDOR=HC --verbose -p ID_MODEL=Volume
-
-  # Symlinks to volumes
-  - ln -s /mnt/HC_Volume_${backupVolumeId} /mnt/backup
 
   - printf "[sshd]\nenabled = true\nbanaction = iptables-multiport" > /etc/fail2ban/jail.local
   - systemctl enable fail2ban
