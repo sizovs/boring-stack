@@ -1,9 +1,10 @@
+import { db } from "../modules/database/connect.js"
 import { TodoError, Todos } from "../views/Todos.js"
 
 /**
  * @param {{ app: import("fastify").FastifyInstance }}
  */
-export const initTodos = async ({ app, db }) => {
+export const initTodos = async ({ app }) => {
 
   app.get("/todos", async (request, reply) => {
     return render(request, reply)

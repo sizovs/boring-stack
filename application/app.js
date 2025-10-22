@@ -6,12 +6,12 @@ import { initAdmin } from "./routes/admin.js"
 import { initTodos } from "./routes/todos.js"
 import { logger } from "./modules/logger.js"
 import { Migrator } from "./modules/database/migrator.js"
-import { connect } from './modules/database/database.js'
 import { errors } from './modules/errors.js'
 import { Layout } from './views/Layout.js'
 import { Alert } from './views/Alert.js'
 import { Hasher } from './modules/hasher.js'
 import { performance } from 'node:perf_hooks'
+import { db } from './modules/database/connect.js'
 
 export const startApp = async (options = { port: 0 }) => {
 
@@ -27,15 +27,6 @@ export const startApp = async (options = { port: 0 }) => {
   const envs = ['development', 'production']
   if (!envs.includes(process.env.NODE_ENV)) {
     throw new Error(`NODE_ENV environment variable must be one of ${envs}.`)
-  }
-
-  const { db } = await connect(process.env.DB_LOCATION)
-
-  // In dev mode, we run migrations upon startup.
-  // In production, migrations are run by the deployment script.
-  if (isDevMode) {
-    const migrator = new Migrator(db)
-    migrator.migrate()
   }
 
   const app = fastify({ trustProxy: true })
@@ -132,8 +123,8 @@ export const startApp = async (options = { port: 0 }) => {
   })
 
 
-  const captureClientError = errors(db, { appVersion, source: 'client' })
-  const captureServerError = errors(db, { appVersion, source: 'server' })
+  const captureClientError = errors({ appVersion, source: 'client' })
+  const captureServerError = errors({ appVersion, source: 'server' })
 
   app.setErrorHandler((e, request, reply) => {
     captureServerError(e)
@@ -145,8 +136,8 @@ export const startApp = async (options = { port: 0 }) => {
     }
   })
 
-  await initTodos({ app, db })
-  await initAdmin({ app, db })
+  await initTodos({ app })
+  await initAdmin({ app })
 
   app.get('/', (request, reply) => reply.redirect('/todos'))
   app.get('/health', (request, reply) => reply.status(health).send())
@@ -156,9 +147,6 @@ export const startApp = async (options = { port: 0 }) => {
     captureClientError(error, context)
     return reply.status(204).send()
   })
-
-  // this one will be used for testing.
-  app.get('/boom', (request, reply) => { throw new Error('Boom!') })
 
   const healthy = () => health = 200
   const bumpVersion = () => appVersion++

@@ -1,6 +1,6 @@
 import { describe, it } from 'node:test'
 import assert from 'node:assert'
-import { connect, oneOf, raw } from './database.js'
+import { connect, all, raw } from '../../modules/database/database.js'
 
 describe('database', async () => {
 
@@ -20,20 +20,20 @@ describe('database', async () => {
     assert.equal(stmt, `select * from super_table where x = '25' or x = 25.0 or items = 'hello' or items = 'hello'''`)
   })
 
-  it('maps oneOf correctly', async () => {
-    db.sql`select * from super_table where items in (${oneOf('Jeff')})`.run()
+  it('maps all correctly', async () => {
+    db.sql`select * from super_table where items in (${all('Jeff')})`.run()
     assert.equal(stmt, `select * from super_table where items in ('Jeff')`)
 
-    db.sql`select * from super_table where items in (${oneOf(['Jeff', 'Elon'])})`.run()
+    db.sql`select * from super_table where items in (${all(['Jeff', 'Elon'])})`.run()
     assert.equal(stmt, `select * from super_table where items in ('Jeff','Elon')`)
 
-    db.sql`select * from super_table where items in (${oneOf()})`.run()
+    db.sql`select * from super_table where items in (${all()})`.run()
     assert.equal(stmt, `select * from super_table where items in ()`)
 
-    db.sql`select * from super_table where items in (${oneOf([null, undefined, ''])})`.run()
+    db.sql`select * from super_table where items in (${all([null, undefined, ''])})`.run()
     assert.equal(stmt, `select * from super_table where items in (NULL,NULL,'')`)
 
-    db.sql`select * from super_table where items in (${oneOf([true, false])})`.run()
+    db.sql`select * from super_table where items in (${all([true, false])})`.run()
     assert.equal(stmt, `select * from super_table where items in (1.0,0.0)`)
   })
 

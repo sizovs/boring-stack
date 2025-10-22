@@ -1,8 +1,8 @@
 import { createHash } from "node:crypto"
 import { logger } from "./logger.js"
+import { db } from "./database/connect.js"
 
-export const errors = (db, defaultContext) => {
-
+export const errors = (defaultContext) => {
   const insertOne = db
     .prepare(`
       INSERT INTO errors (fingerprint, name, message, stack, context) VALUES (?, ?, ?, ?, ?)

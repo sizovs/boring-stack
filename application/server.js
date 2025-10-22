@@ -1,8 +1,7 @@
 import cluster from 'node:cluster'
 import process from 'node:process'
+import { logger } from "./modules/logger.js"
 
-import { startApp } from "./app.js"
-import { logger } from './modules/logger.js'
 
 const numForks = Number(process.env.FORKS) || 1
 
@@ -103,6 +102,7 @@ if (cluster.isPrimary) {
   })
 
 } else {
+  const { startApp } = await import("./app.js")
   const app = await startApp({ port: process.env.PORT })
   process.send(APP_STARTED)
   process.on('message', message => {

@@ -1,8 +1,6 @@
 import { start } from 'node:repl'
-import { connect } from './database/database.js'
+import { db } from "../modules/database/database.js"
 
 const repl = start()
-const { db, sql } = await connect(process.env.DB_LOCATION)
 
 repl.context.db = db
-repl.context.sql = sql
