@@ -209,6 +209,14 @@ root * $HOME/$APP_NAME@$NODE
 reverse_proxy :$NODE
 encode zstd gzip
 
+@static {
+  path /static/*
+}
+
+handle @static {
+  header Cache-Control "public, max-age=31536000"
+}
+
 @maintenance {
 	file $APP_NAME.m {
 		root $HOME
