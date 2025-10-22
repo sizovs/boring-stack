@@ -21,9 +21,6 @@
     "ky": "^1.7.2",
     "pino": "^9.5.0"
   },
-  "imports": {
-    "#application/*": "./application/*"
-  },
   "devDependencies": {
     "@faker-js/faker": "^8.4.1",
     "@playwright/test": "^1.44.1",

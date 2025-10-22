@@ -1,5 +1,5 @@
 import { createHash } from "node:crypto"
-import { logger } from "#application/modules/logger.js"
+import { logger } from "./logger.js"
 
 export const errors = (db, defaultContext) => {
 

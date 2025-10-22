@@ -1,5 +1,5 @@
-import { startApp } from '#application/app'
 import { test, expect } from '@playwright/test'
+import { startApp } from '../application/app.js'
 
 let app
 

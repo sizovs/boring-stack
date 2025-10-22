@@ -70,17 +70,6 @@ HETZNER_API_TOKEN=<secret goes here> npm run devops deploy
 DB_LOCATION=<db location> npm run repl
 ```
 
-#### Production configuration
-Create a `.env.production` file in the project directory and the script will copy it to the server. The minimum configuration requires an S3 bucket for Litestream replication.
-It can be any S3-compatible storage service, such as Cloudflare R2 or Hetzner Object Storage.
-
-```
-R2_BACKUP_KEY=
-R2_BACKUP_SECRET=
-R2_BACKUP_ENDPOINT=
-R2_BACKUP_BUCKET=
-```
-
 # Testing
 A traditional front-end/back-end separation via APIs requires developing and maintaining two distinct test suites—one for testing the back-end through the API and another for testing the front-end against a mock API, which can easily fall out of sync with the actual back-end.  This is cumbersome and clunky. By forgoing JSON APIs and instead sending HTML over the wire, we streamline the process, allowing us to test-drive a single app at the user level using Playwright.
 
@@ -115,6 +104,17 @@ Since everything runs on a single server, users farther away may experience late
 - [You Might Not Need JS](https://youmightnotneedjs.com)
 
 # Before you go live
+
+### Litestream replication
+Create a `.env.production` file in the project directory and the script will copy it to the server. The minimum configuration requires an S3 bucket for Litestream replication.
+It can be any S3-compatible storage service, such as Cloudflare R2 or Hetzner Object Storage.
+
+```
+R2_BACKUP_KEY=
+R2_BACKUP_SECRET=
+R2_BACKUP_ENDPOINT=
+R2_BACKUP_BUCKET=
+```
 
 ### Cloudflare
 It’s a good idea to place the app behind Cloudflare’s proxy. This provides static asset caching (CDN) and free DDoS protection.

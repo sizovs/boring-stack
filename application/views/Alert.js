@@ -1,4 +1,4 @@
-import { html } from "#application/modules/html.js"
+import { html } from "../modules/html.js";
 
 export const Alert = ({ link, lead, follow }) => html`
 <div id="alert" data-js-closeable data-js-remove-me="5s" role="alert">

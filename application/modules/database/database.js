@@ -1,7 +1,7 @@
-import { logger } from '#application/modules/logger.js'
-import { retry } from '#application/modules/retries.js'
 import Database from 'better-sqlite3'
 import { alwaysArray } from '../arrays.js'
+import { logger } from '../logger.js'
+import { retry } from '../retries.js'
 
 const connect = async (location, verbose = (msg, args) => logger.debug(msg, args)) => {
   if (!location) {
@@ -66,7 +66,7 @@ const connect = async (location, verbose = (msg, args) => logger.debug(msg, args
         pluck: () => ({
           get: () => stmt.pluck().get(...params),
           all: () => stmt.pluck().all(...params),
-        })        
+        })
       }
     }
 

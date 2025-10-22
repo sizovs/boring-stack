@@ -1,11 +1,6 @@
 {
   "compilerOptions": {
-    "paths": {
-      "/static/*": ["./static/*"],
-      "#application/*": [
-        "./application/*",
-      ]
-    },
+    "target": "esnext",
     "module": "nodenext"
   },
   "exclude": [

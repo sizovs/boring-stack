@@ -1,4 +1,4 @@
-import { TodoError, Todos } from "#application/views/Todos.js"
+import { TodoError, Todos } from "../views/Todos.js"
 
 /**
  * @param {{ app: import("fastify").FastifyInstance }}

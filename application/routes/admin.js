@@ -1,4 +1,4 @@
-import { Admin } from "#application/views/Admin.js"
+import { Admin } from "../views/Admin.js"
 
 /**
  * @param {{ app: import("fastify").FastifyInstance, db: import("better-sqlite3").Database }}

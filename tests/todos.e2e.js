@@ -1,6 +1,5 @@
-import { startApp } from '#application/app'
 import { test, expect } from '@playwright/test'
-import { expectHtmxReady } from './htmx'
+import { startApp } from '../application/app.js'
 
 let app
 

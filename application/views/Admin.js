@@ -1,4 +1,4 @@
-import { html } from "#application/modules/html.js"
+import { html } from "../modules/html.js"
 
 export const Admin = ({ errors }) => html`
   <main>
