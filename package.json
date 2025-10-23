@@ -1,9 +1,6 @@
 {
   "name": "todos",
   "type": "module",
-  "config": {
-    "domain": ""
-  },
   "scripts": {
     "start": "NODE_ENV=development DB_LOCATION=$npm_package_name.db PORT=3000 nodemon --env-file-if-exists .env ./application/server.js | npx pino-pretty -S",
     "test": "bash -c '(node --test & pid1=$!; npx playwright test & pid2=$!; wait -n || kill $pid1 $pid2 2>/dev/null; wait)'",
