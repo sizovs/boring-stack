@@ -8,7 +8,7 @@
     "start": "NODE_ENV=development DB_LOCATION=$npm_package_name.db PORT=3000 nodemon --env-file-if-exists .env ./application/server.js | npx pino-pretty -S",
     "test": "conc --kill-others-on-fail 'node --test' 'npx playwright test'",
     "repl": "node ./application/modules/repl.js",
-    "devops": "APP_NAME=$npm_package_name node ./deploy/devops.js",
+    "devops": "APP_NAME=$npm_package_name node --env-file-if-exists .env.production ./deploy/devops.js",
     "prepare": "[ -d '.git' ] && husky || echo 'skipping husky'"
   },
   "dependencies": {
