@@ -6,7 +6,7 @@
   },
   "scripts": {
     "start": "NODE_ENV=development DB_LOCATION=$npm_package_name.db PORT=3000 nodemon --env-file-if-exists .env ./application/server.js | npx pino-pretty -S",
-    "test": "conc --kill-others-on-fail 'node --test' 'npx playwright test'",
+    "test": "bash -c '(node --test & pid1=$!; npx playwright test & pid2=$!; wait -n || kill $pid1 $pid2 2>/dev/null; wait)'",
     "repl": "node ./application/modules/repl.js",
     "devops": "APP_NAME=$npm_package_name node --env-file-if-exists .env.production ./deploy/devops.js",
     "prepare": "[ -d '.git' ] && husky || echo 'skipping husky'"
@@ -26,12 +26,10 @@
     "@types/better-sqlite3": "^7.6.11",
     "@types/node": "^22.7.5",
     "chai": "^5.2.0",
-    "concurrently": "^9.1.2",
     "husky": "^9.1.6",
     "memfs": "^4.9.2",
     "nodemon": "^3.1.10",
-    "playwright": "^1.44.1",
-    "zx": "^8.1.9"
+    "playwright": "^1.44.1"
   },
   "volta": {
     "node": "22.21.0"
