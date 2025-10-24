@@ -54,7 +54,6 @@ async function deploy() {
 
 async function db() {
   const dbFile = `${process.env.APP_NAME}.db`
-  if (fs.existsSync(dbFile)) fs.unlinkSync(dbFile)
   execSync(`rm -f ${dbFile}* && DB_LOCATION=${dbFile} litestream restore -config ./deploy/litestream.yml ${dbFile}`, { stdio: 'inherit' })
 }
 
