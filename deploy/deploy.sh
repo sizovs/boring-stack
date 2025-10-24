@@ -39,7 +39,7 @@ EOF
 
 # Start Litestream
 sudo systemctl enable litestream
-sudo systemctl restart litestream
+sudo systemctl start litestream
 
 
 # Install Caddy
