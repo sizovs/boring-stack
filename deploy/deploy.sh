@@ -63,23 +63,6 @@ fi
 export VOLTA_HOME="$HOME/.volta"
 export PATH="$VOLTA_HOME/bin:$PATH"
 
-# Configure log rotation
-sudo tee /etc/logrotate.d/$APP_NAME >/dev/null <<EOF
-/var/log/$APP_NAME*.log {
-    su devops devops
-    daily
-    rotate 7
-    copytruncate
-    missingok
-    notifempty
-    compress
-    delaycompress
-    dateext
-    dateformat -%Y%m%d
-    create 640 devops devops
-}
-EOF
-
 # Determine deploy node
 if systemctl is-active --quiet "$APP_NAME@3000"; then
   OLD_NODE=3000
@@ -109,9 +92,11 @@ Environment=NODE_ENV=production PORT=%i DB_LOCATION=$DB_LOCATION FORKS=$(nproc)
 WorkingDirectory=$HOME/$APP_NAME@%i
 ExecStart=$HOME/.volta/bin/node --env-file-if-exists .env.production application/server.js
 Restart=on-failure
-StandardOutput=append:/var/log/$APP_NAME-out.log
-StandardError=append:/var/log/$APP_NAME-err.log
 TimeoutStopSec=15
+
+SyslogIdentifier=$APP_NAME
+StandardOutput=journal
+StandardError=journal
 
 [Install]
 WantedBy=multi-user.target
