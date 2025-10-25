@@ -37,7 +37,7 @@ await op()
 
 async function logs() {
   const { ip } = await primaryIp.get()
-  execSync(`ssh devops@${ip} "tail -f /var/log/${process.env.APP_NAME}-out.log"`, { stdio: 'inherit' })
+  execSync(`ssh devops@${ip} "journalctl -qft ${process.env.APP_NAME}"`, { stdio: 'inherit' })
 }
 
 async function maintain() {
