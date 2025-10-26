@@ -154,7 +154,9 @@ handle @static {
 }
 
 @maintenance {
-	file $HOME/$APP_NAME.m
+  file $APP_NAME.m {
+    root $HOME
+  }
 	not header X-Bypass-Maintenance *
 }
 
