@@ -26,10 +26,16 @@ write_files:
       AllowAgentForwarding no
       AuthorizedKeysFile .ssh/authorized_keys
       AllowUsers devops
+      AcceptEnv CI_*
+  - path: /etc/fail2ban/jail.local
+    content: |
+      [sshd]
+      enabled = true
+      banaction = iptables-multiport
 runcmd:
   # Bug, see https://github.com/hetznercloud/terraform-provider-hcloud/issues/473
   - udevadm trigger -c add -s block -p ID_VENDOR=HC --verbose -p ID_MODEL=Volume
 
-  - printf "[sshd]\nenabled = true\nbanaction = iptables-multiport" > /etc/fail2ban/jail.local
+  - systemctl daemon-reload
   - systemctl enable fail2ban
-  - systemctl reload sshd
+  - systemctl reload ssh
