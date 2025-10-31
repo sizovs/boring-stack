@@ -11,7 +11,6 @@ DOMAIN="${IP_ADDRESS}.nip.io"
 DB_LOCATION="$HOME/$APP_NAME.db"
 DEPLOY_DIR="$HOME/$APP_NAME.new"
 BACKUP_DIR=/mnt/backup/$APP_NAME
-source "$DEPLOY_DIR/.env.production"
 
 echo "$APP_NAME will be available at https://$DOMAIN"
 

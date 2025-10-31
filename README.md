@@ -65,11 +65,6 @@ HETZNER_API_TOKEN=<secret goes here> npm run devops deploy
 
 🎉 Your app should be publicly available via HTTPS on your custom domain or via `<server ip>.nip.io`.
 
-##### Running REPL
-```
-DB_LOCATION=<db location> npm run repl
-```
-
 # Testing
 A traditional front-end/back-end separation via APIs requires developing and maintaining two distinct test suites—one for testing the back-end through the API and another for testing the front-end against a mock API, which can easily fall out of sync with the actual back-end.  This is cumbersome and clunky. By forgoing JSON APIs and instead sending HTML over the wire, we streamline the process, allowing us to test-drive a single app at the user level using Playwright.
 
@@ -106,14 +101,14 @@ Since everything runs on a single server, users farther away may experience late
 # Before you go live
 
 ### Litestream replication
-Create a `.env.production` file in the project directory and the script will copy it to the server. The minimum configuration requires an S3 bucket for Litestream replication.
+Create a `.env` file in the project directory. Ensure your terminal automatically loads the .env file (I use the dotenv plugin with Zsh). The minimum configuration requires an S3 bucket for Litestream replication.
 It can be any S3-compatible storage service, such as Cloudflare R2 or Hetzner Object Storage.
 
 ```
-R2_BACKUP_KEY=
-R2_BACKUP_SECRET=
-R2_BACKUP_ENDPOINT=
-R2_BACKUP_BUCKET=
+CI_S3_BACKUP_KEY=
+CI_S3_BACKUP_SECRET=
+CI_S3_BACKUP_BUCKET=
+CI_S3_BACKUP_ENDPOINT=
 ```
 
 ### Cloudflare
