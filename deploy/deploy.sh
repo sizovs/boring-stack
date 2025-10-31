@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # Exit if using undefined variable.
-set -u
+set -euo pipefail
 
 IP_ADDRESS=$(hostname -I | awk '{print $1}')
 
@@ -116,7 +116,7 @@ HEALTHY=false
 MAX_RETRIES=3
 WAIT_TIME=5
 while [ $MAX_RETRIES -gt 0 ]; do
-  response=$(curl -s -o /dev/null -w "%{http_code}" "http://localhost:$DEPLOY_NODE/health")
+  response=$(curl -s -o /dev/null -w "%{http_code}" "http://localhost:$DEPLOY_NODE/health" || true)
 
   if [ "$response" -eq 200 ]; then
     HEALTHY=true
