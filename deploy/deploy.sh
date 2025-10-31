@@ -30,19 +30,29 @@ LITESTREAM_DEB="litestream-${LITESTREAM_VERSION}-linux-$(dpkg --print-architectu
 wget -q -nc -P /tmp "https://github.com/benbjohnson/litestream/releases/download/v$LITESTREAM_VERSION/$LITESTREAM_DEB"
 sudo apt-get install -y "/tmp/$LITESTREAM_DEB"
 
-# Create litestream.yml config file for continuous replication
-sudo tee /etc/litestream.yml >/dev/null <<EOF
+# Create litestream.yml
+CONFIG_FILE="/etc/litestream.yml"
+TMP_FILE=$(mktemp)
+tee "$TMP_FILE" >/dev/null <<EOF
 dbs:
   - path: $DB_LOCATION
     replica:
       type: s3
-      endpoint: $R2_BACKUP_ENDPOINT
-      bucket: $R2_BACKUP_BUCKET
-      access-key-id: $R2_BACKUP_KEY
-      secret-access-key: $R2_BACKUP_SECRET
+      endpoint: $CI_S3_BACKUP_ENDPOINT
+      bucket: $CI_S3_BACKUP_BUCKET
+      access-key-id: $CI_S3_BACKUP_KEY
+      secret-access-key: $CI_S3_BACKUP_SECRET
       snapshot-interval: 1h
       retention: 24h
 EOF
+
+# Update and restart if config changed
+if ! cmp -s "$TMP_FILE" "$CONFIG_FILE"; then
+    sudo mv "$TMP_FILE" "$CONFIG_FILE"
+    sudo systemctl restart litestream
+else
+    rm "$TMP_FILE"
+fi
 
 # Start Litestream
 sudo systemctl enable litestream
