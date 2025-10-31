@@ -171,9 +171,9 @@ handle @admin {
 }
 EOF
 
-# cat <<EOF | crontab -
-# * * * * * curl -s http://localhost:$OLD_NODE/cron/service > /dev/null 2>&1
-# EOF
+cat <<EOF | crontab -
+* * * * * curl -s http://localhost:$OLD_NODE/cron/service > /dev/null 2>&1
+EOF
 
 if [ "$HEALTHY" = false ]; then
   echo "$DEPLOY_NODE is not healthy after $MAX_RETRIES retries. Killing it."
