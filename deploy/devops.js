@@ -50,7 +50,7 @@ async function maintain() {
 async function deploy() {
   const { ip } = await primaryIp.get()
   execSync(`rsync -v --timeout=5 --recursive --include-from=./deploy/.includes --exclude='*' ./ devops@${ip}:/home/devops/${process.env.APP_NAME}.new`, { stdio: 'inherit' })
-  execSync(`cat deploy/deploy.sh | ssh devops@${ip} "APP_NAME=${process.env.APP_NAME} bash -s"`, { stdio: 'inherit' })
+  execSync(`cat deploy/deploy.sh | ssh -o SendEnv=CI_* devops@${ip} "APP_NAME=${process.env.APP_NAME} bash -s"`, { stdio: 'inherit' })
 }
 
 async function db() {
