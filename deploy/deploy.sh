@@ -16,12 +16,9 @@ echo "$APP_NAME will be available at https://$DOMAIN"
 
 # Install Litestream
 LITESTREAM_VERSION="0.5.2"
-if [[ "$(litestream version 2>/dev/null)" != "$LITESTREAM_VERSION" ]]; then
-  arch=$(dpkg --print-architecture)
-  url=https://github.com/benbjohnson/litestream/releases/download/v$LITESTREAM_VERSION/litestream-$LITESTREAM_VERSION-linux-$arch.deb
-  curl -fsSL "$url" -o /tmp/litestream.deb || { echo "Failed to download $url"; exit 1; }
-  sudo dpkg -i /tmp/litestream.deb && rm /tmp/litestream.deb
-fi
+LITESTREAM_DEB="litestream-${LITESTREAM_VERSION}-linux-$(dpkg --print-architecture).deb"
+wget -q -nc -P /tmp "https://github.com/benbjohnson/litestream/releases/download/v$LITESTREAM_VERSION/$LITESTREAM_DEB"
+sudo apt-get install -y "/tmp/$LITESTREAM_DEB"
 
 # Create litestream.yml config file for continuous replication
 sudo tee /etc/litestream.yml >/dev/null <<EOF
@@ -44,15 +41,9 @@ sudo systemctl start litestream
 
 # Install Caddy
 CADDY_VERSION="2.10.2"
-if [ "$(caddy version 2>/dev/null | awk '{print $1}')" != "v$CADDY_VERSION" ]; then
-  sudo apt install -y debian-keyring debian-archive-keyring apt-transport-https
-  curl -1sLf 'https://dl.cloudsmith.io/public/caddy/stable/gpg.key' | sudo gpg --dearmor -o /usr/share/keyrings/caddy-stable-archive-keyring.gpg
-  curl -1sLf 'https://dl.cloudsmith.io/public/caddy/stable/debian.deb.txt' | sudo tee /etc/apt/sources.list.d/caddy-stable.list
-  sudo chmod o+r /usr/share/keyrings/caddy-stable-archive-keyring.gpg
-  sudo chmod o+r /etc/apt/sources.list.d/caddy-stable.list
-  sudo apt-get update
-  sudo apt-get -y install caddy=$CADDY_VERSION
-fi
+CADDY_DEB="caddy_${CADDY_VERSION}_linux_$(dpkg --print-architecture).deb"
+wget -q -nc -P /tmp "https://github.com/caddyserver/caddy/releases/download/v$CADDY_VERSION/$CADDY_DEB"
+sudo apt-get install -y "/tmp/$CADDY_DEB"
 
 # Install Volta
 if [ ! -d "$HOME/.volta" ]; then
@@ -192,7 +183,7 @@ else
   crontab -l | sed "s/$OLD_NODE/$DEPLOY_NODE/g" | crontab -
   sudo sed -i "s/$OLD_NODE/$DEPLOY_NODE/g" /etc/caddy/Caddyfile
   sudo systemctl reload caddy
-  sudo systemctl stop "$APP_NAME@$OLD_NODE" &>/dev/null
-  sudo systemctl disable "$APP_NAME@$OLD_NODE" &>/dev/null
-  sudo systemctl enable "$APP_NAME@$DEPLOY_NODE" &>/dev/null
+  sudo systemctl stop "$APP_NAME@$OLD_NODE"
+  sudo systemctl disable --quiet "$APP_NAME@$OLD_NODE"
+  sudo systemctl enable --quiet "$APP_NAME@$DEPLOY_NODE"
 fi
