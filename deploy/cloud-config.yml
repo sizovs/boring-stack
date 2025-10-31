@@ -36,6 +36,9 @@ runcmd:
   # Bug, see https://github.com/hetznercloud/terraform-provider-hcloud/issues/473
   - udevadm trigger -c add -s block -p ID_VENDOR=HC --verbose -p ID_MODEL=Volume
 
+  # Symlinks to volumes
+  - ln -s /mnt/HC_Volume_${backupVolumeId} /mnt/backup
+
   - systemctl daemon-reload
   - systemctl enable fail2ban
   - systemctl reload ssh

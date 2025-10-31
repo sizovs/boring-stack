@@ -8,6 +8,7 @@ const network = new Resource('network', 'vpn')
 const sshKey = new Resource('ssh_key', 'devops')
 const server = new Resource('server', 'web')
 const primaryIp = new Resource("primary_ip", "public")
+const backupVolume = new Resource('volume', 'backup')
 
 const ops = {
   "Create infrastructure": create,
@@ -74,6 +75,12 @@ async function create() {
     ]
   })
 
+  await backupVolume.createIfAbsent({
+    size: 40,
+    location: 'nbg1',
+    format: 'ext4',
+  })
+
   await network.createIfAbsent({
     ip_range: '10.0.1.0/24',
     subnets: [{ type: "cloud", network_zone: "eu-central", ip_range: "10.0.1.0/24" }]
@@ -82,7 +89,8 @@ async function create() {
   const publicKeyLocation = `${process.env.HOME}/.ssh/hetzner.pub`
   const publicKey = fs.readFileSync(publicKeyLocation, 'utf-8')
   const cloudInit = fs.readFileSync(new URL('./cloud-config.yml', import.meta.url), 'utf-8')
-    .replace('${publicKey}', publicKey)
+    .replaceAll('${publicKey}', publicKey)
+    .replaceAll('${backupVolumeId}', await backupVolume.id())
 
   await sshKey.createIfAbsent({ public_key: publicKey })
 
@@ -94,7 +102,7 @@ async function create() {
     location: 'nbg1',
     ssh_keys: [sshKey.name],
     user_data: cloudInit,
-    volumes: [],
+    volumes: [await backupVolume.id()],
     automount: true,
     networks: [await network.id()],
     firewalls: [{ firewall: await firewall.id() }],
