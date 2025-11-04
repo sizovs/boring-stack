@@ -22,10 +22,6 @@ export const connect = async (location, verbose = (msg, args) => logger.debug(ms
     db.pragma("busy_timeout = 5000")
     db.pragma("synchronous = normal")
 
-    // Litestream takes over checkpointing and recommends running the app with checkpointing disabled:
-    // https://litestream.io/tips/#disable-autocheckpoints-for-high-write-load-servers
-    db.pragma("wal_autocheckpoint = 0")
-
     // Enable memory mapped files for speed and smaller memory footprint in multi-process environments.
     // https://oldmoe.blog/2024/02/03/turn-on-mmap-support-for-your-sqlite-connections/#benchmark-results
     // We set 1gb as a reasonable default, but for larger databases, if memory allows, it can go higher.
