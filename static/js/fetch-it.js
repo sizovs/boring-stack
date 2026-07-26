@@ -51,7 +51,7 @@ export class FetchIt extends HTMLElement {
       const { html, title } = this.parse(text);
       this.inject(html, title);
     } finally {
-      if (e.submitter) e.submitter.disabled = true;
+      if (e.submitter) e.submitter.disabled = false;
       this.progress(false);
     }
   }
